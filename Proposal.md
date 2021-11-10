@@ -73,28 +73,28 @@ Dataset from MoiveLens, the link is:
 
 -   SVD
 
-## The planned timeline.
+## The planned timeline
 
--   Have a brain storm and decide the dataset we use: November 4
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
 
--   Finish the draft proposal: November 9
+    ## v ggplot2 3.3.5     v purrr   0.3.4
+    ## v tibble  3.1.4     v dplyr   1.0.7
+    ## v tidyr   1.1.3     v stringr 1.4.0
+    ## v readr   2.0.1     v forcats 0.5.1
 
--   Finish the proposal: November 13
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
 
--   Task assignment: November 15
-
--   Project review meeting: November 16 - 19
-
--   Finish report’s code part: November 30
-
--   Construct Website: December 7
-
--   Report: December 11
-
--   Webpage and screencast: December 11
-
--   Peer assessment: December 11
-
--   Presentation practice: December 14
-
--   “In class” discussion of projects: December 16
+| date        | task                                             |
+|:------------|:-------------------------------------------------|
+| Nov 4       | Brainstorm                                       |
+| Nov 9       | Finish draft proposal                            |
+| Nov 13      | Submit formal proposal                           |
+| Nov 15      | Assign tasks                                     |
+| Nov 16 - 19 | Project review meeting                           |
+| Nov 30      | Finish coding part                               |
+| Dec 7       | Construct website                                |
+| Dec 11      | Report & Webpage and screencast & Peer asessment |
+| Dec 14      | Presentation practice                            |
+| Dec 16      | “In class” discussion                            |

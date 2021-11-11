@@ -1,0 +1,11 @@
+name: "Movie Recommender"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Proposal"
+      href: Proposal.html
+
+output:
+  html_document:
+    theme: yeti

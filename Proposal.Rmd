@@ -1,14 +1,26 @@
 ---
-title: "**Project Proposal: Movie Recommender**"
+title: "Project Proposal: Movie Recommender"
 subtitle: "a demo movie recommendation system"
 author: "Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)"
-output: pdf_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+font-family: Lato
 ---
 
+<style type="text/css">
+
+</style>
+
+
+&nbsp;
 
 ## Motivation
 
 In the era of information overload, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this project, we proposed to explore the movielens dataset, a dataset consisting of users’ rating and tagging towards movies, and implement a demo movie recommendation system.
+
+&nbsp;
 
 ## Intended final products
 
@@ -16,6 +28,7 @@ In the era of information overload, pushing to users information matching their 
 
 - A shiny app or dashboard giving movie recommendation
 
+&nbsp;
 
 ## Anticipated data sources
 
@@ -23,35 +36,51 @@ In the era of information overload, pushing to users information matching their 
 
 - Movie information scraped from [IMDB](https://www.imdb.com/)
 
+&nbsp;
 
-## The planned analyses/ visualizations / coding challenges
+## Planned analyses/ visualizations / coding challenges
+
+&nbsp;
 
 ### Planned analyses
 
 - Find popular movies and high-rating movies
 
-- Investigate the relationship among ratings and various factors, including movie genre, release year, rating time.
+- Investigate the relationship among ratings and various factors, including movie genre, release year, rating time
+
+- Evaluate the similarity among users and among movies
 
 - Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)
 
-- Construct a linear model to predict the underlying rating of a specific user. Preference on specific genre. Whether there is a difference between genre and ratings.
+- Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre.
+
+&nbsp;
 
 ### Visualizations:
 
-- Boxplot regarding the rating and years; boxplot regarding the genre and ratings; maybe a linear regression graph to show a specific user’s rating on genre
+- Boxplot regarding: ratings and years; ratings and genres; 
+
+- Clustering map of users and movies
+
+- Heatmaps denoting user / movie similarity
+
+- maybe a linear regression graph to show a specific user’s rating on genre
+
+&nbsp;
 
 ### Coding challenges:
 
 - Select proper loss function and decompose the user-movie rating matrix through gradient descent
 
-- Scrape basic movie information (length, director, actor, date...) from imdb for calculating movie-movie similarity
+- Scrape movie basic information (length, director, actor, date...) from imdb for calculating movie-movie similarity
 
 - Calculate movie-movie similarity based on movie description and user-generated tags
 
 - Build models to calculate user-similarity
 
+&nbsp;
 
-### The planned timeline
+### Planned timeline
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -67,9 +96,8 @@ tibble(Date = c("Nov 4", "Nov 9", "Nov 13", "Nov 15", "Nov 16 - 19", "Nov 30", "
                 "Report & Webpage and screencast & Peer asessment",
                 "Presentation practice",
                 '"In class" discussion')) %>%
-  #kableExtra::kbl() %>% 
-  #kableExtra::kable_styling()
-  knitr::kable()
+  kableExtra::kbl() %>% 
+  kableExtra::kable_styling(font_size = 15)
 ```
 
 

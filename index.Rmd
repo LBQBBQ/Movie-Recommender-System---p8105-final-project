@@ -1,0 +1,10 @@
+---
+title: "**Movie Recommender**"
+output: html_document
+---
+
+<span style="font-size:2em;">a demo movie recommendation system</span>
+
+<img src="pics/movies.jpg" style="width:100%">
+
+- See our [proposal](Proposal.html)

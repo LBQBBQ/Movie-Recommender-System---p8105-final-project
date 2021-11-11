@@ -9,10 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)" />
 
 
-<title>Project Proposal: Movie Recommender</title>
+<title>Movie Recommender</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -30,14 +29,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -224,69 +218,6 @@ $(document).ready(function () {
 
 
 
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-
 
 </head>
 
@@ -294,16 +225,6 @@ div.tocify {
 
 
 <div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -335,175 +256,19 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Project Proposal: Movie Recommender</h1>
-<h3 class="subtitle">a demo movie recommendation system</h3>
-<h4 class="author">Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)</h4>
+<h1 class="title toc-ignore"><strong>Movie Recommender</strong></h1>
 
 </div>
 
 
-<style type="text/css">
-
-</style>
-<p> </p>
-<div id="motivation" class="section level2">
-<h2>Motivation</h2>
-<p>In the era of information overload, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this project, we proposed to explore the movielens dataset, a dataset consisting of users’ rating and tagging towards movies, and implement a demo movie recommendation system.</p>
-<p> </p>
-</div>
-<div id="intended-final-products" class="section level2">
-<h2>Intended final products</h2>
+<p><span style="font-size:2em;">a demo movie recommendation system</span></p>
+<p><img src="pics/movies.jpg" style="width:100%"></p>
 <ul>
-<li><p>A report summarizing exploratory analysis results, recommendation algorithms used and predicted user-movie rating</p></li>
-<li><p>A shiny app or dashboard giving movie recommendation</p></li>
+<li>See our <a href="Proposal.html">proposal</a></li>
 </ul>
-<p> </p>
-</div>
-<div id="anticipated-data-sources" class="section level2">
-<h2>Anticipated data sources</h2>
-<ul>
-<li><p><a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></p></li>
-<li><p>Movie information scraped from <a href="https://www.imdb.com/">IMDB</a></p></li>
-</ul>
-<p> </p>
-</div>
-<div id="planned-analyses-visualizations-coding-challenges" class="section level2">
-<h2>Planned analyses/ visualizations / coding challenges</h2>
-<p> </p>
-<div id="planned-analyses" class="section level3">
-<h3>Planned analyses</h3>
-<ul>
-<li><p>Find popular movies and high-rating movies</p></li>
-<li><p>Investigate the relationship among ratings and various factors, including movie genre, release year, rating time</p></li>
-<li><p>Evaluate the similarity among users and among movies</p></li>
-<li><p>Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)</p></li>
-<li><p>Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre.</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="visualizations" class="section level3">
-<h3>Visualizations:</h3>
-<ul>
-<li><p>Boxplot regarding: ratings and years; ratings and genres;</p></li>
-<li><p>Clustering map of users and movies</p></li>
-<li><p>Heatmaps denoting user / movie similarity</p></li>
-<li><p>maybe a linear regression graph to show a specific user’s rating on genre</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="coding-challenges" class="section level3">
-<h3>Coding challenges:</h3>
-<ul>
-<li><p>Select proper loss function and decompose the user-movie rating matrix through gradient descent</p></li>
-<li><p>Scrape movie basic information (length, director, actor, date…) from imdb for calculating movie-movie similarity</p></li>
-<li><p>Calculate movie-movie similarity based on movie description and user-generated tags</p></li>
-<li><p>Build models to calculate user-similarity</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="planned-timeline" class="section level3">
-<h3>Planned timeline</h3>
-<table class="table" style="font-size: 15px; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Date
-</th>
-<th style="text-align:left;">
-Task
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Nov 4
-</td>
-<td style="text-align:left;">
-Brainstorm
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 9
-</td>
-<td style="text-align:left;">
-Finish draft proposal
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 13
-</td>
-<td style="text-align:left;">
-Submit formal proposal
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 15
-</td>
-<td style="text-align:left;">
-Assign tasks
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 16 - 19
-</td>
-<td style="text-align:left;">
-Project review meeting
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 30
-</td>
-<td style="text-align:left;">
-Finish coding part
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 7
-</td>
-<td style="text-align:left;">
-Construct website
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 11
-</td>
-<td style="text-align:left;">
-Report &amp; Webpage and screencast &amp; Peer asessment
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 14
-</td>
-<td style="text-align:left;">
-Presentation practice
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 16
-</td>
-<td style="text-align:left;">
-“In class” discussion
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 
 
 
-</div>
-</div>
 
 </div>
 
@@ -536,35 +301,6 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
-<script>
-$(document).ready(function ()  {
-
-    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
-    $('.unlisted.unnumbered').addClass('toc-ignore')
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

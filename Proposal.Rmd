@@ -28,13 +28,18 @@ In the era of information overload, pushing to users information matching their 
 
 - A shiny app or dashboard giving movie recommendation
 
+
+ 
+  
+
+
 &nbsp;
 
 ## Anticipated data sources
 
 - [MoiveLens dataset](https://grouplens.org/datasets/movielens/latest/)
 
-- Movie information scraped from [IMDB](https://www.imdb.com/)
+- Movie information scraped from [IMDb](https://www.imdb.com/)
 
 &nbsp;
 
@@ -51,6 +56,8 @@ In the era of information overload, pushing to users information matching their 
 - Evaluate the similarity among users and among movies
 
 - Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)
+
+- Analyze the changes in the ratings of the same movie every year, or the changes in the ratings of each category of movies,and try to get a rule through the analysis
 
 - Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre.
 
@@ -70,11 +77,21 @@ In the era of information overload, pushing to users information matching their 
 
 ### Coding challenges:
 
+
+- Convert collected-in-seconds timestamp into years
+
+
+- Split and group movie by different genre 
+
+
 - Select proper loss function and decompose the user-movie rating matrix through gradient descent
 
-- Scrape movie basic information (length, director, actor, date...) from imdb for calculating movie-movie similarity
+
+- Scrape movie basic information (length, director, actor, date...) from IMDb for calculating movie-movie similarity
+
 
 - Calculate movie-movie similarity based on movie description and user-generated tags
+
 
 - Build models to calculate user-similarity
 
@@ -99,6 +116,7 @@ tibble(Date = c("Nov 4", "Nov 9", "Nov 13", "Nov 15", "Nov 16 - 19", "Nov 30", "
   kableExtra::kbl() %>% 
   kableExtra::kable_styling(font_size = 15)
 ```
+
 
 
 

@@ -14,8 +14,8 @@
 
 <title>Project Proposal: Movie Recommender</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -363,7 +363,7 @@ div.tocify {
 <h2>Anticipated data sources</h2>
 <ul>
 <li><p><a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></p></li>
-<li><p>Movie information scraped from <a href="https://www.imdb.com/">IMDB</a></p></li>
+<li><p>Movie information scraped from <a href="https://www.imdb.com/">IMDb</a></p></li>
 </ul>
 <p> </p>
 </div>
@@ -377,6 +377,7 @@ div.tocify {
 <li><p>Investigate the relationship among ratings and various factors, including movie genre, release year, rating time</p></li>
 <li><p>Evaluate the similarity among users and among movies</p></li>
 <li><p>Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)</p></li>
+<li><p>Analyze the changes in the ratings of the same movie every year, or the changes in the ratings of each category of movies,and try to get a rule through the analysis</p></li>
 <li><p>Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre.</p></li>
 </ul>
 <p> </p>
@@ -394,8 +395,10 @@ div.tocify {
 <div id="coding-challenges" class="section level3">
 <h3>Coding challenges:</h3>
 <ul>
+<li><p>Convert collected-in-seconds timestamp into years</p></li>
+<li><p>Split and group movie by different genre</p></li>
 <li><p>Select proper loss function and decompose the user-movie rating matrix through gradient descent</p></li>
-<li><p>Scrape movie basic information (length, director, actor, date…) from imdb for calculating movie-movie similarity</p></li>
+<li><p>Scrape movie basic information (length, director, actor, date…) from IMDb for calculating movie-movie similarity</p></li>
 <li><p>Calculate movie-movie similarity based on movie description and user-generated tags</p></li>
 <li><p>Build models to calculate user-similarity</p></li>
 </ul>

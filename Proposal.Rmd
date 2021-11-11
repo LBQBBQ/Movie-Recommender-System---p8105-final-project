@@ -1,69 +1,63 @@
 ---
-title: "Team registration and proposal"
-author: "Shaocong Zhang"
-date: "11/9/2021"
-output: html_document
+title: "**Project Proposal: Movie Recommender**"
+subtitle: "a demo movie recommendation system"
+author: "Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)"
+output: pdf_document
 ---
 
-# The group members 
 
-Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)
+## Motivation
 
-# The tentative project title
+In the era of information overload, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this project, we proposed to explore the movielens dataset, a dataset consisting of users’ rating and tagging towards movies, and implement a demo movie recommendation system.
 
-Recommend movies for users
+## Intended final products
 
-# The motivation for this project
+- A report summarizing exploratory analysis results, recommendation algorithms used and predicted user-movie rating
 
-We proposed to explore a dataset of users’ rating and tagging towards movies and implement a demo movie recommendation system.
+- A shiny app or dashboard giving movie recommendation
 
-# The intended final products
 
-## Models
+## Anticipated data sources
 
-- Item-similarity based recommendation
+- [MoiveLens dataset](https://grouplens.org/datasets/movielens/latest/)
 
-- User-similarity based recommendation
+- Movie information scraped from [IMDB](https://www.imdb.com/)
 
-- Collaborative filtering (Latent factor model (SVD)) based recommendation
 
-## A shiny app 
+## The planned analyses/ visualizations / coding challenges
 
-- Recommends user movie after the user types his favorite 3 movies
+### Planned analyses
 
-# The anticipated data sources
+- Find popular movies and high-rating movies
 
-Dataset from MoiveLens, the link is: https://grouplens.org/datasets/movielens/latest/
-
-# The planned analyses/ visualizations / coding challenges
-
-## Planned analyses:
-
-- Which movies have the highest ratings? Are there any significant differences in the scores of different categories of films? Is there any relationship between the film score and the year of film release? Is there any relationship between film rating and comment time?
+- Investigate the relationship among ratings and various factors, including movie genre, release year, rating time.
 
 - Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)
 
-- Average ratings over years – to investigate whether ratings are different because of the year the movie displayed. 
-
 - Construct a linear model to predict the underlying rating of a specific user. Preference on specific genre. Whether there is a difference between genre and ratings.
 
-## Visualizations:
+### Visualizations:
 
 - Boxplot regarding the rating and years; boxplot regarding the genre and ratings; maybe a linear regression graph to show a specific user’s rating on genre
 
-## Coding challenges:
+### Coding challenges:
 
-- To acheive collaborative filtering (Latent factor model (SVD)) based recommendation, we may construct a M*N matrix to calculate the item-similarity and the user-similarity. We may also pick up the most frequent tags from the movie and used the tag to recommend the similar movies.
+- Select proper loss function and decompose the user-movie rating matrix through gradient descent
 
-- SVD
+- Scrape basic movie information (length, director, actor, date...) from imdb for calculating movie-movie similarity
+
+- Calculate movie-movie similarity based on movie description and user-generated tags
+
+- Build models to calculate user-similarity
+
 
 ### The planned timeline
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
-tibble(date = c("Nov 4", "Nov 9", "Nov 13", "Nov 15", "Nov 16 - 19", "Nov 30", "Dec 7", "Dec 11", "Dec 14", "Dec 16"),
-       task = c("Brainstorm", 
+tibble(Date = c("Nov 4", "Nov 9", "Nov 13", "Nov 15", "Nov 16 - 19", "Nov 30", "Dec 7", "Dec 11", "Dec 14", "Dec 16"),
+       Task = c("Brainstorm", 
                 "Finish draft proposal", 
                 "Submit formal proposal",
                 "Assign tasks",
@@ -73,8 +67,9 @@ tibble(date = c("Nov 4", "Nov 9", "Nov 13", "Nov 15", "Nov 16 - 19", "Nov 30", "
                 "Report & Webpage and screencast & Peer asessment",
                 "Presentation practice",
                 '"In class" discussion')) %>%
-  kableExtra::kbl() %>% 
-  kableExtra::kable_styling()
+  #kableExtra::kbl() %>% 
+  #kableExtra::kable_styling()
+  knitr::kable()
 ```
 
 

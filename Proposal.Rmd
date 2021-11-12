@@ -62,6 +62,9 @@ In the era of information overload, pushing to users information matching their 
 - Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre.
 
 &nbsp;
+- Find the average rating after every year a movie published. And find the trend of that.
+
+-
 
 ### Visualizations:
 

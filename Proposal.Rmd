@@ -6,12 +6,7 @@ output:
   html_document:
     toc: true
     toc_float: true
-font-family: Lato
 ---
-
-<style type="text/css">
-
-</style>
 
 
 &nbsp;
@@ -27,10 +22,6 @@ In the era of information overload, pushing to users information matching their 
 - A report summarizing exploratory analysis results, recommendation algorithms used and predicted user-movie rating
 
 - A shiny app or dashboard giving movie recommendation
-
-
- 
-  
 
 
 &nbsp;

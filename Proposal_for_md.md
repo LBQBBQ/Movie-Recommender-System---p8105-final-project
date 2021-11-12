@@ -82,15 +82,130 @@ system.
 
 ### Planned timeline
 
-| Date        | Task                                             | Due                    |
-|:------------|:-------------------------------------------------|:-----------------------|
-| Nov 4       | Brainstorm                                       | NA                     |
-| Nov 9       | Finish draft proposal                            | NA                     |
-| Nov 13      | Submit formal proposal                           | November 13 by 1:00 pm |
-| Nov 15      | Assign tasks                                     | NA                     |
-| Nov 16 - 19 | Project review meeting                           | November 16-19         |
-| Nov 30      | Finish coding part                               | NA                     |
-| Dec 7       | Construct website                                | NA                     |
-| Dec 11      | Report & Webpage and screencast & Peer asessment | December 11 by 4:00 pm |
-| Dec 14      | Presentation practice                            | NA                     |
-| Dec 16      | In class discussion                              | November 16            |
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+Date
+</th>
+<th style="text-align:left;">
+Task
+</th>
+<th style="text-align:left;">
+Due
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Nov 4
+</td>
+<td style="text-align:left;">
+Brainstorm
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nov 9
+</td>
+<td style="text-align:left;">
+Finish draft proposal
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nov 13
+</td>
+<td style="text-align:left;">
+Submit formal proposal
+</td>
+<td style="text-align:left;">
+Nov 13 by 1:00 pm
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nov 15
+</td>
+<td style="text-align:left;">
+Assign tasks
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nov 16 - 19
+</td>
+<td style="text-align:left;">
+Project review meeting
+</td>
+<td style="text-align:left;">
+Nov 16-19
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nov 30
+</td>
+<td style="text-align:left;">
+Finish coding part
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dec 7
+</td>
+<td style="text-align:left;">
+Construct website
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dec 11
+</td>
+<td style="text-align:left;">
+Report & Webpage and screencast & Peer asessment
+</td>
+<td style="text-align:left;">
+Dec 11 by 4:00 pm
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dec 14
+</td>
+<td style="text-align:left;">
+Presentation practice
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dec 16
+</td>
+<td style="text-align:left;">
+In class discussion
+</td>
+<td style="text-align:left;">
+Dec 16
+</td>
+</tr>
+</tbody>
+</table>

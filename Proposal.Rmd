@@ -59,7 +59,7 @@ In the era of information overload, pushing to users information matching their 
 
 - Analyze the changes in the ratings of the same movie every year, or the changes in the ratings of each category of movies,and try to get a rule through the analysis
 
-- Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre.
+- Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre
 
 &nbsp;
 

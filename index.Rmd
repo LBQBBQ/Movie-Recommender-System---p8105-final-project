@@ -5,6 +5,8 @@ output: html_document
 
 <span style="font-size:2em;">a demo movie recommendation system</span>
 
-<img src="pics/movies.jpg" style="width:100%">
+<img src="pics/movies.jpg" style="width:80%">
+
+ Image source: 38 Top Fall Movies To Get You In the Autumn Mood( Leah Hall 2021)
 
 - See our [proposal](Proposal.html)

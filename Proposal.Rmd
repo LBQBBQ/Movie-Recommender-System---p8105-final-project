@@ -112,7 +112,17 @@ tibble(Date = c("Nov 4", "Nov 9", "Nov 13", "Nov 15", "Nov 16 - 19", "Nov 30", "
                 "Construct website",
                 "Report & Webpage and screencast & Peer asessment",
                 "Presentation practice",
-                '"In class" discussion')) %>%
+                "In class discussion"),
+       Due = c("NA", 
+                "NA", 
+                "November 13 by 1:00 pm",
+                "NA",
+                "November 16-19",
+                "NA",
+                "NA",
+                "December 11 by 4:00 pm",
+                "NA",
+                "November 16")) %>%
   kableExtra::kbl() %>% 
   kableExtra::kable_styling(font_size = 15)
 ```

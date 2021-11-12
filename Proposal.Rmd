@@ -64,7 +64,7 @@ In the era of information overload, pushing to users information matching their 
 &nbsp;
 - Find the average rating after every year a movie published. And find the trend of that.
 
--
+- Find the the average rating of each categories in different year.
 
 ### Visualizations:
 

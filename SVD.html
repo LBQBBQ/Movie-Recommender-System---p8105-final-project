@@ -247,6 +247,18 @@ $(document).ready(function () {
         <li>
   <a href="Proposal.html">Proposal</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Recommendation Algorithm
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SVD.html">SVD</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -302,7 +314,7 @@ library(patchwork)</code></pre>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
 <ul>
-<li>Due to the limitation of computing power, we only predict ratings for 20 users who gave most ratings and 20 movies which received most ratings.</li>
+<li>Due to the limitation of computing power, we only predict ratings for the first 20 users and the first 20 movies in the dataset.</li>
 </ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
@@ -335,6 +347,8 @@ rating_matrix = rating_matrix[users, movies]</code></pre>
 <pre class="r"><code>funk_svd = function(R, K, max_iter, alpha, lambda){
     M = nrow(R)
     N = ncol(R)
+    
+    set.seed(7)
     
     P = matrix(runif(M*K), nrow = M)
     Q = matrix(runif(N*K), nrow = N) %&gt;% t()

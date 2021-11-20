@@ -5,6 +5,10 @@ navbar:
   left:
     - text: "Proposal"
       href: Proposal.html
+    - text: "Recommendation Algorithm"
+      menu:
+        - text: "SVD"
+          href: SVD.html
 
   right:  
     - icon: fa-github fa-lg

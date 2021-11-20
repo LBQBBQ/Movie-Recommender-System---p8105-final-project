@@ -38,7 +38,7 @@ library(patchwork)
 
 ## Data preparation
 
-- Due to the limitation of computing power, we only predict ratings for 20 users who gave most ratings and 20 movies which received most ratings.
+- Due to the limitation of computing power, we only predict ratings for the first 20 users and the first 20 movies in the dataset.
 
 ```{r, warning=FALSE}
 data_path = "./data/small/ratings.csv"
@@ -75,6 +75,8 @@ rating_matrix = rating_matrix[users, movies]
 funk_svd = function(R, K, max_iter, alpha, lambda){
     M = nrow(R)
     N = ncol(R)
+    
+    set.seed(7)
     
     P = matrix(runif(M*K), nrow = M)
     Q = matrix(runif(N*K), nrow = N) %>% t()

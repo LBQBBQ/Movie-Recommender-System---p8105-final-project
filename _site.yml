@@ -9,6 +9,8 @@ navbar:
       menu:
         - text: "SVD"
           href: SVD.html
+        - text: "tree-based bootstraping"
+          href: tree-based-bootstraping.html
 
   right:  
     - icon: fa-github fa-lg

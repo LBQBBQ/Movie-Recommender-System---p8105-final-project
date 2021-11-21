@@ -1,0 +1,203 @@
+---
+title: "tree-based bootstraping"
+author: 'Haolin Zhong (UNI: hz2771)'
+date: "2021/11/20"
+output: html_document
+---
+
+## Dependencies
+
+```{r}
+library(tidyverse)
+```
+
+
+
+## Data preparation
+
+```{r}
+path = "./data/small/ratings.csv"
+
+rating_tidy = read_csv(path, col_types = "iinc") %>% 
+  janitor::clean_names()
+
+hot_movies = 
+  rating_tidy %>% 
+  count(movie_id) %>% 
+  arrange(desc(n)) %>% 
+  head(100) %>% 
+  arrange(movie_id) %>% 
+  pull(movie_id) %>% 
+  as_vector()
+
+
+rating_dscts = 
+  rating_tidy %>% 
+  select(-timestamp) %>% 
+  filter(movie_id %in% hot_movies) %>% 
+  pivot_wider(names_from = movie_id, values_from = rating) %>% 
+  pivot_longer(cols = as.character(hot_movies), names_to = "movie_id", values_to = "rating")
+```
+
+
+## Function
+
+```{r}
+classify = function(rating) {
+  res = ""
+  
+  if (is.na(rating)) {
+    res = "unknown"
+  } else if (rating >= 3.5) {
+    res = "lover"
+  } else {
+    res = "hater"
+  }
+  
+  return(res)
+}
+
+```
+
+
+
+```{r}
+user_cate =
+  rating_dscts %>%
+  mutate(type = map(rating, classify)) %>% 
+  unnest(type) %>% 
+  mutate(movie_id = as.numeric(movie_id))
+```
+
+
+```{r}
+calc_score = function(data, id){
+  
+  user_movie_type = 
+    data %>% 
+    filter(movie_id == id) %>% 
+    select(user_id, type)
+
+  score = 
+    data %>% 
+    select(-type) %>% 
+    left_join(user_movie_type, by = "user_id") %>% 
+    filter(movie_id != id) %>% 
+    group_by(type) %>% 
+    summarize(var = var(rating, na.rm = TRUE)) %>% 
+    pull(var) %>% 
+    sum(na.rm = TRUE)
+  
+  return(score)
+}
+
+```
+
+
+```{r}
+
+
+
+movies = 
+    head(user_cate) %>% 
+    pull(movie_id) %>% 
+    as_vector() %>% 
+    as.integer()
+  
+  scores = list()
+  
+  for (i in 1:length(movies)) {
+    scores[[i]] = calc_score(head(user_cate), movies[i])
+  }
+  
+  scores = as_vector(scores) %>% as.numeric()
+  max_score_ind = which(scores == max(scores))[1]
+  movie = movies[[max_score_ind]] %>% as.integer()
+
+  
+```
+
+
+```{r}
+
+
+
+find_movies = function(data, levels, trace){
+  if (levels == 0 || nrow(data) == 0) {
+    return(trace)
+  }
+  
+  movies = 
+    data %>% 
+    pull(movie_id) %>% 
+    as_vector() %>% 
+    as.integer()
+  
+  scores = list()
+  for (i in 1:length(movies)) {
+    scores[[i]] = calc_score(data, movies[[i]])
+  }
+  
+  scores = as_vector(scores) %>% as.numeric()
+  max_score_ind = which(scores == max(scores))[1]
+  movie = movies[max_score_ind]
+
+  
+  lovers = 
+    data %>%
+    filter(movie_id == movie, type == "lover") %>% 
+    pull(user_id) %>% 
+    as.integer()
+    
+  lovers_data = 
+    data %>% 
+    filter(user_id %in% lovers) %>% 
+    filter(movie_id != movie)
+    
+  haters =
+    data %>%
+    filter(movie_id == movie, type == "hater") %>% 
+    pull(user_id) %>% 
+    as.integer()
+  
+  haters_data = 
+    data %>% 
+    filter(user_id %in% haters) %>% 
+    filter(movie_id != movie)
+    
+  unknowns = 
+    data %>%
+    filter(movie_id == movie, type == "unknown") %>% 
+    pull(user_id) %>% 
+    as.integer()
+    
+  unknowns_data =
+    data %>% 
+    filter(user_id %in% unknowns) %>% 
+    filter(movie_id != movie)
+    
+  sub_lover = find_movies(lovers_data, levels - 1, paste(trace, movie, "-lovers-", sep = ""))
+  sub_hater = find_movies(haters_data, levels - 1, paste(trace, movie, "-haters-", sep = ""))
+  sub_unknowns = find_movies(unknowns_data, levels - 1, paste(trace, movie, "-unknown-", sep = ""))
+  
+  return(list(sub_lover, sub_hater, sub_unknowns))
+}
+
+
+find_movies(sample_n(user_cate, 1000), 2, "")
+```
+
+
+```{r}
+movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
+movie_info = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names()
+
+movie_info %>% 
+  filter(movie_id %in% movies) %>% 
+  kableExtra::kbl() %>% 
+  kableExtra::kable_styling()
+```
+
+
+

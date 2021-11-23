@@ -5,12 +5,16 @@ date: "2021/11/20"
 output: html_document
 ---
 
+## Intuition
+
+- Find movies which mostly differentiate groups of people
+
+
 ## Dependencies
 
 ```{r}
 library(tidyverse)
 ```
-
 
 
 ## Data preparation
@@ -30,7 +34,6 @@ hot_movies =
   pull(movie_id) %>% 
   as_vector()
 
-
 rating_dscts = 
   rating_tidy %>% 
   select(-timestamp) %>% 
@@ -41,6 +44,9 @@ rating_dscts =
 
 
 ## Function
+
+
+### cut-off for being lover/hater/unknown
 
 ```{r}
 classify = function(rating) {
@@ -59,7 +65,7 @@ classify = function(rating) {
 
 ```
 
-
+### classify
 
 ```{r}
 user_cate =
@@ -69,6 +75,7 @@ user_cate =
   mutate(movie_id = as.numeric(movie_id))
 ```
 
+### calculate differentiation score
 
 ```{r}
 calc_score = function(data, id){
@@ -93,38 +100,28 @@ calc_score = function(data, id){
 
 ```
 
+## Tree
+
+We use trinomial trees to save our result.
 
 ```{r}
-
-
-
-movies = 
-    head(user_cate) %>% 
-    pull(movie_id) %>% 
-    as_vector() %>% 
-    as.integer()
-  
-  scores = list()
-  
-  for (i in 1:length(movies)) {
-    scores[[i]] = calc_score(head(user_cate), movies[i])
-  }
-  
-  scores = as_vector(scores) %>% as.numeric()
-  max_score_ind = which(scores == max(scores))[1]
-  movie = movies[[max_score_ind]] %>% as.integer()
-
-  
+setClass("movieTreeNode",
+  slots = c(
+    mid = "numeric",
+    sub_lover = "movieTreeNode",
+    sub_unknown = "movieTreeNode",
+    sub_hater = "movieTreeNode"
+  ) 
+)
 ```
 
 
+## Main function
+
 ```{r}
-
-
-
-find_movies = function(data, levels, trace){
+find_movies = function(data, levels, root){
   if (levels == 0 || nrow(data) == 0) {
-    return(trace)
+    return(root)
   }
   
   movies = 
@@ -141,6 +138,8 @@ find_movies = function(data, levels, trace){
   scores = as_vector(scores) %>% as.numeric()
   max_score_ind = which(scores == max(scores))[1]
   movie = movies[max_score_ind]
+  
+  root@mid = movie
 
   
   lovers = 
@@ -176,20 +175,93 @@ find_movies = function(data, levels, trace){
     filter(user_id %in% unknowns) %>% 
     filter(movie_id != movie)
     
-  sub_lover = find_movies(lovers_data, levels - 1, paste(trace, movie, "-lovers-", sep = ""))
-  sub_hater = find_movies(haters_data, levels - 1, paste(trace, movie, "-haters-", sep = ""))
-  sub_unknowns = find_movies(unknowns_data, levels - 1, paste(trace, movie, "-unknown-", sep = ""))
+  root@sub_lover = find_movies(lovers_data, levels - 1, new("movieTreeNode"))
+  root@sub_unknown = find_movies(unknowns_data, levels - 1, new("movieTreeNode"))
+  root@sub_hater = find_movies(haters_data, levels - 1, new("movieTreeNode"))
   
-  return(list(sub_lover, sub_hater, sub_unknowns))
+  return(root)
 }
 
-
-find_movies(sample_n(user_cate, 1000), 2, "")
 ```
 
 
+## level-order traversal
+
 ```{r}
+dfs = function(root, level, res){
+  
+  if (length(res) < level) {
+    res[[level]] = list()
+  }
+  
+  if (identical(root@mid, numeric(0))) {
+    # increasing the readability of future traversal result
+    # by using -1 of the null node value
+    res[[level]] = append(res[[level]], -1)
+    return(res)
+  }
+  
+  res[[level]] = append(res[[level]], root@mid)
+  
+  res = dfs(root@sub_lover, level + 1, res)
+  res = dfs(root@sub_unknown, level + 1, res)
+  res = dfs(root@sub_hater, level + 1, res)
+  
+  return(res)
+}
+
+```
+
+
+## Test
+
+```{r}
+root = find_movies(sample_n(user_cate, 5000), 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+res
+
+```
+
+
+
+## Running on the whole dataset
+
+- Now we can test our algorithm on 
+
+```{r, eval=FALSE}
+root = find_movies(user_cate, 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+res
+```
+
+```{r}
+# The result of this algorithm on the overall dataset.
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+```
+
+
+
+## Result on the overall dataset
+
+- After perform on the overall dataset, we find the following movies have the highest differentiation score.
+
+```{r}
+# run 1
 movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
+
+# run 2
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+
 movie_info = read_csv("./data/small/movies.csv") %>% 
   janitor::clean_names()
 

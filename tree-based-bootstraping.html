@@ -288,18 +288,44 @@ $(document).ready(function () {
 </div>
 
 
+<div id="intuition" class="section level2">
+<h2>Intuition</h2>
+<ul>
+<li>Find movies which mostly differentiate groups of people</li>
+</ul>
+</div>
 <div id="dependencies" class="section level2">
 <h2>Dependencies</h2>
 <pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.4     v dplyr   1.0.7
+## v tidyr   1.1.3     v stringr 1.4.0
+## v readr   2.0.1     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
 </div>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
 <pre class="r"><code>path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = read_csv(path, col_types = &quot;iinc&quot;) %&gt;% 
-  janitor::clean_names()
-
-hot_movies = 
+  janitor::clean_names()</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): strings not representable in native encoding will
+## be translated to UTF-8</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C4&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E4&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00DF&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D8&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F8&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C5&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E5&gt;&#39; to native encoding</code></pre>
+<pre class="r"><code>hot_movies = 
   rating_tidy %&gt;% 
   count(movie_id) %&gt;% 
   arrange(desc(n)) %&gt;% 
@@ -307,7 +333,6 @@ hot_movies =
   arrange(movie_id) %&gt;% 
   pull(movie_id) %&gt;% 
   as_vector()
-
 
 rating_dscts = 
   rating_tidy %&gt;% 
@@ -318,6 +343,8 @@ rating_dscts =
 </div>
 <div id="function" class="section level2">
 <h2>Function</h2>
+<div id="cut-off-for-being-loverhaterunknown" class="section level3">
+<h3>cut-off for being lover/hater/unknown</h3>
 <pre class="r"><code>classify = function(rating) {
   res = &quot;&quot;
   
@@ -331,11 +358,17 @@ rating_dscts =
   
   return(res)
 }</code></pre>
+</div>
+<div id="classify" class="section level3">
+<h3>classify</h3>
 <pre class="r"><code>user_cate =
   rating_dscts %&gt;%
   mutate(type = map(rating, classify)) %&gt;% 
   unnest(type) %&gt;% 
   mutate(movie_id = as.numeric(movie_id))</code></pre>
+</div>
+<div id="calculate-differentiation-score" class="section level3">
+<h3>calculate differentiation score</h3>
 <pre class="r"><code>calc_score = function(data, id){
   
   user_movie_type = 
@@ -355,24 +388,28 @@ rating_dscts =
   
   return(score)
 }</code></pre>
-<pre class="r"><code>movies = 
-    head(user_cate) %&gt;% 
-    pull(movie_id) %&gt;% 
-    as_vector() %&gt;% 
-    as.integer()
-  
-  scores = list()
-  
-  for (i in 1:length(movies)) {
-    scores[[i]] = calc_score(head(user_cate), movies[i])
-  }
-  
-  scores = as_vector(scores) %&gt;% as.numeric()
-  max_score_ind = which(scores == max(scores))[1]
-  movie = movies[[max_score_ind]] %&gt;% as.integer()</code></pre>
-<pre class="r"><code>find_movies = function(data, levels, trace){
+</div>
+</div>
+<div id="tree" class="section level2">
+<h2>Tree</h2>
+<p>We use trinomial trees to save our result.</p>
+<pre class="r"><code>setClass(&quot;movieTreeNode&quot;,
+  slots = c(
+    mid = &quot;numeric&quot;,
+    sub_lover = &quot;movieTreeNode&quot;,
+    sub_unknown = &quot;movieTreeNode&quot;,
+    sub_hater = &quot;movieTreeNode&quot;
+  ) 
+)</code></pre>
+<pre><code>## Warning: 在&quot;movieTreeNode&quot;的定义中不存在这种槽类别: sub_lover(class
+## &quot;movieTreeNode&quot;), sub_unknown(class &quot;movieTreeNode&quot;), sub_hater(class
+## &quot;movieTreeNode&quot;)</code></pre>
+</div>
+<div id="main-function" class="section level2">
+<h2>Main function</h2>
+<pre class="r"><code>find_movies = function(data, levels, root){
   if (levels == 0 || nrow(data) == 0) {
-    return(trace)
+    return(root)
   }
   
   movies = 
@@ -389,6 +426,8 @@ rating_dscts =
   scores = as_vector(scores) %&gt;% as.numeric()
   max_score_ind = which(scores == max(scores))[1]
   movie = movies[max_score_ind]
+  
+  root@mid = movie
 
   
   lovers = 
@@ -424,39 +463,118 @@ rating_dscts =
     filter(user_id %in% unknowns) %&gt;% 
     filter(movie_id != movie)
     
-  sub_lover = find_movies(lovers_data, levels - 1, paste(trace, movie, &quot;-lovers-&quot;, sep = &quot;&quot;))
-  sub_hater = find_movies(haters_data, levels - 1, paste(trace, movie, &quot;-haters-&quot;, sep = &quot;&quot;))
-  sub_unknowns = find_movies(unknowns_data, levels - 1, paste(trace, movie, &quot;-unknown-&quot;, sep = &quot;&quot;))
+  root@sub_lover = find_movies(lovers_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  root@sub_unknown = find_movies(unknowns_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  root@sub_hater = find_movies(haters_data, levels - 1, new(&quot;movieTreeNode&quot;))
   
-  return(list(sub_lover, sub_hater, sub_unknowns))
-}
+  return(root)
+}</code></pre>
+</div>
+<div id="level-order-traversal" class="section level2">
+<h2>level-order traversal</h2>
+<pre class="r"><code>dfs = function(root, level, res){
+  
+  if (length(res) &lt; level) {
+    res[[level]] = list()
+  }
+  
+  if (identical(root@mid, numeric(0))) {
+    # increasing the readability of future traversal result
+    # by using -1 of the null node value
+    res[[level]] = append(res[[level]], -1)
+    return(res)
+  }
+  
+  res[[level]] = append(res[[level]], root@mid)
+  
+  res = dfs(root@sub_lover, level + 1, res)
+  res = dfs(root@sub_unknown, level + 1, res)
+  res = dfs(root@sub_hater, level + 1, res)
+  
+  return(res)
+}</code></pre>
+</div>
+<div id="test" class="section level2">
+<h2>Test</h2>
+<pre class="r"><code>root = find_movies(sample_n(user_cate, 5000), 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
 
-
-find_movies(sample_n(user_cate, 1000), 2, &quot;&quot;)</code></pre>
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+res</code></pre>
 <pre><code>## [[1]]
 ## [[1]][[1]]
-## [1] &quot;185-lovers-2959-lovers-&quot;
-## 
-## [[1]][[2]]
-## [1] &quot;185-lovers-2959-haters-&quot;
-## 
-## [[1]][[3]]
-## [1] &quot;185-lovers-2959-unknown-&quot;
+## [1] 47
 ## 
 ## 
 ## [[2]]
-## [1] &quot;185-haters-&quot;
+## [[2]][[1]]
+## [1] 608
+## 
+## [[2]][[2]]
+## [1] 7153
+## 
+## [[2]][[3]]
+## [1] 2329
+## 
 ## 
 ## [[3]]
 ## [[3]][[1]]
-## [1] &quot;185-unknown-595-lovers-&quot;
+## [1] 4993
 ## 
 ## [[3]][[2]]
-## [1] &quot;185-unknown-595-haters-&quot;
+## [1] 1210
 ## 
 ## [[3]][[3]]
-## [1] &quot;185-unknown-595-unknown-&quot;</code></pre>
-<pre class="r"><code>movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
+## [1] -1
+## 
+## [[3]][[4]]
+## [1] -1
+## 
+## [[3]][[5]]
+## [1] 4886
+## 
+## [[3]][[6]]
+## [1] -1
+## 
+## [[3]][[7]]
+## [1] -1
+## 
+## [[3]][[8]]
+## [1] 541
+## 
+## [[3]][[9]]
+## [1] -1</code></pre>
+</div>
+<div id="running-on-the-whole-dataset" class="section level2">
+<h2>Running on the whole dataset</h2>
+<ul>
+<li>Now we can test our algorithm on</li>
+</ul>
+<pre class="r"><code>root = find_movies(user_cate, 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+res</code></pre>
+<pre class="r"><code># The result of this algorithm on the overall dataset.
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))</code></pre>
+</div>
+<div id="result-on-the-overall-dataset" class="section level2">
+<h2>Result on the overall dataset</h2>
+<ul>
+<li>After perform on the overall dataset, we find the following movies have the highest differentiation score.</li>
+</ul>
+<pre class="r"><code># run 1
+movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
+
+# run 2
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+
 movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   janitor::clean_names()</code></pre>
 <pre><code>## Rows: 9742 Columns: 3</code></pre>
@@ -488,57 +606,13 @@ genres
 <tbody>
 <tr>
 <td style="text-align:right;">
-1
+480
 </td>
 <td style="text-align:left;">
-Toy Story (1995)
+Jurassic Park (1993)
 </td>
 <td style="text-align:left;">
-Adventure|Animation|Children|Comedy|Fantasy
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-260
-</td>
-<td style="text-align:left;">
-Star Wars: Episode IV - A New Hope (1977)
-</td>
-<td style="text-align:left;">
-Action|Adventure|Sci-Fi
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-293
-</td>
-<td style="text-align:left;">
-Léon: The Professional (a.k.a. The Professional) (Léon) (1994)
-</td>
-<td style="text-align:left;">
-Action|Crime|Drama|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-356
-</td>
-<td style="text-align:left;">
-Forrest Gump (1994)
-</td>
-<td style="text-align:left;">
-Comedy|Drama|Romance|War
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-457
-</td>
-<td style="text-align:left;">
-Fugitive, The (1993)
-</td>
-<td style="text-align:left;">
-Thriller
+Action|Adventure|Sci-Fi|Thriller
 </td>
 </tr>
 <tr>
@@ -554,6 +628,17 @@ Drama|War
 </tr>
 <tr>
 <td style="text-align:right;">
+608
+</td>
+<td style="text-align:left;">
+Fargo (1996)
+</td>
+<td style="text-align:left;">
+Comedy|Crime|Drama|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
 1197
 </td>
 <td style="text-align:left;">
@@ -561,6 +646,39 @@ Princess Bride, The (1987)
 </td>
 <td style="text-align:left;">
 Action|Adventure|Comedy|Fantasy|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1198
+</td>
+<td style="text-align:left;">
+Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark) (1981)
+</td>
+<td style="text-align:left;">
+Action|Adventure
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1210
+</td>
+<td style="text-align:left;">
+Star Wars: Episode VI - Return of the Jedi (1983)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1291
+</td>
+<td style="text-align:left;">
+Indiana Jones and the Last Crusade (1989)
+</td>
+<td style="text-align:left;">
+Action|Adventure
 </td>
 </tr>
 <tr>
@@ -576,57 +694,57 @@ Drama|Romance
 </tr>
 <tr>
 <td style="text-align:right;">
-4226
+2716
 </td>
 <td style="text-align:left;">
-Memento (2000)
+Ghostbusters (a.k.a. Ghost Busters) (1984)
 </td>
 <td style="text-align:left;">
-Mystery|Thriller
+Action|Comedy|Sci-Fi
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-4963
+2858
 </td>
 <td style="text-align:left;">
-Ocean’s Eleven (2001)
+American Beauty (1999)
 </td>
 <td style="text-align:left;">
-Crime|Thriller
+Drama|Romance
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-5952
+4973
 </td>
 <td style="text-align:left;">
-Lord of the Rings: The Two Towers, The (2002)
+Amelie (Fabuleux destin d’Amélie Poulain, Le) (2001)
 </td>
 <td style="text-align:left;">
-Adventure|Fantasy
+Comedy|Romance
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-6377
+7153
 </td>
 <td style="text-align:left;">
-Finding Nemo (2003)
+Lord of the Rings: The Return of the King, The (2003)
 </td>
 <td style="text-align:left;">
-Adventure|Animation|Children|Comedy
+Action|Adventure|Drama|Fantasy
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-8961
+79132
 </td>
 <td style="text-align:left;">
-Incredibles, The (2004)
+Inception (2010)
 </td>
 <td style="text-align:left;">
-Action|Adventure|Animation|Children|Comedy
+Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
 </td>
 </tr>
 </tbody>

@@ -48,24 +48,6 @@ tags.full =
   unnest()
 ```
 
-```{r}
-# compute user interest, user2
-interest.2 = numeric()
-b = sum(tags.full$user_id == 2)
-
-for (i in 1:b) {
-  n_ub = 0
-  n_bi = 0
-  for (j in 1:b) {
-    if (tags.full[j,3] == tags.full[i,3]) {
-      n_ub = n_ub + 1
-    }
-    
-  }
-  }
-}
-
-```
 
 ```{r}
 interest.fc = function(u, i) {
@@ -92,7 +74,28 @@ return(interest = sum(interest))
 ```
 
 ```{r}
-interest.fc(2, 60756)
+test = 
+  tags.user %>%
+  filter(
+    user_id <= 20
+  ) %>%
+  select(-data)
+
+interest = c()
+
+for (j in 1:nrow(test)) {
+  u = as.numeric(test[j,1])
+  i = as.numeric(test[j,2])
+  interest[j] = interest.fc(u, i)
+}
+  
+interest
+
+test = 
+  test %>%
+  mutate(
+    interest = interest
+  )
 ```
 
 

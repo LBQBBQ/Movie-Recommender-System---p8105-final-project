@@ -1,0 +1,101 @@
+---
+title: "tag_system_recommendation"
+author: "Shaocong Zhang"
+date: "11/22/2021"
+output: html_document
+---
+
+Data wrangling on tags
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+# data import
+movies = read_csv("../data/small/movies.csv")
+ratings = read_csv("../data/small/ratings.csv")
+tags = read_csv("../data/small/tags.csv")
+```
+
+```{r}
+# data wrangling
+tags.user = 
+  tags %>%
+  janitor::clean_names() %>%
+  mutate(
+    tag = strsplit(tag, " ")
+  ) %>%
+  select(user_id, movie_id, tag) %>%
+  nest(data = tag) 
+  
+
+tags.movie = 
+  tags %>%
+  janitor::clean_names() %>%
+  mutate(
+    tag = strsplit(tag, " ")
+  ) %>%
+  select(user_id, movie_id, tag) %>%
+  nest(data = c(user_id,tag))
+
+tags.full = 
+  tags %>%
+  janitor::clean_names() %>%
+  mutate(
+    tag = strsplit(tag, " ")
+  ) %>%
+  unnest()
+```
+
+```{r}
+# compute user interest, user2
+interest.2 = numeric()
+b = sum(tags.full$user_id == 2)
+
+for (i in 1:b) {
+  n_ub = 0
+  n_bi = 0
+  for (j in 1:b) {
+    if (tags.full[j,3] == tags.full[i,3]) {
+      n_ub = n_ub + 1
+    }
+    
+  }
+  }
+}
+
+```
+
+```{r}
+interest.fc = function(u, i) {
+test.dat = 
+  tags.full %>%
+  filter(user_id == u,
+         movie_id == i)
+
+test.moive = 
+  tags.full %>%
+  filter(movie_id == i)
+
+interest = c()
+for (b in 1:nrow(test.dat)) {
+  tag = as.character(test.dat[b,3])
+  n_ub = sum(test.dat$tag == tag)
+  n_bi = sum(test.moive$tag == tag)
+  interest[b] = n_ub*n_bi
+}
+
+
+return(interest = sum(interest))
+}
+```
+
+```{r}
+interest.fc(2, 60756)
+```
+
+
+
+
+

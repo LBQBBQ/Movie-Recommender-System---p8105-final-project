@@ -1,0 +1,70 @@
+---
+title: "EDA"
+author: "Yuxuan Wang"
+date: "11/23/2021"
+output: 
+    html_document:
+        theme: yeti
+---
+**Find popular movies and high-rating movies**
+
+# Import dependencies
+```{r, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(ggplot2)
+```
+
+
+## Data preparation
+```{r, message = FALSE}
+data_path = "./data/small/ratings.csv"
+
+rating_tidy = 
+  read_csv(data_path, col_types = "ccnc") %>% 
+    janitor::clean_names() %>% 
+    select(-timestamp) %>% 
+    mutate(rating = as.double(rating))  
+
+high_rating = 
+  rating_tidy %>% 
+  filter(rating == 5.0) 
+
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId)
+```
+
+
+# Test
+```{r}
+high_rating_movienames = 
+  merge(high_rating, movie_names) %>% 
+  group_by(title, genres,rating) %>% 
+  count(movie_id) %>% 
+  filter(n >= 100) %>% 
+  select(n,title,genres,rating) %>% 
+  knitr::kable()
+high_rating_movienames 
+```
+**Find popular movies and high-rating movies** : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

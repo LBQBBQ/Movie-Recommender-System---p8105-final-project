@@ -24,6 +24,15 @@ shinyServer(function(input, output) {
     })
 
 })
-
-selectInput(inputId = "movie", label = "Choose your favorite movie in the list")
-selectInput(inputId = "movie", label = "Choose your favorite movie category in the list")
+shinyUI(
+    fluidPage(
+        title = "Movie Recommender",
+        fluidRow(
+            column(5,
+                   selectInput("select", label = "Choose Three Movies You Like",choices = "1"),
+                   selectInput("select2", label = NA, choices = "2"),
+                   selectInput("select3", label = NA, choices = "3")
+            )
+        )
+    )
+)

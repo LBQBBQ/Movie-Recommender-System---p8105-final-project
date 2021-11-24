@@ -1,0 +1,275 @@
+---
+title: "tree-based bootstraping"
+author: 'Haolin Zhong (UNI: hz2771)'
+date: "2021/11/20"
+output: html_document
+---
+
+## Intuition
+
+- Find movies which mostly differentiate groups of people
+
+
+## Dependencies
+
+```{r}
+library(tidyverse)
+```
+
+
+## Data preparation
+
+```{r}
+path = "./data/small/ratings.csv"
+
+rating_tidy = read_csv(path, col_types = "iinc") %>% 
+  janitor::clean_names()
+
+hot_movies = 
+  rating_tidy %>% 
+  count(movie_id) %>% 
+  arrange(desc(n)) %>% 
+  head(100) %>% 
+  arrange(movie_id) %>% 
+  pull(movie_id) %>% 
+  as_vector()
+
+rating_dscts = 
+  rating_tidy %>% 
+  select(-timestamp) %>% 
+  filter(movie_id %in% hot_movies) %>% 
+  pivot_wider(names_from = movie_id, values_from = rating) %>% 
+  pivot_longer(cols = as.character(hot_movies), names_to = "movie_id", values_to = "rating")
+```
+
+
+## Function
+
+
+### cut-off for being lover/hater/unknown
+
+```{r}
+classify = function(rating) {
+  res = ""
+  
+  if (is.na(rating)) {
+    res = "unknown"
+  } else if (rating >= 3.5) {
+    res = "lover"
+  } else {
+    res = "hater"
+  }
+  
+  return(res)
+}
+
+```
+
+### classify
+
+```{r}
+user_cate =
+  rating_dscts %>%
+  mutate(type = map(rating, classify)) %>% 
+  unnest(type) %>% 
+  mutate(movie_id = as.numeric(movie_id))
+```
+
+### calculate differentiation score
+
+```{r}
+calc_score = function(data, id){
+  
+  user_movie_type = 
+    data %>% 
+    filter(movie_id == id) %>% 
+    select(user_id, type)
+
+  score = 
+    data %>% 
+    select(-type) %>% 
+    left_join(user_movie_type, by = "user_id") %>% 
+    filter(movie_id != id) %>% 
+    group_by(type) %>% 
+    summarize(var = var(rating, na.rm = TRUE)) %>% 
+    pull(var) %>% 
+    sum(na.rm = TRUE)
+  
+  return(score)
+}
+
+```
+
+## Tree
+
+We use trinomial trees to save our result.
+
+```{r}
+setClass("movieTreeNode",
+  slots = c(
+    mid = "numeric",
+    sub_lover = "movieTreeNode",
+    sub_unknown = "movieTreeNode",
+    sub_hater = "movieTreeNode"
+  ) 
+)
+```
+
+
+## Main function
+
+```{r}
+find_movies = function(data, levels, root){
+  if (levels == 0 || nrow(data) == 0) {
+    return(root)
+  }
+  
+  movies = 
+    data %>% 
+    pull(movie_id) %>% 
+    as_vector() %>% 
+    as.integer()
+  
+  scores = list()
+  for (i in 1:length(movies)) {
+    scores[[i]] = calc_score(data, movies[[i]])
+  }
+  
+  scores = as_vector(scores) %>% as.numeric()
+  max_score_ind = which(scores == max(scores))[1]
+  movie = movies[max_score_ind]
+  
+  root@mid = movie
+
+  
+  lovers = 
+    data %>%
+    filter(movie_id == movie, type == "lover") %>% 
+    pull(user_id) %>% 
+    as.integer()
+    
+  lovers_data = 
+    data %>% 
+    filter(user_id %in% lovers) %>% 
+    filter(movie_id != movie)
+    
+  haters =
+    data %>%
+    filter(movie_id == movie, type == "hater") %>% 
+    pull(user_id) %>% 
+    as.integer()
+  
+  haters_data = 
+    data %>% 
+    filter(user_id %in% haters) %>% 
+    filter(movie_id != movie)
+    
+  unknowns = 
+    data %>%
+    filter(movie_id == movie, type == "unknown") %>% 
+    pull(user_id) %>% 
+    as.integer()
+    
+  unknowns_data =
+    data %>% 
+    filter(user_id %in% unknowns) %>% 
+    filter(movie_id != movie)
+    
+  root@sub_lover = find_movies(lovers_data, levels - 1, new("movieTreeNode"))
+  root@sub_unknown = find_movies(unknowns_data, levels - 1, new("movieTreeNode"))
+  root@sub_hater = find_movies(haters_data, levels - 1, new("movieTreeNode"))
+  
+  return(root)
+}
+
+```
+
+
+## level-order traversal
+
+```{r}
+dfs = function(root, level, res){
+  
+  if (length(res) < level) {
+    res[[level]] = list()
+  }
+  
+  if (identical(root@mid, numeric(0))) {
+    # increasing the readability of future traversal result
+    # by using -1 of the null node value
+    res[[level]] = append(res[[level]], -1)
+    return(res)
+  }
+  
+  res[[level]] = append(res[[level]], root@mid)
+  
+  res = dfs(root@sub_lover, level + 1, res)
+  res = dfs(root@sub_unknown, level + 1, res)
+  res = dfs(root@sub_hater, level + 1, res)
+  
+  return(res)
+}
+
+```
+
+
+## Test
+
+```{r}
+root = find_movies(sample_n(user_cate, 5000), 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+res
+
+```
+
+
+
+## Running on the whole dataset
+
+- Now we can test our algorithm on 
+
+```{r, eval=FALSE}
+root = find_movies(user_cate, 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+res
+```
+
+```{r}
+# The result of this algorithm on the overall dataset.
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+```
+
+
+
+## Result on the overall dataset
+
+- After perform on the overall dataset, we find the following movies have the highest differentiation score.
+
+```{r}
+# run 1
+movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
+
+# run 2
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+
+movie_info = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names()
+
+movie_info %>% 
+  filter(movie_id %in% movies) %>% 
+  kableExtra::kbl() %>% 
+  kableExtra::kable_styling()
+```
+
+
+

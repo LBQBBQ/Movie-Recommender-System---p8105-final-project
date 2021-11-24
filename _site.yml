@@ -5,19 +5,25 @@ navbar:
   left:
     - text: "Proposal"
       href: Proposal.html
+
     - text: "Exploratory Analyses"
       href: Exploratory-Analyses.html
+   
+      
+
+    - text: "Recommendation Algorithm"
+      menu:
+        - text: "SVD"
+          href: SVD.html
+        - text: "tree-based bootstraping"
+          href: tree-based-bootstraping.html
     - text: "Shinyapps"
       href: https://yw3608.shinyapps.io/Movie_Recommendation/
-  
+      
       
   right:  
-    - icon: fa-envelope fa-lg
-      href: mailto:<yuxuanw808@gmail.com>
     - icon: fa-github fa-lg
       href: https://github.com/ShaocongZ/Final_Project/
-      
-      
       
 output:
   html_document:

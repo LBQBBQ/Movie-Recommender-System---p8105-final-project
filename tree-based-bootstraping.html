@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
+
+
+<title>tree-based bootstraping</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="Proposal.html">Proposal</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Recommendation Algorithm
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="SVD.html">SVD</a>
+    </li>
+    <li>
+      <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/ShaocongZ/Final_Project/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">tree-based bootstraping</h1>
+<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
+<h4 class="date">2021/11/20</h4>
+
+</div>
+
+
+<div id="intuition" class="section level2">
+<h2>Intuition</h2>
+<ul>
+<li>Find movies which mostly differentiate groups of people</li>
+</ul>
+</div>
+<div id="dependencies" class="section level2">
+<h2>Dependencies</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
+<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.4     v dplyr   1.0.7
+## v tidyr   1.1.3     v stringr 1.4.0
+## v readr   2.0.1     v forcats 0.5.1</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div id="data-preparation" class="section level2">
+<h2>Data preparation</h2>
+<pre class="r"><code>path = &quot;./data/small/ratings.csv&quot;
+
+rating_tidy = read_csv(path, col_types = &quot;iinc&quot;) %&gt;% 
+  janitor::clean_names()</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): strings not representable in native encoding will
+## be translated to UTF-8</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C4&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E4&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00DF&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D8&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F8&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C5&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E5&gt;&#39; to native encoding</code></pre>
+<pre class="r"><code>hot_movies = 
+  rating_tidy %&gt;% 
+  count(movie_id) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(100) %&gt;% 
+  arrange(movie_id) %&gt;% 
+  pull(movie_id) %&gt;% 
+  as_vector()
+
+rating_dscts = 
+  rating_tidy %&gt;% 
+  select(-timestamp) %&gt;% 
+  filter(movie_id %in% hot_movies) %&gt;% 
+  pivot_wider(names_from = movie_id, values_from = rating) %&gt;% 
+  pivot_longer(cols = as.character(hot_movies), names_to = &quot;movie_id&quot;, values_to = &quot;rating&quot;)</code></pre>
+</div>
+<div id="function" class="section level2">
+<h2>Function</h2>
+<div id="cut-off-for-being-loverhaterunknown" class="section level3">
+<h3>cut-off for being lover/hater/unknown</h3>
+<pre class="r"><code>classify = function(rating) {
+  res = &quot;&quot;
+  
+  if (is.na(rating)) {
+    res = &quot;unknown&quot;
+  } else if (rating &gt;= 3.5) {
+    res = &quot;lover&quot;
+  } else {
+    res = &quot;hater&quot;
+  }
+  
+  return(res)
+}</code></pre>
+</div>
+<div id="classify" class="section level3">
+<h3>classify</h3>
+<pre class="r"><code>user_cate =
+  rating_dscts %&gt;%
+  mutate(type = map(rating, classify)) %&gt;% 
+  unnest(type) %&gt;% 
+  mutate(movie_id = as.numeric(movie_id))</code></pre>
+</div>
+<div id="calculate-differentiation-score" class="section level3">
+<h3>calculate differentiation score</h3>
+<pre class="r"><code>calc_score = function(data, id){
+  
+  user_movie_type = 
+    data %&gt;% 
+    filter(movie_id == id) %&gt;% 
+    select(user_id, type)
+
+  score = 
+    data %&gt;% 
+    select(-type) %&gt;% 
+    left_join(user_movie_type, by = &quot;user_id&quot;) %&gt;% 
+    filter(movie_id != id) %&gt;% 
+    group_by(type) %&gt;% 
+    summarize(var = var(rating, na.rm = TRUE)) %&gt;% 
+    pull(var) %&gt;% 
+    sum(na.rm = TRUE)
+  
+  return(score)
+}</code></pre>
+</div>
+</div>
+<div id="tree" class="section level2">
+<h2>Tree</h2>
+<p>We use trinomial trees to save our result.</p>
+<pre class="r"><code>setClass(&quot;movieTreeNode&quot;,
+  slots = c(
+    mid = &quot;numeric&quot;,
+    sub_lover = &quot;movieTreeNode&quot;,
+    sub_unknown = &quot;movieTreeNode&quot;,
+    sub_hater = &quot;movieTreeNode&quot;
+  ) 
+)</code></pre>
+<pre><code>## Warning: 在&quot;movieTreeNode&quot;的定义中不存在这种槽类别: sub_lover(class
+## &quot;movieTreeNode&quot;), sub_unknown(class &quot;movieTreeNode&quot;), sub_hater(class
+## &quot;movieTreeNode&quot;)</code></pre>
+</div>
+<div id="main-function" class="section level2">
+<h2>Main function</h2>
+<pre class="r"><code>find_movies = function(data, levels, root){
+  if (levels == 0 || nrow(data) == 0) {
+    return(root)
+  }
+  
+  movies = 
+    data %&gt;% 
+    pull(movie_id) %&gt;% 
+    as_vector() %&gt;% 
+    as.integer()
+  
+  scores = list()
+  for (i in 1:length(movies)) {
+    scores[[i]] = calc_score(data, movies[[i]])
+  }
+  
+  scores = as_vector(scores) %&gt;% as.numeric()
+  max_score_ind = which(scores == max(scores))[1]
+  movie = movies[max_score_ind]
+  
+  root@mid = movie
+
+  
+  lovers = 
+    data %&gt;%
+    filter(movie_id == movie, type == &quot;lover&quot;) %&gt;% 
+    pull(user_id) %&gt;% 
+    as.integer()
+    
+  lovers_data = 
+    data %&gt;% 
+    filter(user_id %in% lovers) %&gt;% 
+    filter(movie_id != movie)
+    
+  haters =
+    data %&gt;%
+    filter(movie_id == movie, type == &quot;hater&quot;) %&gt;% 
+    pull(user_id) %&gt;% 
+    as.integer()
+  
+  haters_data = 
+    data %&gt;% 
+    filter(user_id %in% haters) %&gt;% 
+    filter(movie_id != movie)
+    
+  unknowns = 
+    data %&gt;%
+    filter(movie_id == movie, type == &quot;unknown&quot;) %&gt;% 
+    pull(user_id) %&gt;% 
+    as.integer()
+    
+  unknowns_data =
+    data %&gt;% 
+    filter(user_id %in% unknowns) %&gt;% 
+    filter(movie_id != movie)
+    
+  root@sub_lover = find_movies(lovers_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  root@sub_unknown = find_movies(unknowns_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  root@sub_hater = find_movies(haters_data, levels - 1, new(&quot;movieTreeNode&quot;))
+  
+  return(root)
+}</code></pre>
+</div>
+<div id="level-order-traversal" class="section level2">
+<h2>level-order traversal</h2>
+<pre class="r"><code>dfs = function(root, level, res){
+  
+  if (length(res) &lt; level) {
+    res[[level]] = list()
+  }
+  
+  if (identical(root@mid, numeric(0))) {
+    # increasing the readability of future traversal result
+    # by using -1 of the null node value
+    res[[level]] = append(res[[level]], -1)
+    return(res)
+  }
+  
+  res[[level]] = append(res[[level]], root@mid)
+  
+  res = dfs(root@sub_lover, level + 1, res)
+  res = dfs(root@sub_unknown, level + 1, res)
+  res = dfs(root@sub_hater, level + 1, res)
+  
+  return(res)
+}</code></pre>
+</div>
+<div id="test" class="section level2">
+<h2>Test</h2>
+<pre class="r"><code>root = find_movies(sample_n(user_cate, 5000), 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+res</code></pre>
+<pre><code>## [[1]]
+## [[1]][[1]]
+## [1] 47
+## 
+## 
+## [[2]]
+## [[2]][[1]]
+## [1] 608
+## 
+## [[2]][[2]]
+## [1] 7153
+## 
+## [[2]][[3]]
+## [1] 2329
+## 
+## 
+## [[3]]
+## [[3]][[1]]
+## [1] 4993
+## 
+## [[3]][[2]]
+## [1] 1210
+## 
+## [[3]][[3]]
+## [1] -1
+## 
+## [[3]][[4]]
+## [1] -1
+## 
+## [[3]][[5]]
+## [1] 4886
+## 
+## [[3]][[6]]
+## [1] -1
+## 
+## [[3]][[7]]
+## [1] -1
+## 
+## [[3]][[8]]
+## [1] 541
+## 
+## [[3]][[9]]
+## [1] -1</code></pre>
+</div>
+<div id="running-on-the-whole-dataset" class="section level2">
+<h2>Running on the whole dataset</h2>
+<ul>
+<li>Now we can test our algorithm on</li>
+</ul>
+<pre class="r"><code>root = find_movies(user_cate, 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+res</code></pre>
+<pre class="r"><code># The result of this algorithm on the overall dataset.
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))</code></pre>
+</div>
+<div id="result-on-the-overall-dataset" class="section level2">
+<h2>Result on the overall dataset</h2>
+<ul>
+<li>After perform on the overall dataset, we find the following movies have the highest differentiation score.</li>
+</ul>
+<pre class="r"><code># run 1
+movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
+
+# run 2
+result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+
+movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names()</code></pre>
+<pre><code>## Rows: 9742 Columns: 3</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): title, genres
+## dbl (1): movieId</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>movie_info %&gt;% 
+  filter(movie_id %in% movies) %&gt;% 
+  kableExtra::kbl() %&gt;% 
+  kableExtra::kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+movie_id
+</th>
+<th style="text-align:left;">
+title
+</th>
+<th style="text-align:left;">
+genres
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+480
+</td>
+<td style="text-align:left;">
+Jurassic Park (1993)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+527
+</td>
+<td style="text-align:left;">
+Schindler’s List (1993)
+</td>
+<td style="text-align:left;">
+Drama|War
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+608
+</td>
+<td style="text-align:left;">
+Fargo (1996)
+</td>
+<td style="text-align:left;">
+Comedy|Crime|Drama|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1197
+</td>
+<td style="text-align:left;">
+Princess Bride, The (1987)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Comedy|Fantasy|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1198
+</td>
+<td style="text-align:left;">
+Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark) (1981)
+</td>
+<td style="text-align:left;">
+Action|Adventure
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1210
+</td>
+<td style="text-align:left;">
+Star Wars: Episode VI - Return of the Jedi (1983)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1291
+</td>
+<td style="text-align:left;">
+Indiana Jones and the Last Crusade (1989)
+</td>
+<td style="text-align:left;">
+Action|Adventure
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1704
+</td>
+<td style="text-align:left;">
+Good Will Hunting (1997)
+</td>
+<td style="text-align:left;">
+Drama|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2716
+</td>
+<td style="text-align:left;">
+Ghostbusters (a.k.a. Ghost Busters) (1984)
+</td>
+<td style="text-align:left;">
+Action|Comedy|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2858
+</td>
+<td style="text-align:left;">
+American Beauty (1999)
+</td>
+<td style="text-align:left;">
+Drama|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4973
+</td>
+<td style="text-align:left;">
+Amelie (Fabuleux destin d’Amélie Poulain, Le) (2001)
+</td>
+<td style="text-align:left;">
+Comedy|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7153
+</td>
+<td style="text-align:left;">
+Lord of the Rings: The Return of the King, The (2003)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Drama|Fantasy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+79132
+</td>
+<td style="text-align:left;">
+Inception (2010)
+</td>
+<td style="text-align:left;">
+Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -5,14 +5,28 @@ date: "2021/11/20"
 output: html_document
 ---
 
-## Intuition
+- Recommend movies for new users can be knotty since we have no prior data about new users. 
 
-- Find movies which mostly differentiate groups of people
+- One strategy to solve this problem is providing new users with some movies and let them feedback their interest in provided movies.
+
+- What kind of movies should be provided to new users? Intuitively, these movies should be:
+  - **Popular**: Users can't comment on movies they have never heard of.
+  - **Controversial**: Movies unanimously praised can't differentiate users of different tastes.
+
+
+## Tree-based bootstraping
+
+- Here we adopted the tree-based bootstraping algorithm proposed by [Golbandi, N., et al. 2011.](https://dl.acm.org/doi/10.1145/1935826.1935910) to find movies meet above requirement.
 
 
 ## Dependencies
 
 ```{r}
+library(dplyr, warn.conflicts = FALSE)
+
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+
 library(tidyverse)
 ```
 
@@ -90,7 +104,7 @@ calc_score = function(data, id){
     select(-type) %>% 
     left_join(user_movie_type, by = "user_id") %>% 
     filter(movie_id != id) %>% 
-    group_by(type) %>% 
+    group_by(type, movie_id) %>% 
     summarize(var = var(rating, na.rm = TRUE)) %>% 
     pull(var) %>% 
     sum(na.rm = TRUE)
@@ -102,9 +116,9 @@ calc_score = function(data, id){
 
 ## Tree
 
-We use trinomial trees to save our result.
+We use ternary tree to save our result.
 
-```{r}
+```{r, warning=FALSE}
 setClass("movieTreeNode",
   slots = c(
     mid = "numeric",
@@ -136,8 +150,8 @@ find_movies = function(data, levels, root){
   }
   
   scores = as_vector(scores) %>% as.numeric()
-  max_score_ind = which(scores == max(scores))[1]
-  movie = movies[max_score_ind]
+  ind = which(scores == min(scores))[1]
+  movie = movies[ind]
   
   root@mid = movie
 
@@ -215,12 +229,15 @@ dfs = function(root, level, res){
 
 ## Test
 
-```{r}
+- For testing, we perform the bootstrapping on 5000 rows of sampled data, generate the ternary tree, and retrive movies thorugh level order traversal.
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 root = find_movies(sample_n(user_cate, 5000), 3, new("movieTreeNode"))
 res = dfs(root, 1, list())
 
 # The last element must be a list made up of several -1, so we directly discard it.
 res = res[1:length(res) - 1]
+
 res
 
 ```
@@ -229,7 +246,9 @@ res
 
 ## Running on the whole dataset
 
-- Now we can test our algorithm on 
+- Here is the code we used to perform the bootstrapping on the whole dataset.
+
+- The calculation is not perform while knitting this document due to large time cost. We performed calculation in advance, and recorded the result (showed in the following section).
 
 ```{r, eval=FALSE}
 root = find_movies(user_cate, 3, new("movieTreeNode"))
@@ -241,35 +260,32 @@ res = res[1:length(res) - 1]
 res
 ```
 
-```{r}
-# The result of this algorithm on the overall dataset.
-result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
-
-movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
-```
-
-
-
 ## Result on the overall dataset
 
 - After perform on the overall dataset, we find the following movies have the highest differentiation score.
 
 ```{r}
-# run 1
-movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
-
-# run 2
-result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+result = list(list(208), list(356, 1213, 260), list(2028, 150, 1, 4963, 2329, 2571, 1196, 4993, 34))
 movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+movie_seq = 1:13
+
+movies_df = tibble(seq = movie_seq, movie_id = movies)
 
 movie_info = read_csv("./data/small/movies.csv") %>% 
   janitor::clean_names()
 
 movie_info %>% 
   filter(movie_id %in% movies) %>% 
+  left_join(movies_df) %>% 
+  arrange(seq) %>% 
+  select(-seq) %>% 
   kableExtra::kbl() %>% 
   kableExtra::kable_styling()
+  
 ```
 
 
+- According to the result, when facing new users, we can let them show their preference for above movies:
 
+
+<img src="pics/recsys.jpg" style="width:100%">

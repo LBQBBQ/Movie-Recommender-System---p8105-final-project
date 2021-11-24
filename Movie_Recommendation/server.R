@@ -26,3 +26,4 @@ shinyServer(function(input, output) {
 })
 
 selectInput(inputId = "movie_name", label = "Choose your favorite movie in the list")
+selectInput(inputId = "movie_name", label = "Choose your favorite movie category in the list")

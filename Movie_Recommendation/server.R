@@ -24,15 +24,3 @@ shinyServer(function(input, output) {
     })
 
 })
-shinyUI(
-    fluidPage(
-        title = "Movie Recommender",
-        fluidRow(
-            column(5,
-                   selectInput("select", label = "Choose Three Movies You Like",choices = "1"),
-                   selectInput("select2", label = NA, choices = "2"),
-                   selectInput("select3", label = NA, choices = "3")
-            )
-        )
-    )
-)

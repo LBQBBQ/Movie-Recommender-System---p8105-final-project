@@ -7,7 +7,9 @@ navbar:
       href: Proposal.html
     - text: "Exploratory Analyses"
       href: Exploratory-Analyses.html
-   
+    - text: "Shinyapps"
+      href: https://yw3608.shinyapps.io/Movie_Recommendation/
+  
       
   right:  
     - icon: fa-envelope fa-lg

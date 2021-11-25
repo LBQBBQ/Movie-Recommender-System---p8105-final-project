@@ -20,9 +20,9 @@ library(shiny)
         titlePanel("Movie Recommender"),
         fluidRow(
           column(10,
-                 selectInput("select", label = "Movies 1",choices = "1"),
-                 selectInput("select2", label = "Movies 2", choices = "2"),
-                 selectInput("select3", label = "Movies 3", choices = "3"),
+                 selectInput("movie_1", label = "Movie 1",choices = "1"),
+                 selectInput("movie_2", label = "Movie 2", choices = "2"),
+                 selectInput("movie_3", label = "Movie 3", choices = "3"),
                  submitButton("Show the result")
           )
         )

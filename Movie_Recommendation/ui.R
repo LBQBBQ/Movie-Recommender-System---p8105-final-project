@@ -14,6 +14,7 @@ library(shiny)
     # Application title
     titlePanel("Movie Recommendation")
 
+    # create a selection box 
     shinyUI(
       fluidPage(
         titlePanel("Movie Recommender"),
@@ -21,9 +22,11 @@ library(shiny)
           column(10,
                  selectInput("select", label = "Movies 1",choices = "1"),
                  selectInput("select2", label = "Movies 2", choices = "2"),
-                 selectInput("select3", label = "Movies 3", choices = "3")
-                 )
+                 selectInput("select3", label = "Movies 3", choices = "3"),
+                 submitButton("Show the result")
+          )
         )
       )
     )
+    
     

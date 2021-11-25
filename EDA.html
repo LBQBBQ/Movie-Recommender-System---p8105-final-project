@@ -383,33 +383,99 @@ filter_ratingscore =
 
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
-  head(5000) %&gt;%
- ggplot(aes(x = genres, y = rating)) + geom_boxplot()
+  head(400) %&gt;%
+ ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><strong>Evaluate the similarity among users and among movies</strong> #among movies</p>
+<p><strong>Boxplot regarding: ratings and years;</strong> #among movies</p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
-  separate(title, 
-                c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
 <pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 3 rows [9260,
 ## 9368, 9515].</code></pre>
-<pre class="r"><code>  movie_names</code></pre>
-<pre><code>## # A tibble: 9,742 × 4
-##    movie_id name                        year   genres                           
-##       &lt;dbl&gt; &lt;chr&gt;                       &lt;chr&gt;  &lt;chr&gt;                            
-##  1        1 Toy Story                   (1995) Adventure|Animation|Children|Com…
-##  2        2 Jumanji                     (1995) Adventure|Children|Fantasy       
-##  3        3 Grumpier Old Men            (1995) Comedy|Romance                   
-##  4        4 Waiting to Exhale           (1995) Comedy|Drama|Romance             
-##  5        5 Father of the Bride Part II (1995) Comedy                           
-##  6        6 Heat                        (1995) Action|Crime|Thriller            
-##  7        7 Sabrina                     (1995) Comedy|Romance                   
-##  8        8 Tom and Huck                (1995) Adventure|Children               
-##  9        9 Sudden Death                (1995) Action                           
-## 10       10 GoldenEye                   (1995) Action|Adventure|Thriller        
-## # … with 9,732 more rows</code></pre>
+<pre class="r"><code>boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  head(500) %&gt;%
+  ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
+  viridis::scale_fill_viridis(discrete = TRUE)
+boxplot_df2 </code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><strong>Find the average rating of each categories in different year</strong></p>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+ave_rating = 
+  merge(filter_ratingscore, movie_names) %&gt;% 
+  group_by(year,genres) %&gt;%
+  summarize(mu_rating = mean(rating)) %&gt;% 
+  head(10) %&gt;% 
+  knitr::kable()
+ave_rating</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">year</th>
+<th align="left">genres</th>
+<th align="right">mu_rating</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(1902)</td>
+<td align="left">Action|Adventure|Fantasy|Sci-Fi</td>
+<td align="right">3.50</td>
+</tr>
+<tr class="even">
+<td align="left">(1903)</td>
+<td align="left">Crime|Western</td>
+<td align="right">2.50</td>
+</tr>
+<tr class="odd">
+<td align="left">(1908)</td>
+<td align="left">Animation|Comedy|Sci-Fi</td>
+<td align="right">4.00</td>
+</tr>
+<tr class="even">
+<td align="left">(1915)</td>
+<td align="left">Drama|War</td>
+<td align="right">2.00</td>
+</tr>
+<tr class="odd">
+<td align="left">(1916)</td>
+<td align="left">Action|Adventure|Sci-Fi</td>
+<td align="right">3.75</td>
+</tr>
+<tr class="even">
+<td align="left">(1916)</td>
+<td align="left">Comedy</td>
+<td align="right">3.50</td>
+</tr>
+<tr class="odd">
+<td align="left">(1916)</td>
+<td align="left">Drama</td>
+<td align="right">3.50</td>
+</tr>
+<tr class="even">
+<td align="left">(1916)</td>
+<td align="left">Fantasy|Romance</td>
+<td align="right">3.50</td>
+</tr>
+<tr class="odd">
+<td align="left">(1917)</td>
+<td align="left">Comedy</td>
+<td align="right">4.50</td>
+</tr>
+<tr class="even">
+<td align="left">(1919)</td>
+<td align="left">Comedy|Drama</td>
+<td align="right">2.00</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 

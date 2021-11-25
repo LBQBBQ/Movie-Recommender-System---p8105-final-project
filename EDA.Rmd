@@ -63,29 +63,48 @@ filter_ratingscore =
 
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
-  head(5000) %>%
- ggplot(aes(x = genres, y = rating)) + geom_boxplot()
+  head(400) %>%
+ ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
 boxplot_df 
 
 ```
 
-**Evaluate the similarity among users and among movies**
+**Boxplot regarding: ratings and years;**
 #among movies
 ```{r, message = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId) %>% 
-  separate(title, 
-                c("name", "year"), sep="\\s+(?=\\S*$)") 
-  movie_names
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
+boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %>%
+  head(500) %>%
+  ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
+  viridis::scale_fill_viridis(discrete = TRUE)
+boxplot_df2 
+  
+  
 ```
 
 
 
 
-
-
-
+**Find  the average rating of each categories in different year**
+```{r,message = FALSE,warning = FALSE}
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
+ave_rating = 
+  merge(filter_ratingscore, movie_names) %>% 
+  group_by(year,genres) %>%
+  summarize(mu_rating = mean(rating)) %>% 
+  head(10) %>% 
+  knitr::kable()
+ave_rating
+```
 
 
 

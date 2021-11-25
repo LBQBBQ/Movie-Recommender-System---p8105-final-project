@@ -372,6 +372,44 @@ high_rating_movienames </code></pre>
 </tbody>
 </table>
 <p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
+<p><strong>Boxplot regarding: ratings and years; ratings and genres</strong></p>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId)
+
+filter_ratingscore = 
+  rating_tidy  
+
+
+boxplot_df = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  head(5000) %&gt;%
+ ggplot(aes(x = genres, y = rating)) + geom_boxplot()
+boxplot_df </code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><strong>Evaluate the similarity among users and among movies</strong> #among movies</p>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(title, 
+                c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
+<pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 3 rows [9260,
+## 9368, 9515].</code></pre>
+<pre class="r"><code>  movie_names</code></pre>
+<pre><code>## # A tibble: 9,742 × 4
+##    movie_id name                        year   genres                           
+##       &lt;dbl&gt; &lt;chr&gt;                       &lt;chr&gt;  &lt;chr&gt;                            
+##  1        1 Toy Story                   (1995) Adventure|Animation|Children|Com…
+##  2        2 Jumanji                     (1995) Adventure|Children|Fantasy       
+##  3        3 Grumpier Old Men            (1995) Comedy|Romance                   
+##  4        4 Waiting to Exhale           (1995) Comedy|Drama|Romance             
+##  5        5 Father of the Bride Part II (1995) Comedy                           
+##  6        6 Heat                        (1995) Action|Crime|Thriller            
+##  7        7 Sabrina                     (1995) Comedy|Romance                   
+##  8        8 Tom and Huck                (1995) Adventure|Children               
+##  9        9 Sudden Death                (1995) Action                           
+## 10       10 GoldenEye                   (1995) Action|Adventure|Thriller        
+## # … with 9,732 more rows</code></pre>
 </div>
 
 

@@ -249,6 +249,9 @@ $(document).ready(function () {
         <li>
   <a href="Proposal.html">Proposal</a>
 </li>
+<li>
+  <a href="Exploratory-Analyses.html">Exploratory Analyses</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Recommendation Algorithm
@@ -263,6 +266,9 @@ $(document).ready(function () {
       <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="https://yw3608.shinyapps.io/Movie_Recommendation/">Shinyapps</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -288,20 +294,34 @@ $(document).ready(function () {
 </div>
 
 
-<div id="intuition" class="section level2">
-<h2>Intuition</h2>
 <ul>
-<li>Find movies which mostly differentiate groups of people</li>
+<li><p>Recommend movies for new users can be knotty since we have no prior data about new users.</p></li>
+<li><p>One strategy to solve this problem is providing new users with some movies and let them feedback their interest in provided movies.</p></li>
+<li><p>What kind of movies should be provided to new users? Intuitively, these movies should be:</p>
+<ul>
+<li><strong>Popular</strong>: Users can’t comment on movies they have never heard of.</li>
+<li><strong>Controversial</strong>: Movies unanimously praised can’t differentiate users of different tastes.</li>
+</ul></li>
+</ul>
+<div id="tree-based-bootstraping" class="section level2">
+<h2>Tree-based bootstraping</h2>
+<ul>
+<li>Here we adopted the tree-based bootstraping algorithm proposed by <a href="https://dl.acm.org/doi/10.1145/1935826.1935910">Golbandi, N., et al. 2011.</a> to find movies meet above requirement.</li>
 </ul>
 </div>
 <div id="dependencies" class="section level2">
 <h2>Dependencies</h2>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>library(dplyr, warn.conflicts = FALSE)
+
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+
+library(tidyverse)</code></pre>
 <pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
 <pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
-## v tibble  3.1.4     v dplyr   1.0.7
-## v tidyr   1.1.3     v stringr 1.4.0
-## v readr   2.0.1     v forcats 0.5.1</code></pre>
+## v tibble  3.1.4     v stringr 1.4.0
+## v tidyr   1.1.3     v forcats 0.5.1
+## v readr   2.0.1</code></pre>
 <pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
@@ -381,7 +401,7 @@ rating_dscts =
     select(-type) %&gt;% 
     left_join(user_movie_type, by = &quot;user_id&quot;) %&gt;% 
     filter(movie_id != id) %&gt;% 
-    group_by(type) %&gt;% 
+    group_by(type, movie_id) %&gt;% 
     summarize(var = var(rating, na.rm = TRUE)) %&gt;% 
     pull(var) %&gt;% 
     sum(na.rm = TRUE)
@@ -392,7 +412,7 @@ rating_dscts =
 </div>
 <div id="tree" class="section level2">
 <h2>Tree</h2>
-<p>We use trinomial trees to save our result.</p>
+<p>We use ternary tree to save our result.</p>
 <pre class="r"><code>setClass(&quot;movieTreeNode&quot;,
   slots = c(
     mid = &quot;numeric&quot;,
@@ -401,9 +421,6 @@ rating_dscts =
     sub_hater = &quot;movieTreeNode&quot;
   ) 
 )</code></pre>
-<pre><code>## Warning: 在&quot;movieTreeNode&quot;的定义中不存在这种槽类别: sub_lover(class
-## &quot;movieTreeNode&quot;), sub_unknown(class &quot;movieTreeNode&quot;), sub_hater(class
-## &quot;movieTreeNode&quot;)</code></pre>
 </div>
 <div id="main-function" class="section level2">
 <h2>Main function</h2>
@@ -424,8 +441,8 @@ rating_dscts =
   }
   
   scores = as_vector(scores) %&gt;% as.numeric()
-  max_score_ind = which(scores == max(scores))[1]
-  movie = movies[max_score_ind]
+  ind = which(scores == min(scores))[1]
+  movie = movies[ind]
   
   root@mid = movie
 
@@ -496,34 +513,31 @@ rating_dscts =
 </div>
 <div id="test" class="section level2">
 <h2>Test</h2>
-<pre class="r"><code>root = find_movies(sample_n(user_cate, 5000), 3, new(&quot;movieTreeNode&quot;))
-res = dfs(root, 1, list())
-
-# The last element must be a list made up of several -1, so we directly discard it.
-res = res[1:length(res) - 1]
-res</code></pre>
+<ul>
+<li>For testing, we perform the bootstrapping on 5000 rows of sampled data, generate the ternary tree, and retrive movies thorugh level order traversal.</li>
+</ul>
 <pre><code>## [[1]]
 ## [[1]][[1]]
-## [1] 47
+## [1] 5349
 ## 
 ## 
 ## [[2]]
 ## [[2]][[1]]
-## [1] 608
+## [1] 34
 ## 
 ## [[2]][[2]]
-## [1] 7153
+## [1] 6874
 ## 
 ## [[2]][[3]]
-## [1] 2329
+## [1] 1197
 ## 
 ## 
 ## [[3]]
 ## [[3]][[1]]
-## [1] 4993
+## [1] -1
 ## 
 ## [[3]][[2]]
-## [1] 1210
+## [1] 367
 ## 
 ## [[3]][[3]]
 ## [1] -1
@@ -532,16 +546,16 @@ res</code></pre>
 ## [1] -1
 ## 
 ## [[3]][[5]]
-## [1] 4886
+## [1] 2683
 ## 
 ## [[3]][[6]]
 ## [1] -1
 ## 
 ## [[3]][[7]]
-## [1] -1
+## [1] 586
 ## 
 ## [[3]][[8]]
-## [1] 541
+## [1] -1
 ## 
 ## [[3]][[9]]
 ## [1] -1</code></pre>
@@ -549,7 +563,8 @@ res</code></pre>
 <div id="running-on-the-whole-dataset" class="section level2">
 <h2>Running on the whole dataset</h2>
 <ul>
-<li>Now we can test our algorithm on</li>
+<li><p>Here is the code we used to perform the bootstrapping on the whole dataset.</p></li>
+<li><p>The calculation is not perform while knitting this document due to large time cost. We performed calculation in advance, and recorded the result (showed in the following section).</p></li>
 </ul>
 <pre class="r"><code>root = find_movies(user_cate, 3, new(&quot;movieTreeNode&quot;))
 res = dfs(root, 1, list())
@@ -558,22 +573,17 @@ res = dfs(root, 1, list())
 res = res[1:length(res) - 1]
 
 res</code></pre>
-<pre class="r"><code># The result of this algorithm on the overall dataset.
-result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
-
-movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))</code></pre>
 </div>
 <div id="result-on-the-overall-dataset" class="section level2">
 <h2>Result on the overall dataset</h2>
 <ul>
 <li>After perform on the overall dataset, we find the following movies have the highest differentiation score.</li>
 </ul>
-<pre class="r"><code># run 1
-movies = c(4226, 527, 457, 4963, 6377, 356, 1, 293, 8961, 1704, 1197, 5952, 260)
-
-# run 2
-result = list(list(1198), list(527, 4973, 2858), list(79132, 1210, 2716, 608, 1197, 1704, 1291, 480, 7153))
+<pre class="r"><code>result = list(list(208), list(356, 1213, 260), list(2028, 150, 1, 4963, 2329, 2571, 1196, 4993, 34))
 movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+movie_seq = 1:13
+
+movies_df = tibble(seq = movie_seq, movie_id = movies)
 
 movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   janitor::clean_names()</code></pre>
@@ -587,8 +597,12 @@ movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;%
 ## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>movie_info %&gt;% 
   filter(movie_id %in% movies) %&gt;% 
+  left_join(movies_df) %&gt;% 
+  arrange(seq) %&gt;% 
+  select(-seq) %&gt;% 
   kableExtra::kbl() %&gt;% 
   kableExtra::kable_styling()</code></pre>
+<pre><code>## Joining, by = &quot;movie_id&quot;</code></pre>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -606,65 +620,10 @@ genres
 <tbody>
 <tr>
 <td style="text-align:right;">
-480
+208
 </td>
 <td style="text-align:left;">
-Jurassic Park (1993)
-</td>
-<td style="text-align:left;">
-Action|Adventure|Sci-Fi|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-527
-</td>
-<td style="text-align:left;">
-Schindler’s List (1993)
-</td>
-<td style="text-align:left;">
-Drama|War
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-608
-</td>
-<td style="text-align:left;">
-Fargo (1996)
-</td>
-<td style="text-align:left;">
-Comedy|Crime|Drama|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1197
-</td>
-<td style="text-align:left;">
-Princess Bride, The (1987)
-</td>
-<td style="text-align:left;">
-Action|Adventure|Comedy|Fantasy|Romance
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1198
-</td>
-<td style="text-align:left;">
-Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark) (1981)
-</td>
-<td style="text-align:left;">
-Action|Adventure
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1210
-</td>
-<td style="text-align:left;">
-Star Wars: Episode VI - Return of the Jedi (1983)
+Waterworld (1995)
 </td>
 <td style="text-align:left;">
 Action|Adventure|Sci-Fi
@@ -672,83 +631,142 @@ Action|Adventure|Sci-Fi
 </tr>
 <tr>
 <td style="text-align:right;">
-1291
+356
 </td>
 <td style="text-align:left;">
-Indiana Jones and the Last Crusade (1989)
+Forrest Gump (1994)
 </td>
 <td style="text-align:left;">
-Action|Adventure
+Comedy|Drama|Romance|War
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-1704
+1213
 </td>
 <td style="text-align:left;">
-Good Will Hunting (1997)
+Goodfellas (1990)
 </td>
 <td style="text-align:left;">
-Drama|Romance
+Crime|Drama
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-2716
+260
 </td>
 <td style="text-align:left;">
-Ghostbusters (a.k.a. Ghost Busters) (1984)
+Star Wars: Episode IV - A New Hope (1977)
 </td>
 <td style="text-align:left;">
-Action|Comedy|Sci-Fi
+Action|Adventure|Sci-Fi
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-2858
+2028
 </td>
 <td style="text-align:left;">
-American Beauty (1999)
+Saving Private Ryan (1998)
 </td>
 <td style="text-align:left;">
-Drama|Romance
+Action|Drama|War
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-4973
+150
 </td>
 <td style="text-align:left;">
-Amelie (Fabuleux destin d’Amélie Poulain, Le) (2001)
+Apollo 13 (1995)
 </td>
 <td style="text-align:left;">
-Comedy|Romance
+Adventure|Drama|IMAX
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-7153
+1
 </td>
 <td style="text-align:left;">
-Lord of the Rings: The Return of the King, The (2003)
+Toy Story (1995)
 </td>
 <td style="text-align:left;">
-Action|Adventure|Drama|Fantasy
+Adventure|Animation|Children|Comedy|Fantasy
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-79132
+4963
 </td>
 <td style="text-align:left;">
-Inception (2010)
+Ocean’s Eleven (2001)
 </td>
 <td style="text-align:left;">
-Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
+Crime|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2329
+</td>
+<td style="text-align:left;">
+American History X (1998)
+</td>
+<td style="text-align:left;">
+Crime|Drama
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2571
+</td>
+<td style="text-align:left;">
+Matrix, The (1999)
+</td>
+<td style="text-align:left;">
+Action|Sci-Fi|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1196
+</td>
+<td style="text-align:left;">
+Star Wars: Episode V - The Empire Strikes Back (1980)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4993
+</td>
+<td style="text-align:left;">
+Lord of the Rings: The Fellowship of the Ring, The (2001)
+</td>
+<td style="text-align:left;">
+Adventure|Fantasy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+Babe (1995)
+</td>
+<td style="text-align:left;">
+Children|Drama
 </td>
 </tr>
 </tbody>
 </table>
+<ul>
+<li>According to the result, when facing new users, we can let them show their preference for above movies:</li>
+</ul>
+<p><img src="pics/recsys.jpg" style="width:100%"></p>
 </div>
 
 

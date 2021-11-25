@@ -9,7 +9,7 @@ output:
 **Find popular movies and high-rating movies**
 
 # Import dependencies
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
@@ -18,7 +18,7 @@ library(ggplot2)
 
 
 ## Data preparation
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 data_path = "./data/small/ratings.csv"
 
 rating_tidy = 
@@ -44,7 +44,8 @@ high_rating_movienames =
   group_by(title, genres,rating) %>% 
   count(movie_id) %>% 
   filter(n >= 100) %>% 
-  select(n,title,genres,rating) %>% 
+  select(n,title,genres,rating) %>%  
+  arrange(desc(n)) %>% 
   knitr::kable()
 high_rating_movienames 
 ```
@@ -105,13 +106,6 @@ ave_rating =
   knitr::kable()
 ave_rating
 ```
-
-
-
-
-
-
-
 
 
 

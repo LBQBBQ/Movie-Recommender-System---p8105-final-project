@@ -326,7 +326,8 @@ movie_names =
   group_by(title, genres,rating) %&gt;% 
   count(movie_id) %&gt;% 
   filter(n &gt;= 100) %&gt;% 
-  select(n,title,genres,rating) %&gt;% 
+  select(n,title,genres,rating) %&gt;%  
+  arrange(desc(n)) %&gt;% 
   knitr::kable()
 high_rating_movienames </code></pre>
 <table>
@@ -340,6 +341,18 @@ high_rating_movienames </code></pre>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="right">153</td>
+<td align="left">Shawshank Redemption, The (1994)</td>
+<td align="left">Crime|Drama</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="right">123</td>
+<td align="left">Pulp Fiction (1994)</td>
+<td align="left">Comedy|Crime|Drama|Thriller</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
 <td align="right">116</td>
 <td align="left">Forrest Gump (1994)</td>
 <td align="left">Comedy|Drama|Romance|War</td>
@@ -349,18 +362,6 @@ high_rating_movienames </code></pre>
 <td align="right">109</td>
 <td align="left">Matrix, The (1999)</td>
 <td align="left">Action|Sci-Fi|Thriller</td>
-<td align="right">5</td>
-</tr>
-<tr class="odd">
-<td align="right">123</td>
-<td align="left">Pulp Fiction (1994)</td>
-<td align="left">Comedy|Crime|Drama|Thriller</td>
-<td align="right">5</td>
-</tr>
-<tr class="even">
-<td align="right">153</td>
-<td align="left">Shawshank Redemption, The (1994)</td>
-<td align="left">Crime|Drama</td>
 <td align="right">5</td>
 </tr>
 <tr class="odd">

@@ -45,16 +45,18 @@ high_rating_movienames =
   group_by(title, genres,rating) %>% 
   count(movie_id) %>% 
   filter(n >= 100) %>% 
-  select(n,title,genres,rating) %>%  
-  arrange(desc(n)) %>% 
-  knitr::kable()
+  select(n,title,genres,rating) %>% 
+  ungroup(title, genres,rating) %>% 
+  arrange(n) %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
 high_rating_movienames 
 ```
 **Find popular movies and high-rating movies** : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
 
 
-**Boxplot ratings and genres**
-```{r, message = FALSE}
+**Boxplot regarding ratings and genres**
+```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId)
@@ -62,18 +64,16 @@ movie_names =
 filter_ratingscore = 
   rating_tidy  
 
-
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
   head(400) %>%
  ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
 boxplot_df 
-
 ```
 
 **Boxplot regarding: ratings and years**
-#among movies
-```{r, message = FALSE}
+
+```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId) %>% 
@@ -85,8 +85,6 @@ boxplot_df2 =
   ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 
-  
-  
 ```
 
 
@@ -104,7 +102,8 @@ ave_rating =
   group_by(year,genres) %>%
   summarize(mu_rating = mean(rating)) %>% 
   head(10) %>% 
-  knitr::kable()
+  knitr::kable() %>%
+kable_styling(bootstrap_options = c("striped"))
 ave_rating
 ```
 
@@ -114,13 +113,44 @@ ave_rating
 𝐻0:𝜇1=𝜇2=...=𝜇600
 
 𝐻1:at least two of the mean ratings of the user from the 600 users are different
-```{r}
+```{r, message = FALSE, warning = FALSE}
 filter_ratingscore = rating_tidy 
 res = lm(rating ~ factor(user_id), data = filter_ratingscore)   
 anova(res) %>% 
-  kable() 
-
+  kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
 ```
 At 0.05 significance level, we reject the null hypothesis and conclude that at least two of 
 the mean ratings of the user from the 600 users are different.
+
+
+
+
+```{r}
+
+kruskal.test(rating ~ user_id, data = filter_ratingscore) 
+```
+At 0.05 significance level, we reject the null hypothesis and conclude that at least two of 
+the mean ratings of the user from the 600 users are different.
+
+
+
+
+**linear regression graph to show a specific user’s rating on genre**
+Linearity: The relationship between X and the mean of Y is linear.
+Homoscedasticity: The variance of residual is the same for any value of X.
+Independence: Observations are independent of each other.
+Normality: For any fixed value of X, Y is normally distributed. To check whether the dependent(y)variable follows a normal distribution, use the hist() function.
+```{r,message = FALSE, warning = FALSE}
+ave_rating = 
+  merge(filter_ratingscore, movie_names)
+hist(ave_rating$rating)
+
+
+
+
+
+
+
+```
 

@@ -9,6 +9,7 @@ Data wrangling on tags
 
 ```{r}
 library(tidyverse)
+library(tm)
 ```
 
 ```{r}
@@ -114,43 +115,32 @@ test =
 
 
 ```{r}
-test.dat = 
+tags.full = 
   tags.full %>%
-  filter(user_id == 2,
-         movie_id == 60756)
+  mutate(tag = tolower(tag))
+```
 
-test.moive = 
-  tags.full %>%
-  filter(movie_id == 60756)
-
-interest = c()
-value = c()
-n_b_u = c(rep(0, nrow(test.dat)))
-n_i_u = length(unique(test.moive$user_id))
-for (b in 1:nrow(test.dat)) {
-  tag = as.character(test.dat[b,3])
-  n_ub = sum(test.dat$tag == tag)
-  n_bi = sum(test.moive$tag == tag)
-  interest[b] = n_ub*n_bi
-  for (j in unique(tags.full$user_id)) {
-    dat.u = 
-      tags.full %>%
-      filter(user_id == j)
-    tag = as.character(test.dat[b,3])
-    if (sum(dat.u$tag == tag) != 0) {
-      n_b_u[b] = n_b_u[b] + 1
-    } else {
-      n_b_u[b] = n_b_u[b]
-    }
-  }
-  value[b] = interest[b] / (log(1 + n_b_u[b]) * log(1 + n_i_u))
-}
-
-
-
-return(interest = sum(value))
+```{r}
+remove.list = read_csv("./stop_words_english.txt", col_names = FALSE) %>% 
+  pull("X1") %>% 
+  as_vector()
 
 ```
+
+```{r}
+remove.tag = 
+tags.full %>% 
+  filter(!tag %in% remove.list) %>%
+  mutate(
+    tag = removePunctuation(tag)
+  ) %>% 
+  filter(
+    !tag == ""
+  )
+
+```
+
+
 
 
 

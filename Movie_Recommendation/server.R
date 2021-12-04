@@ -25,4 +25,3 @@ shinyServer(function(input, output) {
 
 })
 
-Genre <- c("Adventure", "Animation","Children","Comedy", "Fantasy", "Romance", "Drama", "Action", "Crime", "Thriller", "Horror", "Sci-Fi", "Mystery", "War", "Musical", "Documentary")

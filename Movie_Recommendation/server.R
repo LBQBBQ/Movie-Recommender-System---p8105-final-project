@@ -25,3 +25,60 @@ shinyServer(function(input, output) {
 
 })
 
+output$table <- renderTable({
+    movie_recommendation(#input$select, #input$select2, #input$select3)
+})
+
+}
+)
+    
+"Adventure" = selectInput("Choose one genre", "Genre_1",
+                          choices = "a",
+                          selected = "a"),
+"Animation" = selectInput("Choose one genre", "Genre_1",
+                          choices = "a",
+                          selected = "a"),
+"Children" = selectInput("Choose one genre", "Genre_1",
+                         choices = "a",
+                         selected = "a"),
+"Comedy" = selectInput("Choose one genre", "Genre_1",
+                       choices = "a",
+                       selected = "a"),
+"Fantasy" = selectInput("Choose one genre", "Genre_1",
+                        choices = "a",
+                        selected = "a"),
+"Romance" = selectInput("Choose one genre", "Genre_1",
+                        choices = "a",
+                        selected = "a"),
+"Drama" = selectInput("Choose one genre", "Genre_1",
+                      choices = "a",
+                      selected = "a"),
+"Action" = selectInput("Choose one genre", "Genre_1",
+                       choices = "a",
+                       selected = "a"),
+"Crime" = selectInput("Choose one genre", "Genre_1",
+                      choices = "a",
+                      selected = "a"),
+"Thriller" = selectInput("Choose one genre", "Genre_1",
+                         choices = "a",
+                         selected = "a"),
+"Horror" = selectInput("Choose one genre", "Genre_1",
+                       choices = "a",
+                       selected = "a"),
+"Sci-Fi" = selectInput("Choose one genre", "Genre_1",
+                       choices = "a",
+                       selected = "a"),
+"Mystery" = selectInput("Choose one genre", "Genre_1",
+                        choices = "a",
+                        selected = "a"),
+"War" = selectInput("Choose one genre", "Genre_1",
+                    choices = "a",
+                    selected = "a"),
+"Musical" = selectInput("Choose one genre", "Genre_1",
+                        choices = "a",
+                        selected = "a"),
+"Documentary" = selectInput("Choose one genre", "Genre_1",
+                            choices = "a",
+                            selected = "a")
+    
+    

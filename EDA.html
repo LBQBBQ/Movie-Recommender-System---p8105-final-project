@@ -34,6 +34,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -299,7 +301,8 @@ $(document).ready(function () {
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
-library(ggplot2)</code></pre>
+library(ggplot2)
+library(kableExtra)</code></pre>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
@@ -326,54 +329,104 @@ movie_names =
   group_by(title, genres,rating) %&gt;% 
   count(movie_id) %&gt;% 
   filter(n &gt;= 100) %&gt;% 
-  select(n,title,genres,rating) %&gt;%  
-  arrange(desc(n)) %&gt;% 
-  knitr::kable()
+  select(n,title,genres,rating) %&gt;% 
+  ungroup(title, genres,rating) %&gt;% 
+  arrange(n) %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))
 high_rating_movienames </code></pre>
-<table>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
-<tr class="header">
-<th align="right">n</th>
-<th align="left">title</th>
-<th align="left">genres</th>
-<th align="right">rating</th>
+<tr>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:left;">
+title
+</th>
+<th style="text-align:left;">
+genres
+</th>
+<th style="text-align:right;">
+rating
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="right">153</td>
-<td align="left">Shawshank Redemption, The (1994)</td>
-<td align="left">Crime|Drama</td>
-<td align="right">5</td>
+<tr>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:left;">
+Star Wars: Episode IV - A New Hope (1977)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+<td style="text-align:right;">
+5
+</td>
 </tr>
-<tr class="even">
-<td align="right">123</td>
-<td align="left">Pulp Fiction (1994)</td>
-<td align="left">Comedy|Crime|Drama|Thriller</td>
-<td align="right">5</td>
+<tr>
+<td style="text-align:right;">
+109
+</td>
+<td style="text-align:left;">
+Matrix, The (1999)
+</td>
+<td style="text-align:left;">
+Action|Sci-Fi|Thriller
+</td>
+<td style="text-align:right;">
+5
+</td>
 </tr>
-<tr class="odd">
-<td align="right">116</td>
-<td align="left">Forrest Gump (1994)</td>
-<td align="left">Comedy|Drama|Romance|War</td>
-<td align="right">5</td>
+<tr>
+<td style="text-align:right;">
+116
+</td>
+<td style="text-align:left;">
+Forrest Gump (1994)
+</td>
+<td style="text-align:left;">
+Comedy|Drama|Romance|War
+</td>
+<td style="text-align:right;">
+5
+</td>
 </tr>
-<tr class="even">
-<td align="right">109</td>
-<td align="left">Matrix, The (1999)</td>
-<td align="left">Action|Sci-Fi|Thriller</td>
-<td align="right">5</td>
+<tr>
+<td style="text-align:right;">
+123
+</td>
+<td style="text-align:left;">
+Pulp Fiction (1994)
+</td>
+<td style="text-align:left;">
+Comedy|Crime|Drama|Thriller
+</td>
+<td style="text-align:right;">
+5
+</td>
 </tr>
-<tr class="odd">
-<td align="right">104</td>
-<td align="left">Star Wars: Episode IV - A New Hope (1977)</td>
-<td align="left">Action|Adventure|Sci-Fi</td>
-<td align="right">5</td>
+<tr>
+<td style="text-align:right;">
+153
+</td>
+<td style="text-align:left;">
+Shawshank Redemption, The (1994)
+</td>
+<td style="text-align:left;">
+Crime|Drama
+</td>
+<td style="text-align:right;">
+5
+</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
-<p><strong>Boxplot regarding: ratings and years; ratings and genres</strong></p>
+<p><strong>Boxplot regarding ratings and genres</strong></p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId)
@@ -381,22 +434,19 @@ high_rating_movienames </code></pre>
 filter_ratingscore = 
   rating_tidy  
 
-
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
   head(400) %&gt;%
  ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><strong>Boxplot regarding: ratings and years;</strong> #among movies</p>
+<p><strong>Boxplot regarding: ratings and years</strong></p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
   separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
-<pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 3 rows [9260,
-## 9368, 9515].</code></pre>
-<pre class="r"><code>boxplot_df2 = 
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
   head(500) %&gt;%
   ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
@@ -414,69 +464,232 @@ ave_rating =
   group_by(year,genres) %&gt;%
   summarize(mu_rating = mean(rating)) %&gt;% 
   head(10) %&gt;% 
-  knitr::kable()
+  knitr::kable() %&gt;%
+kable_styling(bootstrap_options = c(&quot;striped&quot;))
 ave_rating</code></pre>
-<table>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
-<tr class="header">
-<th align="left">year</th>
-<th align="left">genres</th>
-<th align="right">mu_rating</th>
+<tr>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:left;">
+genres
+</th>
+<th style="text-align:right;">
+mu_rating
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(1902)</td>
-<td align="left">Action|Adventure|Fantasy|Sci-Fi</td>
-<td align="right">3.50</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action|Adventure|Fantasy|Sci-Fi
+</td>
+<td style="text-align:right;">
+3.50
+</td>
 </tr>
-<tr class="even">
-<td align="left">(1903)</td>
-<td align="left">Crime|Western</td>
-<td align="right">2.50</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1903" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Crime|Western
+</td>
+<td style="text-align:right;">
+2.50
+</td>
 </tr>
-<tr class="odd">
-<td align="left">(1908)</td>
-<td align="left">Animation|Comedy|Sci-Fi</td>
-<td align="right">4.00</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1908" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Animation|Comedy|Sci-Fi
+</td>
+<td style="text-align:right;">
+4.00
+</td>
 </tr>
-<tr class="even">
-<td align="left">(1915)</td>
-<td align="left">Drama|War</td>
-<td align="right">2.00</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1915" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Drama|War
+</td>
+<td style="text-align:right;">
+2.00
+</td>
 </tr>
-<tr class="odd">
-<td align="left">(1916)</td>
-<td align="left">Action|Adventure|Sci-Fi</td>
-<td align="right">3.75</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1916" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+<td style="text-align:right;">
+3.75
+</td>
 </tr>
-<tr class="even">
-<td align="left">(1916)</td>
-<td align="left">Comedy</td>
-<td align="right">3.50</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1916" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+3.50
+</td>
 </tr>
-<tr class="odd">
-<td align="left">(1916)</td>
-<td align="left">Drama</td>
-<td align="right">3.50</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1916" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+3.50
+</td>
 </tr>
-<tr class="even">
-<td align="left">(1916)</td>
-<td align="left">Fantasy|Romance</td>
-<td align="right">3.50</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1916" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Fantasy|Romance
+</td>
+<td style="text-align:right;">
+3.50
+</td>
 </tr>
-<tr class="odd">
-<td align="left">(1917)</td>
-<td align="left">Comedy</td>
-<td align="right">4.50</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1917" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+4.50
+</td>
 </tr>
-<tr class="even">
-<td align="left">(1919)</td>
-<td align="left">Comedy|Drama</td>
-<td align="right">2.00</td>
+<tr>
+<td style="text-align:left;">
+<ol start="1919" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy|Drama
+</td>
+<td style="text-align:right;">
+2.00
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
+<p><strong>Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)</strong></p>
+<p>𝐻0:𝜇1=𝜇2=…=𝜇600</p>
+<p>𝐻1:at least two of the mean ratings of the user from the 600 users are different</p>
+<pre class="r"><code>filter_ratingscore = rating_tidy 
+res = lm(rating ~ factor(user_id), data = filter_ratingscore)   
+anova(res) %&gt;% 
+  kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Df
+</th>
+<th style="text-align:right;">
+Sum Sq
+</th>
+<th style="text-align:right;">
+Mean Sq
+</th>
+<th style="text-align:right;">
+F value
+</th>
+<th style="text-align:right;">
+Pr(&gt;F)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+factor(user_id)
+</td>
+<td style="text-align:right;">
+609
+</td>
+<td style="text-align:right;">
+21493.48
+</td>
+<td style="text-align:right;">
+35.2930699
+</td>
+<td style="text-align:right;">
+40.15042
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Residuals
+</td>
+<td style="text-align:right;">
+100226
+</td>
+<td style="text-align:right;">
+88100.78
+</td>
+<td style="text-align:right;">
+0.8790212
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
 </tr>
 </tbody>
 </table>
+<p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) </code></pre>
+<pre><code>## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  rating by user_id
+## Kruskal-Wallis chi-squared = 20677, df = 609, p-value &lt; 2.2e-16</code></pre>
+<p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<p><strong>linear regression graph to show a specific user’s rating on genre</strong> Linearity: The relationship between X and the mean of Y is linear. Homoscedasticity: The variance of residual is the same for any value of X. Independence: Observations are independent of each other. Normality: For any fixed value of X, Y is normally distributed. To check whether the dependent(y)variable follows a normal distribution, use the hist() function.</p>
+<pre class="r"><code>ave_rating = 
+  merge(filter_ratingscore, movie_names)
+hist(ave_rating$rating)</code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 
 

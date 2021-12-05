@@ -80,5 +80,4 @@ shinyServer(function(input, output) {
 #"Documentary" = selectInput("Choose one genre", "Genre_1",
 #                            choices = "a",
 #                            selected = "a")
-#    
     

@@ -23,7 +23,7 @@ library(shiny)
         titlePanel("Movie Recommender"),
         fluidRow(
           column(4,
-                 selectInput("movie_1", label = "movie 1",choices = "1"),
+                 selectInput("movie_1", label = "movie 1",choices = ),
                  submitButton("Select movie you like"),
           column(5,
                  selectInput("movie_2", label = "Movie 2",choices = "2"),

@@ -1,0 +1,174 @@
+---
+title: "similarity-based recommendation"
+author: 'Haolin Zhong (UNI: hz2771)'
+date: "2021/12/5"
+output: html_document
+---
+
+A basic strategy for recommendation is, find users similar to the new user, and
+recommend the new user with what similar users like.
+
+Let's denote $w_{uv}$ as the similarity between two users($u$, $v$), $r$ as movie
+ratings, $m$ as movie, then $w_{uv}$ can be quantitatively defined by pearson 
+correlation:
+
+$$
+w_{u v}=\frac{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right) \cdot\left(r_{v m}-\bar{r}_{v}\right)}{\sqrt{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right)^{2} \sum_{m \in M}\left(r_{v m}-\bar{r}_{v}\right)^{2}}}
+$$
+
+Once we found users similar to the new user, we can predict the new users rating
+towards a movie:
+- $S(u, K)$: the most similar $K$ users of $u$
+- $N(m)$: users who have rated on movie $m$
+
+$$
+\hat{r}_{u m}=\bar{r}_{u}+\frac{\sum_{v \in S(u, K) \cap N(m)} w_{u v}\left(r_{v m}-\bar{r}_{v}\right)}{\sum_{v \in S(u, K) \cap N(m)}\left|w_{u v}\right|}
+$$
+## Implementation
+
+### Dependencies
+
+```{r}
+library(tidyverse)
+```
+
+### Data preparation
+
+```{r, warning=FALSE}
+path = "./data/small/ratings.csv"
+
+ratings_tidy = read_csv(path) %>% 
+  janitor::clean_names() %>% 
+  select(-timestamp)
+
+ratings = ratings_tidy %>% 
+  nest(movie_id, rating)
+```
+
+### core functions
+
+```{r}
+acquired_data = function(user){
+  return(ratings %>% filter(user_id == user) %>% pull(data))
+}
+
+get_similar = function(user){
+  
+  user_data = acquired_data(user)
+  calc_df = ratings %>% 
+    filter(user_id != user) %>%
+    rename(v_data = data) %>% 
+    mutate(u_data = user_data) %>% 
+    mutate(
+      sim = map2_dbl(u_data, v_data, calc_sim)
+    ) %>% 
+    select(-u_data, -v_data) %>% 
+    arrange(desc(sim)) %>% 
+    head(10)
+  
+  return(calc_df)
+}
+
+
+
+calc_sim = function(u_data, v_data){
+  
+  calc_df = u_data %>% 
+    inner_join(v_data, by = "movie_id", suffix = c("_u", "_v"))
+  
+  # two users should at least watched 5 same movie
+  if (nrow(calc_df) < 5) {
+    return(-1)
+  }
+  
+  r_mean_u = u_data %>% pull(rating) %>% mean()
+  r_mean_v = v_data %>% pull(rating) %>% mean()
+  
+  calc_df = calc_df %>% 
+    mutate(
+      r_u_ct = rating_u - r_mean_u,
+      r_v_ct = rating_v - r_mean_v,
+      r_uv_ct = r_u_ct * r_v_ct,
+      r_u_ct_sq = r_u_ct^2,
+      r_v_ct_sq = r_v_ct^2
+    )
+  
+  sum_r_uv_ct = calc_df %>% pull(r_uv_ct) %>% sum()
+  sum_r_u_ct_sq = calc_df %>% pull(r_u_ct_sq) %>% sum()
+  sum_r_v_ct_sq = calc_df %>% pull(r_v_ct_sq) %>% sum()
+  
+  sim = sum_r_uv_ct / sqrt(sum_r_u_ct_sq * sum_r_v_ct_sq)
+  
+  return(sim)
+}
+
+predict_rating = function(user, movie, sim_users){
+  
+  r_means = ratings_tidy %>% 
+    group_by(user_id) %>% 
+    summarize(r_mean = mean(rating))
+  
+  calc_df = 
+    ratings_tidy %>% 
+    filter(movie_id == movie) %>% 
+    inner_join(sim_users, by = "user_id") %>% 
+    left_join(r_means, by = "user_id") %>% 
+    mutate(
+      sim_r_diff = sim * (rating - r_mean),
+      abs_sim = abs(sim)
+    )
+  
+  sum_sim_r_diff = calc_df %>% pull(sim_r_diff) %>% sum()
+  sum_abs_sim = calc_df %>% pull(abs_sim) %>% sum()
+  
+  r_u_mean = acquired_data(1)[[1]] %>% pull(rating) %>% mean()
+  
+  rating = r_u_mean + sum_sim_r_diff/sum_abs_sim
+  
+  return(rating)
+}
+
+main = function(user){
+  
+  sim_users = get_similar(user)
+  
+  movies = sim_users %>% 
+    select(user_id) %>% 
+    left_join(ratings_tidy, by = "user_id") %>% 
+    pull(movie_id) 
+  
+  calc_df = tibble(
+    user_id = user,
+    movie_id = movies
+  )
+  
+  watched = acquired_data(user)[[1]] %>% pull(movie_id) %>% as.vector()
+  
+  rec_movies = 
+    calc_df %>% 
+    filter(!movie_id %in% watched) %>% 
+    mutate(
+      r_pred = map2_dbl(user_id, movie_id, ~predict_rating(user = .x, movie = .y, sim_users = sim_users))
+    ) %>% 
+    arrange(desc(r_pred)) %>% 
+    head(10) %>% 
+    select(movie_id, pred_rating = r_pred)
+  
+  return(rec_movies)
+}
+```
+
+
+### test
+
+- Recommend movies for user 1 and user 77
+
+```{r}
+main(1)
+```
+
+
+```{r}
+main(77)
+```
+

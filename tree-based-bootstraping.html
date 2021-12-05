@@ -14,8 +14,8 @@
 
 <title>tree-based bootstraping</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -265,6 +265,9 @@ $(document).ready(function () {
     <li>
       <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
     </li>
+    <li>
+      <a href="user-similarity.html">user-similarity based recommendation</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -317,35 +320,15 @@ $(document).ready(function () {
 options(dplyr.summarise.inform = FALSE)
 
 library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
-<pre><code>## v ggplot2 3.3.5     v purrr   0.3.4
-## v tibble  3.1.4     v stringr 1.4.0
-## v tidyr   1.1.3     v forcats 0.5.1
-## v readr   2.0.1</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
 </div>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
 <pre class="r"><code>path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = read_csv(path, col_types = &quot;iinc&quot;) %&gt;% 
-  janitor::clean_names()</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): strings not representable in native encoding will
-## be translated to UTF-8</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C4&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E4&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00DF&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D8&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F8&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C5&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E5&gt;&#39; to native encoding</code></pre>
-<pre class="r"><code>hot_movies = 
+  janitor::clean_names()
+
+hot_movies = 
   rating_tidy %&gt;% 
   count(movie_id) %&gt;% 
   arrange(desc(n)) %&gt;% 
@@ -518,44 +501,44 @@ rating_dscts =
 </ul>
 <pre><code>## [[1]]
 ## [[1]][[1]]
-## [1] 5349
+## [1] 356
 ## 
 ## 
 ## [[2]]
 ## [[2]][[1]]
-## [1] 34
+## [1] 1580
 ## 
 ## [[2]][[2]]
-## [1] 6874
+## [1] 527
 ## 
 ## [[2]][[3]]
-## [1] 1197
+## [1] 293
 ## 
 ## 
 ## [[3]]
 ## [[3]][[1]]
-## [1] -1
+## [1] 1089
 ## 
 ## [[3]][[2]]
-## [1] 367
+## [1] 1265
 ## 
 ## [[3]][[3]]
-## [1] -1
+## [1] 1206
 ## 
 ## [[3]][[4]]
-## [1] -1
+## [1] 586
 ## 
 ## [[3]][[5]]
-## [1] 2683
+## [1] 1721
 ## 
 ## [[3]][[6]]
 ## [1] -1
 ## 
 ## [[3]][[7]]
-## [1] 586
+## [1] -1
 ## 
 ## [[3]][[8]]
-## [1] -1
+## [1] 380
 ## 
 ## [[3]][[9]]
 ## [1] -1</code></pre>

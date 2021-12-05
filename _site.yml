@@ -9,14 +9,15 @@ navbar:
     - text: "Exploratory Analyses"
       href: Exploratory-Analyses.html
    
-      
-
     - text: "Recommendation Algorithm"
       menu:
         - text: "SVD"
           href: SVD.html
         - text: "tree-based bootstraping"
           href: tree-based-bootstraping.html
+        - text: "user-similarity based recommendation"
+          href: user-similarity.html
+          
     - text: "Shinyapps"
       href: https://yw3608.shinyapps.io/Movie_Recommendation/
       

@@ -440,9 +440,22 @@ filter_ratingscore =
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
   head(400) %&gt;%
- ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
+ ggplot(aes(x = rating, y = genres),color = genres) + geom_boxplot()
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><strong>Boxplot regarding: ratings and years</strong></p>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  head(500) %&gt;%
+  ggplot(aes(x = rating, y = year),color = year) + geom_boxplot()+
+  viridis::scale_fill_viridis(discrete = TRUE)
+boxplot_df2 </code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p><strong>Boxplot regarding ratings and genres, (genre split)</strong></p>
 <pre class="r"><code>tags = read_csv(&quot;./data/small/tags.csv&quot;)
 tags.user = 
@@ -470,129 +483,22 @@ tags.full =
   mutate(
     tag = strsplit(tag, &quot; &quot;)
   ) %&gt;%
-  unnest()
+  unnest() 
+
+tag_review = 
   merge(tags.full , movie_names) %&gt;% 
   select(-timestamp, -genres) %&gt;% 
-  head(6) %&gt;% 
+  head(5) %&gt;% 
   knitr::kable() %&gt;% 
   kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
-<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-movie_id
-</th>
-<th style="text-align:right;">
-user_id
-</th>
-<th style="text-align:left;">
-tag
-</th>
-<th style="text-align:left;">
-title
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-474
-</td>
-<td style="text-align:left;">
-pixar
-</td>
-<td style="text-align:left;">
-Toy Story (1995)
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-567
-</td>
-<td style="text-align:left;">
-fun
-</td>
-<td style="text-align:left;">
-Toy Story (1995)
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-336
-</td>
-<td style="text-align:left;">
-pixar
-</td>
-<td style="text-align:left;">
-Toy Story (1995)
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-474
-</td>
-<td style="text-align:left;">
-game
-</td>
-<td style="text-align:left;">
-Jumanji (1995)
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-62
-</td>
-<td style="text-align:left;">
-game
-</td>
-<td style="text-align:left;">
-Jumanji (1995)
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-62
-</td>
-<td style="text-align:left;">
-magic
-</td>
-<td style="text-align:left;">
-Jumanji (1995)
-</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Boxplot regarding: ratings and years</strong></p>
-<pre class="r"><code>movie_names = 
-  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  rename(movie_id = movieId) %&gt;% 
-  separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
-boxplot_df2 = 
-  merge(filter_ratingscore, movie_names) %&gt;%
-  head(500) %&gt;%
-  ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
+<p><strong>Boxplot regarding split genre and rating, see if there is trend</strong></p>
+<pre class="r"><code>tag_review_plot =
+  merge(tags.full ,filter_ratingscore) %&gt;% 
+  head(30) %&gt;%
+  ggplot(aes(x = rating, y = tag),color = tag) + geom_boxplot()+
   viridis::scale_fill_viridis(discrete = TRUE)
-boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+tag_review_plot</code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p><strong>Find the average rating of each categories in different year</strong></p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 

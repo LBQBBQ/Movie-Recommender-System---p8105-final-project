@@ -67,10 +67,30 @@ filter_ratingscore =
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
   head(400) %>%
- ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
+ ggplot(aes(x = rating, y = genres),color = genres) + geom_boxplot()
 boxplot_df 
 
 
+```
+
+
+
+
+
+**Boxplot regarding: ratings and years**
+
+```{r, message = FALSE, warning = FALSE}
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
+boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %>%
+  head(500) %>%
+  ggplot(aes(x = rating, y = year),color = year) + geom_boxplot()+
+  viridis::scale_fill_viridis(discrete = TRUE)
+boxplot_df2 
 ```
 
 
@@ -103,42 +123,39 @@ tags.full =
   mutate(
     tag = strsplit(tag, " ")
   ) %>%
-  unnest()
+  unnest() 
+
+tag_review = 
   merge(tags.full , movie_names) %>% 
   select(-timestamp, -genres) %>% 
-  head(6) %>% 
+  head(5) %>% 
   knitr::kable() %>% 
   kable_styling(bootstrap_options = c("striped"))
-  
+
 
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-**Boxplot regarding: ratings and years**
-
-```{r, message = FALSE, warning = FALSE}
-movie_names = 
-  read_csv("./data/small/movies.csv") %>% 
-  rename(movie_id = movieId) %>% 
-  separate(
-  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
-boxplot_df2 = 
-  merge(filter_ratingscore, movie_names) %>%
-  head(500) %>%
-  ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
+**Boxplot regarding split genre and rating, see if there is trend**
+```{r}
+tag_review_plot =
+  merge(tags.full ,filter_ratingscore) %>% 
+  head(30) %>%
+  ggplot(aes(x = rating, y = tag),color = tag) + geom_boxplot()+
   viridis::scale_fill_viridis(discrete = TRUE)
-boxplot_df2 
+tag_review_plot
+  
 ```
+
+
+
+
+
+
+
+
+
+
 
 
 

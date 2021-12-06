@@ -298,16 +298,15 @@ $(document).ready(function () {
 </div>
 
 
-<p><strong>Find popular movies and high-rating movies</strong></p>
-<div id="import-dependencies" class="section level1">
-<h1>Import dependencies</h1>
+<div id="find-popular-movies-and-high-rating-movies" class="section level1">
+<h1>Find popular movies and high-rating movies</h1>
+<p><strong>Import dependencies</strong></p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(kableExtra)</code></pre>
-<div id="data-preparation" class="section level2">
-<h2>Data preparation</h2>
+<p><strong>Data preparation</strong></p>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = 
@@ -323,10 +322,7 @@ high_rating =
 movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId)</code></pre>
-</div>
-</div>
-<div id="test" class="section level1">
-<h1>Test</h1>
+<p><strong>Test</strong></p>
 <pre class="r"><code>high_rating_movienames = 
   merge(high_rating, movie_names) %&gt;% 
   group_by(title, genres,rating) %&gt;% 
@@ -429,7 +425,9 @@ Crime|Drama
 </tbody>
 </table>
 <p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
-<p><strong>Boxplot regarding ratings and genres</strong></p>
+</div>
+<div id="boxplot-regarding-ratings-and-genres" class="section level1">
+<h1>Boxplot regarding ratings and genres</h1>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId)
@@ -443,7 +441,8 @@ boxplot_df =
  ggplot(aes(x = rating, y = genres),color = genres) + geom_boxplot()
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p><strong>Boxplot regarding: ratings and years</strong></p>
+<div id="boxplot-regarding-ratings-and-years" class="section level2">
+<h2>Boxplot regarding: ratings and years</h2>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -456,7 +455,9 @@ boxplot_df2 =
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p><strong>Boxplot regarding ratings and genres, (genre split)</strong></p>
+</div>
+<div id="boxplot-regarding-ratings-and-genres-genre-split" class="section level2">
+<h2>Boxplot regarding ratings and genres, (genre split)</h2>
 <pre class="r"><code>tags = read_csv(&quot;./data/small/tags.csv&quot;)
 tags.user = 
   tags %&gt;%
@@ -491,7 +492,9 @@ tag_review =
   head(5) %&gt;% 
   knitr::kable() %&gt;% 
   kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
-<p><strong>Boxplot regarding split genre and rating, see if there is trend</strong></p>
+</div>
+<div id="boxplot-regarding-split-genre-and-rating-see-if-there-is-trend" class="section level2">
+<h2>Boxplot regarding split genre and rating, see if there is trend</h2>
 <pre class="r"><code>tag_review_plot =
   merge(tags.full ,filter_ratingscore) %&gt;% 
   head(30) %&gt;%
@@ -499,7 +502,9 @@ tag_review =
   viridis::scale_fill_viridis(discrete = TRUE)
 tag_review_plot</code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p><strong>Find the average rating of each categories in different year</strong></p>
+</div>
+<div id="find-the-average-rating-of-each-categories-in-different-year" class="section level2">
+<h2>Find the average rating of each categories in different year</h2>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -650,6 +655,9 @@ Comedy|Drama
 </ol></li>
 </ol></li>
 </ol>
+</div>
+<div id="kruskal-test-regarding-user_id-and-rating" class="section level2">
+<h2>Kruskal Test regarding user_id and rating</h2>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  knitr::kable(digits = 100000) %&gt;% 
@@ -689,6 +697,7 @@ Kruskal-Wallis rank sum test
 </tbody>
 </table>
 <p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+</div>
 </div>
 
 

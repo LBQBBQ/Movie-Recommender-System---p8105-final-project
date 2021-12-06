@@ -6,9 +6,9 @@ output:
     html_document:
         theme: yeti
 ---
-**Find popular movies and high-rating movies**
+# Find popular movies and high-rating movies
 
-# Import dependencies
+**Import dependencies**
 ```{r, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -18,7 +18,7 @@ library(kableExtra)
 ```
 
 
-## Data preparation
+**Data preparation**
 ```{r, message = FALSE, warning = FALSE}
 data_path = "./data/small/ratings.csv"
 
@@ -38,7 +38,7 @@ movie_names =
 ```
 
 
-# Test
+**Test**
 ```{r, message = FALSE, warning = FALSE}
 high_rating_movienames = 
   merge(high_rating, movie_names) %>% 
@@ -55,7 +55,7 @@ high_rating_movienames
 **Find popular movies and high-rating movies** : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
 
 
-**Boxplot regarding ratings and genres**
+# Boxplot regarding ratings and genres
 ```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
@@ -77,7 +77,7 @@ boxplot_df
 
 
 
-**Boxplot regarding: ratings and years**
+## Boxplot regarding: ratings and years
 
 ```{r, message = FALSE, warning = FALSE}
 movie_names = 
@@ -95,7 +95,7 @@ boxplot_df2
 
 
 
-**Boxplot regarding ratings and genres, (genre split)**
+## Boxplot regarding ratings and genres, (genre split)
 ```{r, message = FALSE, warning = FALSE}
 tags = read_csv("./data/small/tags.csv")
 tags.user = 
@@ -136,7 +136,7 @@ tag_review =
 ```
 
 
-**Boxplot regarding split genre and rating, see if there is trend**
+## Boxplot regarding split genre and rating, see if there is trend
 ```{r}
 tag_review_plot =
   merge(tags.full ,filter_ratingscore) %>% 
@@ -155,12 +155,7 @@ tag_review_plot
 
 
 
-
-
-
-
-
-**Find  the average rating of each categories in different year**
+## Find  the average rating of each categories in different year
 ```{r,message = FALSE,warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
@@ -178,7 +173,7 @@ ave_rating
 ```
 
 
-
+## Kruskal Test regarding user_id and rating
 ```{r}
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
  broom::tidy() %>% 

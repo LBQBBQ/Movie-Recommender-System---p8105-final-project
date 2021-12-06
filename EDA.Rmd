@@ -69,7 +69,60 @@ boxplot_df =
   head(400) %>%
  ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
 boxplot_df 
+
+
 ```
+
+
+
+**Boxplot regarding ratings and genres, (genre split)**
+```{r, message = FALSE, warning = FALSE}
+tags = read_csv("./data/small/tags.csv")
+tags.user = 
+  tags %>%
+  janitor::clean_names() %>%
+  mutate(
+    tag = strsplit(tag, " ")
+  ) %>%
+  select(user_id, movie_id, tag) %>%
+  nest(data = tag) 
+  
+
+tags.movie = 
+  tags %>%
+  janitor::clean_names() %>%
+  mutate(
+    tag = strsplit(tag, " ")
+  ) %>%
+  select(user_id, movie_id, tag) %>%
+  nest(data = c(user_id,tag))
+
+tags.full = 
+  tags %>%
+  janitor::clean_names() %>%
+  mutate(
+    tag = strsplit(tag, " ")
+  ) %>%
+  unnest()
+  merge(tags.full , movie_names) %>% 
+  select(-timestamp, -genres) %>% 
+  head(6) %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
+  
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 **Boxplot regarding: ratings and years**
 

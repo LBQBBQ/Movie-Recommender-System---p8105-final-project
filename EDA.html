@@ -443,6 +443,143 @@ boxplot_df =
  ggplot(aes(x = genres, y = rating),color = genres) + geom_boxplot()
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><strong>Boxplot regarding ratings and genres, (genre split)</strong></p>
+<pre class="r"><code>tags = read_csv(&quot;./data/small/tags.csv&quot;)
+tags.user = 
+  tags %&gt;%
+  janitor::clean_names() %&gt;%
+  mutate(
+    tag = strsplit(tag, &quot; &quot;)
+  ) %&gt;%
+  select(user_id, movie_id, tag) %&gt;%
+  nest(data = tag) 
+  
+
+tags.movie = 
+  tags %&gt;%
+  janitor::clean_names() %&gt;%
+  mutate(
+    tag = strsplit(tag, &quot; &quot;)
+  ) %&gt;%
+  select(user_id, movie_id, tag) %&gt;%
+  nest(data = c(user_id,tag))
+
+tags.full = 
+  tags %&gt;%
+  janitor::clean_names() %&gt;%
+  mutate(
+    tag = strsplit(tag, &quot; &quot;)
+  ) %&gt;%
+  unnest()
+  merge(tags.full , movie_names) %&gt;% 
+  select(-timestamp, -genres) %&gt;% 
+  head(6) %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+movie_id
+</th>
+<th style="text-align:right;">
+user_id
+</th>
+<th style="text-align:left;">
+tag
+</th>
+<th style="text-align:left;">
+title
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+474
+</td>
+<td style="text-align:left;">
+pixar
+</td>
+<td style="text-align:left;">
+Toy Story (1995)
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+567
+</td>
+<td style="text-align:left;">
+fun
+</td>
+<td style="text-align:left;">
+Toy Story (1995)
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+336
+</td>
+<td style="text-align:left;">
+pixar
+</td>
+<td style="text-align:left;">
+Toy Story (1995)
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+474
+</td>
+<td style="text-align:left;">
+game
+</td>
+<td style="text-align:left;">
+Jumanji (1995)
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+game
+</td>
+<td style="text-align:left;">
+Jumanji (1995)
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+62
+</td>
+<td style="text-align:left;">
+magic
+</td>
+<td style="text-align:left;">
+Jumanji (1995)
+</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Boxplot regarding: ratings and years</strong></p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -455,7 +592,7 @@ boxplot_df2 =
   ggplot(aes(x = year, y = rating),color = year) + geom_boxplot()+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p><strong>Find the average rating of each categories in different year</strong></p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 

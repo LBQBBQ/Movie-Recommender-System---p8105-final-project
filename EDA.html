@@ -607,92 +607,45 @@ Comedy|Drama
 </ol></li>
 </ol></li>
 </ol>
-<p><strong>Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)</strong></p>
-<p>𝐻0:𝜇1=𝜇2=…=𝜇600</p>
-<p>𝐻1:at least two of the mean ratings of the user from the 600 users are different</p>
-<pre class="r"><code>filter_ratingscore = rating_tidy 
-res = lm(rating ~ factor(user_id), data = filter_ratingscore)   
-anova(res) %&gt;% 
-  kable() %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
+<pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
+ broom::tidy() %&gt;% 
+ knitr::kable(digits = 100000) %&gt;% 
+ kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+parameter
+</th>
 <th style="text-align:left;">
-</th>
-<th style="text-align:right;">
-Df
-</th>
-<th style="text-align:right;">
-Sum Sq
-</th>
-<th style="text-align:right;">
-Mean Sq
-</th>
-<th style="text-align:right;">
-F value
-</th>
-<th style="text-align:right;">
-Pr(&gt;F)
+method
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-factor(user_id)
-</td>
 <td style="text-align:right;">
-609
-</td>
-<td style="text-align:right;">
-21493.48
-</td>
-<td style="text-align:right;">
-35.2930699
-</td>
-<td style="text-align:right;">
-40.15042
+20676.72
 </td>
 <td style="text-align:right;">
 0
 </td>
-</tr>
-<tr>
+<td style="text-align:right;">
+609
+</td>
 <td style="text-align:left;">
-Residuals
-</td>
-<td style="text-align:right;">
-100226
-</td>
-<td style="text-align:right;">
-88100.78
-</td>
-<td style="text-align:right;">
-0.8790212
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
+Kruskal-Wallis rank sum test
 </td>
 </tr>
 </tbody>
 </table>
 <p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
-<pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) </code></pre>
-<pre><code>## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  rating by user_id
-## Kruskal-Wallis chi-squared = 20677, df = 609, p-value &lt; 2.2e-16</code></pre>
-<p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
-<p><strong>linear regression graph to show a specific user’s rating on genre</strong> Linearity: The relationship between X and the mean of Y is linear. Homoscedasticity: The variance of residual is the same for any value of X. Independence: Observations are independent of each other. Normality: For any fixed value of X, Y is normally distributed. To check whether the dependent(y)variable follows a normal distribution, use the hist() function.</p>
-<pre class="r"><code>ave_rating = 
-  merge(filter_ratingscore, movie_names)
-hist(ave_rating$rating)</code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 
 

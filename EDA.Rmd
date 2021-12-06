@@ -108,27 +108,12 @@ ave_rating
 ```
 
 
-**Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)**
-
-𝐻0:𝜇1=𝜇2=...=𝜇600
-
-𝐻1:at least two of the mean ratings of the user from the 600 users are different
-```{r, message = FALSE, warning = FALSE}
-filter_ratingscore = rating_tidy 
-res = lm(rating ~ factor(user_id), data = filter_ratingscore)   
-anova(res) %>% 
-  kable() %>% 
-  kable_styling(bootstrap_options = c("striped"))
-```
-At 0.05 significance level, we reject the null hypothesis and conclude that at least two of 
-the mean ratings of the user from the 600 users are different.
-
-
-
 
 ```{r}
-
-kruskal.test(rating ~ user_id, data = filter_ratingscore) 
+kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
+ broom::tidy() %>% 
+ knitr::kable(digits = 100000) %>% 
+ kable_styling(bootstrap_options = c("striped"))
 ```
 At 0.05 significance level, we reject the null hypothesis and conclude that at least two of 
 the mean ratings of the user from the 600 users are different.
@@ -136,21 +121,4 @@ the mean ratings of the user from the 600 users are different.
 
 
 
-**linear regression graph to show a specific user’s rating on genre**
-Linearity: The relationship between X and the mean of Y is linear.
-Homoscedasticity: The variance of residual is the same for any value of X.
-Independence: Observations are independent of each other.
-Normality: For any fixed value of X, Y is normally distributed. To check whether the dependent(y)variable follows a normal distribution, use the hist() function.
-```{r,message = FALSE, warning = FALSE}
-ave_rating = 
-  merge(filter_ratingscore, movie_names)
-hist(ave_rating$rating)
-
-
-
-
-
-
-
-```
 

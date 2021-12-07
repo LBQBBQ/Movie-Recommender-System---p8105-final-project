@@ -15,7 +15,7 @@ ui <- fluidPage(
     sliderInput("year", "Filter movie year", 1990, 2018, value = c(1990, 2000),
                 sep = ""),
     selectInput('movie', 'select movie', "1", "1" ),
-    selectInput('rate', 'select rate', "2", "2"),
+    selectInput('rate', 'Select rate', "2", "2"),
     submitButton("Add rating"),
     submitButton("See recommendation")),
   mainPanel(

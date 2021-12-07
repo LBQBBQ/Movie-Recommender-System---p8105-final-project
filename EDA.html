@@ -461,7 +461,7 @@ boxplot_df </code></pre>
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
-  head(500) %&gt;%
+  head(1000) %&gt;% 
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 </code></pre>
@@ -669,7 +669,7 @@ Comedy|Drama
 </div>
 <div id="kruskal-test-regarding-user_id-and-rating" class="section level2">
 <h2>Kruskal Test regarding user_id and rating</h2>
-<p>Assumption: <span class="math inline">\(H0:\mu0=\mu1=\mu2=\mu3=...=\mu x\)</span> <span class="math inline">\(H1: At least two of the mean ratings of the users are different.\)</span></p>
+<p>Assumption: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least \ two \ of \ the \ mean \ ratings\ of \ the\  users\  are\  different.\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  knitr::kable(digits = 100000) %&gt;% 

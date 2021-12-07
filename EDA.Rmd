@@ -112,7 +112,7 @@ movie_names =
   title, c("name", "year"), sep="\\s+(?=\\S*$)") 
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%
-  head(500) %>%
+  head(1000) %>% 
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 
@@ -201,8 +201,8 @@ ave_rating
 ## Kruskal Test regarding user_id and rating
 
 Assumption:
-$H0:\mu0=\mu1=\mu2=\mu3=...=\mu x$
-$H1: At least two of the mean ratings of the users are different.$
+$H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x$
+$H_1: At\ least \ two \ of \ the \ mean \ ratings\ of \ the\  users\  are\  different.$
 
 ```{r}
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 

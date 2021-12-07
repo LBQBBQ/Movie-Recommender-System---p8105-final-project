@@ -10,7 +10,7 @@
 library(shiny)
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+"shinyServer(function(input, output) {
 
     output$distPlot <- renderPlot({
 
@@ -24,7 +24,7 @@ shinyServer(function(input, output) {
     })
 
 })
-
+"
 #output$table <- renderTable({
 #    movie_recommendation(#input$select, #input$select2, #input$select3)
 #})

@@ -251,7 +251,7 @@ $(document).ready(function () {
   <a href="Proposal.html">Proposal</a>
 </li>
 <li>
-  <a href="Exploratory-Analyses.html">Exploratory Analyses</a>
+  <a href="EDA.html">Exploratory Analyses</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -434,15 +434,19 @@ Crime|Drama
 <h1>Boxplot regarding ratings and genres</h1>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  rename(movie_id = movieId)
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
 
 filter_ratingscore = 
   rating_tidy  
 
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
-  head(400) %&gt;%
- ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
+  janitor::clean_names() %&gt;%
+  separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
+  filter(!genres  %in% &quot;(no genres listed)&quot;) %&gt;% 
+  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="boxplot-regarding-ratings-and-years" class="section level2">

@@ -6,7 +6,7 @@ output:
     html_document:
         theme: yeti
 ---
-# Find popular movies and high-rating movies
+# Data discription 
 
 **Import dependencies**
 ```{r, message = FALSE, warning = FALSE}
@@ -17,6 +17,24 @@ library(ggplot2)
 library(kableExtra)
 ```
 
+**Overview of data sets**
+```{r, message = FALSE, warning = FALSE}
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+# Find popular movies and high-rating movies
 
 **Data preparation**
 ```{r, message = FALSE, warning = FALSE}
@@ -67,8 +85,11 @@ filter_ratingscore =
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
   head(400) %>%
- ggplot(aes(x = rating, y = genres),color = genres) + geom_boxplot()
+ ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df 
+
+
+
 
 
 ```
@@ -88,7 +109,7 @@ movie_names =
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%
   head(500) %>%
-  ggplot(aes(x = rating, y = year),color = year) + geom_boxplot()+
+  ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 
 ```
@@ -141,7 +162,7 @@ tag_review =
 tag_review_plot =
   merge(tags.full ,filter_ratingscore) %>% 
   head(30) %>%
-  ggplot(aes(x = rating, y = tag),color = tag) + geom_boxplot()+
+  ggplot(aes(x = rating, y = tag)) + geom_boxplot(aes(color = tag))+
   viridis::scale_fill_viridis(discrete = TRUE)
 tag_review_plot
   
@@ -174,6 +195,11 @@ ave_rating
 
 
 ## Kruskal Test regarding user_id and rating
+
+Assumption:
+$H0:\mu0=\mu1=\mu2=\mu3=...=\mu x$
+$H1: At least two of the mean ratings of the users are different.$
+
 ```{r}
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
  broom::tidy() %>% 

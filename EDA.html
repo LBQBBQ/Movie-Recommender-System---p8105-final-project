@@ -298,14 +298,18 @@ $(document).ready(function () {
 </div>
 
 
-<div id="find-popular-movies-and-high-rating-movies" class="section level1">
-<h1>Find popular movies and high-rating movies</h1>
+<div id="data-discription" class="section level1">
+<h1>Data discription</h1>
 <p><strong>Import dependencies</strong></p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(kableExtra)</code></pre>
+<p><strong>Overview of data sets</strong></p>
+</div>
+<div id="find-popular-movies-and-high-rating-movies" class="section level1">
+<h1>Find popular movies and high-rating movies</h1>
 <p><strong>Data preparation</strong></p>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
@@ -438,9 +442,9 @@ filter_ratingscore =
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
   head(400) %&gt;%
- ggplot(aes(x = rating, y = genres),color = genres) + geom_boxplot()
+ ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="boxplot-regarding-ratings-and-years" class="section level2">
 <h2>Boxplot regarding: ratings and years</h2>
 <pre class="r"><code>movie_names = 
@@ -451,10 +455,10 @@ boxplot_df </code></pre>
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
   head(500) %&gt;%
-  ggplot(aes(x = rating, y = year),color = year) + geom_boxplot()+
+  ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="boxplot-regarding-ratings-and-genres-genre-split" class="section level2">
 <h2>Boxplot regarding ratings and genres, (genre split)</h2>
@@ -498,10 +502,10 @@ tag_review =
 <pre class="r"><code>tag_review_plot =
   merge(tags.full ,filter_ratingscore) %&gt;% 
   head(30) %&gt;%
-  ggplot(aes(x = rating, y = tag),color = tag) + geom_boxplot()+
+  ggplot(aes(x = rating, y = tag)) + geom_boxplot(aes(color = tag))+
   viridis::scale_fill_viridis(discrete = TRUE)
 tag_review_plot</code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="find-the-average-rating-of-each-categories-in-different-year" class="section level2">
 <h2>Find the average rating of each categories in different year</h2>
@@ -658,6 +662,7 @@ Comedy|Drama
 </div>
 <div id="kruskal-test-regarding-user_id-and-rating" class="section level2">
 <h2>Kruskal Test regarding user_id and rating</h2>
+<p>Assumption: <span class="math inline">\(H0:\mu0=\mu1=\mu2=\mu3=...=\mu x\)</span> <span class="math inline">\(H1: At least two of the mean ratings of the users are different.\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  knitr::kable(digits = 100000) %&gt;% 

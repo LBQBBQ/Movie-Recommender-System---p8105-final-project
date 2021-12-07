@@ -9,12 +9,20 @@
 
 library(shiny)
 
-pageWithSidebar(
+ui <- fluidPage(
   headerPanel('Movie Recommendation'),
   sidebarPanel(
-    selectInput('movie_1', 'movie_1', "1"),
-    selectInput('movie_2', 'movie_2', "2"),
-    selectInput('movie_3', 'movie_3', "3"),
-    submitButton("Get Recommendations")),
+    sliderInput("year", "Filter movie year", 1990, 2018, value = c(1990, 2000),
+                sep = ""),
+    selectInput('movie', 'select movie', "1", "1" ),
+    selectInput('rate', 'select rate', "2", "2"),
+    submitButton("Add rating"),
+    submitButton("See recommendation")),
   mainPanel(
-    plotOutput('')))
+    textOutput("text")
+))
+ 
+server <- function(input, output){
+ }
+ 
+ shinyApp(ui = ui, server = server)

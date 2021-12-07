@@ -7,7 +7,7 @@ navbar:
       href: Proposal.html
 
     - text: "Exploratory Analyses"
-      href: Exploratory-Analyses.html
+      href: EDA.html
    
     - text: "Recommendation Algorithm"
       menu:

@@ -77,15 +77,19 @@ high_rating_movienames
 ```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
-  rename(movie_id = movieId)
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
 
 filter_ratingscore = 
   rating_tidy  
 
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
-  head(400) %>%
- ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
+  janitor::clean_names() %>%
+  separate_rows(genres, sep = "[|]") %>%
+  filter(!genres  %in% "(no genres listed)") %>% 
+  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df 
 
 

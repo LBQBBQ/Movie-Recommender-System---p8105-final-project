@@ -14,8 +14,8 @@
 
 <title>tree-based bootstraping</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -251,6 +251,9 @@ $(document).ready(function () {
 </li>
 <li>
   <a href="EDA.html">Exploratory Analyses</a>
+</li>
+<li>
+  <a href="tag_system_recommendation.html">Tag based TF-IDF</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -571,13 +574,13 @@ movies_df = tibble(seq = movie_seq, movie_id = movies)
 movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   janitor::clean_names()</code></pre>
 <pre><code>## Rows: 9742 Columns: 3</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
+<pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr (2): title, genres
 ## dbl (1): movieId</code></pre>
 <pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>movie_info %&gt;% 
   filter(movie_id %in% movies) %&gt;% 
   left_join(movies_df) %&gt;% 

@@ -14,8 +14,8 @@
 
 <title>similarity-based recommendation</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -250,6 +250,9 @@ $(document).ready(function () {
 <li>
   <a href="EDA.html">Exploratory Analyses</a>
 </li>
+<li>
+  <a href="tag_system_recommendation.html">Tag based TF-IDF</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Recommendation Algorithm
@@ -316,12 +319,12 @@ ratings_tidy = read_csv(path) %&gt;%
   janitor::clean_names() %&gt;% 
   select(-timestamp)</code></pre>
 <pre><code>## Rows: 100836 Columns: 4</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
+<pre><code>## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## dbl (4): userId, movieId, rating, timestamp</code></pre>
 <pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <pre class="r"><code>ratings = ratings_tidy %&gt;% 
   nest(movie_id, rating)</code></pre>
 </div>
@@ -400,7 +403,7 @@ predict_rating = function(user, movie, sim_users){
   sum_sim_r_diff = calc_df %&gt;% pull(sim_r_diff) %&gt;% sum()
   sum_abs_sim = calc_df %&gt;% pull(abs_sim) %&gt;% sum()
   
-  r_u_mean = acquired_data(1)[[1]] %&gt;% pull(rating) %&gt;% mean()
+  r_u_mean = acquired_data(user)[[1]] %&gt;% pull(rating) %&gt;% mean()
   
   rating = r_u_mean + sum_sim_r_diff/sum_abs_sim
   
@@ -414,6 +417,7 @@ main = function(user){
   movies = sim_users %&gt;% 
     select(user_id) %&gt;% 
     left_join(ratings_tidy, by = &quot;user_id&quot;) %&gt;% 
+    distinct(movie_id) %&gt;% 
     pull(movie_id) 
   
   calc_df = tibble(
@@ -442,7 +446,7 @@ main = function(user){
 <li>Recommend movies for user 1 and user 77</li>
 </ul>
 <pre class="r"><code>main(1)</code></pre>
-<pre><code>## # A tibble: 10 x 2
+<pre><code>## # A tibble: 10 × 2
 ##    movie_id pred_rating
 ##       &lt;dbl&gt;       &lt;dbl&gt;
 ##  1    27611        6.22
@@ -456,19 +460,19 @@ main = function(user){
 ##  9    66934        5.72
 ## 10    96079        5.72</code></pre>
 <pre class="r"><code>main(77)</code></pre>
-<pre><code>## # A tibble: 10 x 2
+<pre><code>## # A tibble: 10 × 2
 ##    movie_id pred_rating
 ##       &lt;dbl&gt;       &lt;dbl&gt;
-##  1     1658        6.76
-##  2     3358        6.76
-##  3     3200        6.60
-##  4     3404        6.60
-##  5     1252        6.24
-##  6     1252        6.24
-##  7      913        6.20
-##  8      913        6.20
-##  9      913        6.20
-## 10     1234        6.12</code></pre>
+##  1     1658        6.39
+##  2     3358        6.39
+##  3     3200        6.24
+##  4     3404        6.24
+##  5     1252        5.88
+##  6      913        5.84
+##  7     1234        5.75
+##  8      750        5.61
+##  9      899        5.61
+## 10      912        5.61</code></pre>
 </div>
 
 

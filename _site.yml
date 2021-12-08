@@ -10,7 +10,7 @@ navbar:
       href: EDA.html
 
     - text: "Tag based TF-IDF"
-      href: "tag_system_recommendation.html" 
+      href: tag_system_recommendation.html 
    
     - text: "Recommendation Algorithm"
       menu:

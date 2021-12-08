@@ -104,9 +104,9 @@ return(interest = round(sum(value), 2))
 }
 ```
 
-### Search the movie that was most frequently labeled by the users
+### Find the most popular movies and the most active users
 
-After building the function, we want to select the most popular movie to see how this function works. Since the dataset we have only contains about 3700 tags labeled by the users, we will then choose several movies that have labeled most by users. In this way, we select the movies that has labeled by more than 4 users. For example, Star Wars: Episode IV - A New Hope.
+After building the function, we want to select the most popular movies to see how this function works. However, the dataset only contains Since the dataset we have only contains about 3700 tags labeled by the users, we will then choose several movies that have labeled most by users. In this way, we select the movies that has labeled by more than 4 users. For example, Star Wars: Episode IV - A New Hope.
 
 
 <img src="starwar.jpg" style="width:75%">   
@@ -180,8 +180,21 @@ heat.map %>%
 
 ```
 
+### Discussion
 
+Tag based TF-IDF can help us predict the user's interest on a certain movie (or item). The molecule of the formula, which is $\sum_{b} n_{u, b} n_{b, i}$, firstly compute the user's interest on a certain movie by finding the sets. $B(u)$ is the set of tags that user u has labeled, $B(i)$ is the set of tags that movie i is labeled, $n_{u, b}$ is the number of times that user u has labeled tag b and $n_{b, i}$ is the number of times that movie i has been labeled tag b
 
+However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problem, we improve this formula by drawing on the idea of TF-IDF and construct the new formula.
+
+$p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}$,
+
+where $n_b^{(u)}$ records how many different users have used tag b, $n_i^{(u)}$records how many different users have tagged the movie i. The denominator of the formula is used to appropriately punish popular labels and popular items, but the results will not reduce the offline accuracy of the recommendation results while enhancing the personalization of the recommendation results.
+
+Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, $n_{b, i}$, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user's interest anymore and the heat map then will be bad and doesn't contain useful information.
+
+Luckily, there are several movies are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.
+
+It is conceivable that if the sample data set is large enough, then we will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the size of the interest is delineated, and the movie is recommended to the user if it is larger than a certain value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users' will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. But we are confident that this is a successful attempt.
 
 
 

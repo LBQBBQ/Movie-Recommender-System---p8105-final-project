@@ -6,25 +6,17 @@ output:
     html_document:
         theme: yeti
 ---
-# Overview of data sets
+# Overview of data sets 
 - Dataset source used for EDA analysis:
 [MoiveLens dataset](https://grouplens.org/datasets/movielens/latest/)
 - Here, we decided to use "Small" dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).
 - Dataset "links.csv" has 3 variables, including movieId(movie ID),imdbId(IMDb ID) and tmdbId(TMDB ID).
 - "movies.csv" is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres).
-- In "ratings.csv" dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp
-```{r, message = FALSE, warning = FALSE}
+- In "ratings.csv" dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp represent a digital record of the time of occurrence of a particular movie. Last but not the least, rating represent the ratings of movies.
+- Dataset "tag.csv" has 4 variables, including userId(user ID),movieId(movie ID),tag(tag of movies) and timestamp(digital record of the time of occurrence of a particular movie)
+-In our Exploratory Analyses, we mainly focus on the following datasets :"ratings.csv","movies.csv" and "tag.csv".
 
-
-
-
-
-```
-
-
-
-# Data discription 
-
+# Summary of the used packages and dependencies 
 **Import dependencies**
 ```{r, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -32,10 +24,39 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 library(kableExtra)
+library(pastecs)
 ```
 
 
 
+# Overview of dataset "ratings.csv"
+**Import dataset**
+```{r, message = FALSE, warning = FALSE}
+data_path = "./data/small/ratings.csv"
+```
+
+**Descriptive statistics（brief descriptive coefficients that summarize dataset "ratings.csv"）**
+```{r}
+rating_descriptive = 
+  read_csv(data_path, col_types = "ccnc") %>% 
+  janitor::clean_names() %>% 
+  select(rating) %>% 
+  stat.desc() %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
+rating_descriptive  
+```
+- Here, we applied the "stat.desc()" function tobriefly describe the variable "rating".
+- According to the result, 
+- median is 3.5
+- mean is 3.501557
+- standard error on the mean (SE.mean) is 3.283100
+- confidence interval of the mean (CI.mean) at the p level (default is 0.95)
+- variance (var)
+- standard deviation (std.dev)
+- the variation coefficient (coef.var) defined as the standard deviation divided by the mean
+
+**Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie,we do not analysis those three variables **
 
 
 
@@ -219,7 +240,7 @@ $H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.$
 ```{r}
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
  broom::tidy() %>% 
- knitr::kable(digits = 100000) %>% 
+ knitr::kable() %>% 
  kable_styling(bootstrap_options = c("striped"))
 ```
 At 0.05 significance level, we reject the null hypothesis and conclude that at least two of 

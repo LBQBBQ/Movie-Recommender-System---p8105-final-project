@@ -15,8 +15,8 @@
 
 <title>EDA</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -308,17 +308,170 @@ $(document).ready(function () {
 <li>Here, we decided to use “Small” dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).</li>
 <li>Dataset “links.csv” has 3 variables, including movieId(movie ID),imdbId(IMDb ID) and tmdbId(TMDB ID).</li>
 <li>“movies.csv” is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres).</li>
-<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp</li>
+<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp represent a digital record of the time of occurrence of a particular movie. Last but not the least, rating represent the ratings of movies.</li>
+<li>Dataset “tag.csv” has 4 variables, including userId(user ID),movieId(movie ID),tag(tag of movies) and timestamp(digital record of the time of occurrence of a particular movie) -In our Exploratory Analyses, we mainly focus on the following datasets :“ratings.csv”,“movies.csv” and “tag.csv”.</li>
 </ul>
 </div>
-<div id="data-discription" class="section level1">
-<h1>Data discription</h1>
+<div id="summary-of-the-used-packages-and-dependencies" class="section level1">
+<h1>Summary of the used packages and dependencies</h1>
 <p><strong>Import dependencies</strong></p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(ggplot2)
-library(kableExtra)</code></pre>
+library(kableExtra)
+library(pastecs)</code></pre>
+</div>
+<div id="overview-of-dataset-ratings.csv" class="section level1">
+<h1>Overview of dataset “ratings.csv”</h1>
+<p><strong>Import dataset</strong></p>
+<pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;</code></pre>
+<p><strong>Descriptive statistics（brief descriptive coefficients that summarize dataset “ratings.csv”）</strong></p>
+<pre class="r"><code>rating_descriptive = 
+  read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(rating) %&gt;% 
+  stat.desc() %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))
+rating_descriptive  </code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+rating
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+nbr.val
+</td>
+<td style="text-align:right;">
+1.008360e+05
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nbr.null
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nbr.na
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+min
+</td>
+<td style="text-align:right;">
+5.000000e-01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+max
+</td>
+<td style="text-align:right;">
+5.000000e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+range
+</td>
+<td style="text-align:right;">
+4.500000e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sum
+</td>
+<td style="text-align:right;">
+3.530830e+05
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+median
+</td>
+<td style="text-align:right;">
+3.500000e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mean
+</td>
+<td style="text-align:right;">
+3.501557e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SE.mean
+</td>
+<td style="text-align:right;">
+3.283100e-03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CI.mean.0.95
+</td>
+<td style="text-align:right;">
+6.434800e-03
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+var
+</td>
+<td style="text-align:right;">
+1.086867e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+std.dev
+</td>
+<td style="text-align:right;">
+1.042529e+00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+coef.var
+</td>
+<td style="text-align:right;">
+2.977330e-01
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Here, we applied the “stat.desc()” function tobriefly describe the variable “rating”.</li>
+<li>According to the result,</li>
+<li>median is 3.5</li>
+<li>mean is 3.501557</li>
+<li>standard error on the mean (SE.mean) is 3.283100</li>
+<li>confidence interval of the mean (CI.mean) at the p level (default is 0.95)</li>
+<li>variance (var)</li>
+<li>standard deviation (std.dev)</li>
+<li>the variation coefficient (coef.var) defined as the standard deviation divided by the mean</li>
+</ul>
+<p><strong>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie,we do not analysis those three variables </strong></p>
 </div>
 <div id="find-popular-movies-and-high-rating-movies" class="section level1">
 <h1>Find popular movies and high-rating movies</h1>
@@ -460,7 +613,7 @@ boxplot_df =
   filter(!genres  %in% &quot;(no genres listed)&quot;) %&gt;% 
   ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <div id="boxplot-regarding-ratings-and-years" class="section level2">
 <h2>Boxplot regarding: ratings and years</h2>
 <pre class="r"><code>movie_names = 
@@ -474,7 +627,7 @@ boxplot_df2 =
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="boxplot-regarding-ratings-and-genres-genre-split" class="section level2">
 <h2>Boxplot regarding ratings and genres, (genre split)</h2>
@@ -521,7 +674,7 @@ tag_review =
   ggplot(aes(x = rating, y = tag)) + geom_boxplot(aes(color = tag))+
   viridis::scale_fill_viridis(discrete = TRUE)
 tag_review_plot</code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="find-the-average-rating-of-each-categories-in-different-year" class="section level2">
 <h2>Find the average rating of each categories in different year</h2>
@@ -681,7 +834,7 @@ Comedy|Drama
 <p>Assumption: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
- knitr::kable(digits = 100000) %&gt;% 
+ knitr::kable() %&gt;% 
  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>

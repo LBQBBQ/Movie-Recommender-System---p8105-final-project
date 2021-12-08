@@ -5,6 +5,9 @@ date: "11/23/2021"
 output: 
     html_document:
         theme: yeti
+        toc: true
+        toc_float: true
+        code_folding: hide
 ---
 # Overview of data sets 
 - Dataset source used for EDA analysis:
@@ -17,7 +20,6 @@ output:
 -In our Exploratory Analyses, we mainly focus on the following datasets :"ratings.csv","movies.csv" and "tag.csv".
 
 # Summary of the used packages and dependencies 
-**Import dependencies**
 ```{r, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -25,44 +27,80 @@ library(readr)
 library(ggplot2)
 library(kableExtra)
 library(pastecs)
+library(ggpubr)
 ```
 
 
 
 # Overview of dataset "ratings.csv"
-**Import dataset**
 ```{r, message = FALSE, warning = FALSE}
 data_path = "./data/small/ratings.csv"
 ```
-
-**Descriptive statistics（brief descriptive coefficients that summarize dataset "ratings.csv"）**
 ```{r}
-rating_descriptive = 
+summary_df = 
   read_csv(data_path, col_types = "ccnc") %>% 
   janitor::clean_names() %>% 
-  select(rating) %>% 
-  stat.desc() %>% 
+  summary(summary_df$rating) %>% 
   knitr::kable() %>% 
   kable_styling(bootstrap_options = c("striped"))
-rating_descriptive  
+summary_df
 ```
-- Here, we applied the "stat.desc()" function tobriefly describe the variable "rating".
-- According to the result, 
-- median is 3.5
-- mean is 3.501557
-- standard error on the mean (SE.mean) is 3.283100
-- confidence interval of the mean (CI.mean) at the p level (default is 0.95)
-- variance (var)
-- standard deviation (std.dev)
-- the variation coefficient (coef.var) defined as the standard deviation divided by the mean
+**Here, we applied the "summarise()" function to briefly describe the variable "rating"**:
+According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.
 
-**Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie,we do not analysis those three variables **
+Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, **we choose not to analyze those three variables **
+
+
+
+
+
+
+
+
+# Overview of dataset "movies.csv"
+```{r, message = FALSE, warning = FALSE}
+data_path = "./data/small/movies.csv"
+
+movie_descriptive = 
+  read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names() %>%
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
+  separate_rows(genres, sep = "[|]") 
+  
+genres_count =
+  movie_descriptive %>% 
+  group_by(genres) %>% 
+  count(genres) %>% 
+  filter(n >= 1500) %>% 
+  arrange(desc(n)) %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
+genres_count
+
+year_count =
+  movie_descriptive %>% 
+  group_by(year) %>% 
+  count(year) %>% 
+  filter(n >= 690) %>% 
+  arrange(desc(n)) %>%  
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped"))
+year_count
+```
+
+**We count the 5 most appeared genres and made a table** : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place.
+**We count the 5 most appeared year of the movie released, and made a table**:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.
+
+
+
+
+
+
 
 
 
 # Find popular movies and high-rating movies
-
-**Data preparation**
 ```{r, message = FALSE, warning = FALSE}
 data_path = "./data/small/ratings.csv"
 
@@ -80,9 +118,6 @@ movie_names =
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId)
 ```
-
-
-**Test**
 ```{r, message = FALSE, warning = FALSE}
 high_rating_movienames = 
   merge(high_rating, movie_names) %>% 
@@ -91,7 +126,9 @@ high_rating_movienames =
   filter(n >= 100) %>% 
   select(n,title,genres,rating) %>% 
   ungroup(title, genres,rating) %>% 
-  arrange(n) %>% 
+  arrange(desc(n)) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
   knitr::kable() %>% 
   kable_styling(bootstrap_options = c("striped"))
 high_rating_movienames 
@@ -99,6 +136,32 @@ high_rating_movienames
 **Find popular movies and high-rating movies** : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
 
 
+
+
+
+# Find  the average rating of each genres in different year
+```{r,message = FALSE,warning = FALSE}
+movie_names_ave = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
+  separate_rows(genres, sep = "[|]") %>%
+  filter(!genres  %in% "(no genres listed)") 
+```
+```{r,message = FALSE,warning = FALSE}
+filter_ratingscore = 
+  rating_tidy  
+ave_rating = 
+  merge(filter_ratingscore, movie_names_ave) %>% 
+  group_by(year,genres) %>%
+  summarize(mu_rating = mean(rating)) %>% 
+  head(10) %>% 
+  knitr::kable() %>%
+kable_styling(bootstrap_options = c("striped"))
+ave_rating
+```
+**Find  the average rating of each genres in different year**:
 
 
 
@@ -116,7 +179,8 @@ movie_names =
 
 filter_ratingscore = 
   rating_tidy  
-
+```
+```{r}
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
   janitor::clean_names() %>%
@@ -124,25 +188,20 @@ boxplot_df =
   filter(!genres  %in% "(no genres listed)") %>% 
   ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df 
-
-
-
-
-
 ```
 
 
 
-
-
-## Boxplot regarding: ratings and years
-
+# Boxplot regarding: ratings and years
 ```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId) %>% 
   separate(
   title, c("name", "year"), sep="\\s+(?=\\S*$)") 
+
+```
+```{r}
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%
   head(1000) %>% 
@@ -153,90 +212,15 @@ boxplot_df2
 
 
 
-## Boxplot regarding ratings and genres, (genre split)
-```{r, message = FALSE, warning = FALSE}
-tags = read_csv("./data/small/tags.csv")
-tags.user = 
-  tags %>%
-  janitor::clean_names() %>%
-  mutate(
-    tag = strsplit(tag, " ")
-  ) %>%
-  select(user_id, movie_id, tag) %>%
-  nest(data = tag) 
-  
-
-tags.movie = 
-  tags %>%
-  janitor::clean_names() %>%
-  mutate(
-    tag = strsplit(tag, " ")
-  ) %>%
-  select(user_id, movie_id, tag) %>%
-  nest(data = c(user_id,tag))
-
-tags.full = 
-  tags %>%
-  janitor::clean_names() %>%
-  mutate(
-    tag = strsplit(tag, " ")
-  ) %>%
-  unnest() 
-
-tag_review = 
-  merge(tags.full , movie_names) %>% 
-  select(-timestamp, -genres) %>% 
-  head(5) %>% 
-  knitr::kable() %>% 
-  kable_styling(bootstrap_options = c("striped"))
-
-
-```
-
-
-## Boxplot regarding split genre and rating, see if there is trend
-```{r}
-tag_review_plot =
-  merge(tags.full ,filter_ratingscore) %>% 
-  head(30) %>%
-  ggplot(aes(x = rating, y = tag)) + geom_boxplot(aes(color = tag))+
-  viridis::scale_fill_viridis(discrete = TRUE)
-tag_review_plot
-  
-```
-
-
-## Find  the average rating of each categories in different year
-```{r,message = FALSE,warning = FALSE}
-movie_names = 
-  read_csv("./data/small/movies.csv") %>% 
-  rename(movie_id = movieId) %>% 
-  separate(
-  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
-ave_rating = 
-  merge(filter_ratingscore, movie_names) %>% 
-  group_by(year,genres) %>%
-  summarize(mu_rating = mean(rating)) %>% 
-  head(10) %>% 
-  knitr::kable() %>%
-kable_styling(bootstrap_options = c("striped"))
-ave_rating
-```
 
 
 
-
-
-
-
-
-
-## Kruskal Test regarding user_id and rating
+# Kruskal Test regarding user_id and rating
 
 Assumption:
+
 $H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x$
 $H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.$
-
 ```{r}
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
  broom::tidy() %>% 

@@ -31,7 +31,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
@@ -221,7 +225,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -231,6 +301,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -292,6 +372,14 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">EDA</h1>
@@ -314,168 +402,291 @@ $(document).ready(function () {
 </div>
 <div id="summary-of-the-used-packages-and-dependencies" class="section level1">
 <h1>Summary of the used packages and dependencies</h1>
-<p><strong>Import dependencies</strong></p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(kableExtra)
-library(pastecs)</code></pre>
+library(pastecs)
+library(ggpubr)</code></pre>
 </div>
 <div id="overview-of-dataset-ratings.csv" class="section level1">
 <h1>Overview of dataset “ratings.csv”</h1>
-<p><strong>Import dataset</strong></p>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;</code></pre>
-<p><strong>Descriptive statistics（brief descriptive coefficients that summarize dataset “ratings.csv”）</strong></p>
-<pre class="r"><code>rating_descriptive = 
+<pre class="r"><code>summary_df = 
   read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
   janitor::clean_names() %&gt;% 
-  select(rating) %&gt;% 
-  stat.desc() %&gt;% 
+  summary(summary_df$rating) %&gt;% 
   knitr::kable() %&gt;% 
   kable_styling(bootstrap_options = c(&quot;striped&quot;))
-rating_descriptive  </code></pre>
+summary_df</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
 </th>
-<th style="text-align:right;">
+<th style="text-align:left;">
+user_id
+</th>
+<th style="text-align:left;">
+movie_id
+</th>
+<th style="text-align:left;">
 rating
+</th>
+<th style="text-align:left;">
+timestamp
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
-nbr.val
 </td>
-<td style="text-align:right;">
-1.008360e+05
+<td style="text-align:left;">
+Length:100836
+</td>
+<td style="text-align:left;">
+Length:100836
+</td>
+<td style="text-align:left;">
+Min. :0.500
+</td>
+<td style="text-align:left;">
+Length:100836
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-nbr.null
 </td>
-<td style="text-align:right;">
-0.000000e+00
+<td style="text-align:left;">
+Class :character
+</td>
+<td style="text-align:left;">
+Class :character
+</td>
+<td style="text-align:left;">
+1st Qu.:3.000
+</td>
+<td style="text-align:left;">
+Class :character
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-nbr.na
 </td>
-<td style="text-align:right;">
-0.000000e+00
+<td style="text-align:left;">
+Mode :character
+</td>
+<td style="text-align:left;">
+Mode :character
+</td>
+<td style="text-align:left;">
+Median :3.500
+</td>
+<td style="text-align:left;">
+Mode :character
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-min
 </td>
-<td style="text-align:right;">
-5.000000e-01
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+Mean :3.502
+</td>
+<td style="text-align:left;">
+NA
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-max
 </td>
-<td style="text-align:right;">
-5.000000e+00
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+3rd Qu.:4.000
+</td>
+<td style="text-align:left;">
+NA
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-range
 </td>
-<td style="text-align:right;">
-4.500000e+00
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-sum
+NA
 </td>
-<td style="text-align:right;">
-3.530830e+05
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-median
+NA
 </td>
-<td style="text-align:right;">
-3.500000e+00
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-mean
+Max. :5.000
 </td>
-<td style="text-align:right;">
-3.501557e+00
-</td>
-</tr>
-<tr>
 <td style="text-align:left;">
-SE.mean
-</td>
-<td style="text-align:right;">
-3.283100e-03
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-CI.mean.0.95
-</td>
-<td style="text-align:right;">
-6.434800e-03
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-var
-</td>
-<td style="text-align:right;">
-1.086867e+00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-std.dev
-</td>
-<td style="text-align:right;">
-1.042529e+00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-coef.var
-</td>
-<td style="text-align:right;">
-2.977330e-01
+NA
 </td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li>Here, we applied the “stat.desc()” function tobriefly describe the variable “rating”.</li>
-<li>According to the result,</li>
-<li>median is 3.5</li>
-<li>mean is 3.501557</li>
-<li>standard error on the mean (SE.mean) is 3.283100</li>
-<li>confidence interval of the mean (CI.mean) at the p level (default is 0.95)</li>
-<li>variance (var)</li>
-<li>standard deviation (std.dev)</li>
-<li>the variation coefficient (coef.var) defined as the standard deviation divided by the mean</li>
-</ul>
-<p><strong>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie,we do not analysis those three variables </strong></p>
+<p><strong>Here, we applied the “summarise()” function to briefly describe the variable “rating”</strong>: According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.</p>
+<p>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, <strong>we choose not to analyze those three variables </strong></p>
+</div>
+<div id="overview-of-dataset-movies.csv" class="section level1">
+<h1>Overview of dataset “movies.csv”</h1>
+<pre class="r"><code>data_path = &quot;./data/small/movies.csv&quot;
+
+movie_descriptive = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;%
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
+  separate_rows(genres, sep = &quot;[|]&quot;) 
+  
+genres_count =
+  movie_descriptive %&gt;% 
+  group_by(genres) %&gt;% 
+  count(genres) %&gt;% 
+  filter(n &gt;= 1500) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))
+genres_count</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+genres
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+4361
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+3756
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thriller
+</td>
+<td style="text-align:right;">
+1894
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Action
+</td>
+<td style="text-align:right;">
+1828
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romance
+</td>
+<td style="text-align:right;">
+1596
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>year_count =
+  movie_descriptive %&gt;% 
+  group_by(year) %&gt;% 
+  count(year) %&gt;% 
+  filter(n &gt;= 690) %&gt;% 
+  arrange(desc(n)) %&gt;%  
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))
+year_count</code></pre>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<ol start="2006" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+733
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2009" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+719
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2005" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+709
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2002" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+705
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2008" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+691
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
+<p><strong>We count the 5 most appeared genres and made a table</strong> : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. <strong>We count the 5 most appeared year of the movie released, and made a table</strong>:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
 </div>
 <div id="find-popular-movies-and-high-rating-movies" class="section level1">
 <h1>Find popular movies and high-rating movies</h1>
-<p><strong>Data preparation</strong></p>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = 
@@ -491,7 +702,6 @@ high_rating =
 movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId)</code></pre>
-<p><strong>Test</strong></p>
 <pre class="r"><code>high_rating_movienames = 
   merge(high_rating, movie_names) %&gt;% 
   group_by(title, genres,rating) %&gt;% 
@@ -499,7 +709,9 @@ movie_names =
   filter(n &gt;= 100) %&gt;% 
   select(n,title,genres,rating) %&gt;% 
   ungroup(title, genres,rating) %&gt;% 
-  arrange(n) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
   knitr::kable() %&gt;% 
   kable_styling(bootstrap_options = c(&quot;striped&quot;))
 high_rating_movienames </code></pre>
@@ -510,7 +722,10 @@ high_rating_movienames </code></pre>
 n
 </th>
 <th style="text-align:left;">
-title
+name
+</th>
+<th style="text-align:left;">
+year
 </th>
 <th style="text-align:left;">
 genres
@@ -523,41 +738,16 @@ rating
 <tbody>
 <tr>
 <td style="text-align:right;">
-104
+153
 </td>
 <td style="text-align:left;">
-Star Wars: Episode IV - A New Hope (1977)
+Shawshank Redemption, The
 </td>
 <td style="text-align:left;">
-Action|Adventure|Sci-Fi
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-109
-</td>
+<ol start="1994" style="list-style-type: decimal">
+<li></td>
 <td style="text-align:left;">
-Matrix, The (1999)
-</td>
-<td style="text-align:left;">
-Action|Sci-Fi|Thriller
-</td>
-<td style="text-align:right;">
-5
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-116
-</td>
-<td style="text-align:left;">
-Forrest Gump (1994)
-</td>
-<td style="text-align:left;">
-Comedy|Drama|Romance|War
+Crime|Drama
 </td>
 <td style="text-align:right;">
 5
@@ -568,8 +758,11 @@ Comedy|Drama|Romance|War
 123
 </td>
 <td style="text-align:left;">
-Pulp Fiction (1994)
+Pulp Fiction
 </td>
+<td style="text-align:left;">
+<ol start="1994" style="list-style-type: decimal">
+<li></td>
 <td style="text-align:left;">
 Comedy|Crime|Drama|Thriller
 </td>
@@ -579,13 +772,50 @@ Comedy|Crime|Drama|Thriller
 </tr>
 <tr>
 <td style="text-align:right;">
-153
+116
 </td>
 <td style="text-align:left;">
-Shawshank Redemption, The (1994)
+Forrest Gump
 </td>
 <td style="text-align:left;">
-Crime|Drama
+<ol start="1994" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy|Drama|Romance|War
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+109
+</td>
+<td style="text-align:left;">
+Matrix, The
+</td>
+<td style="text-align:left;">
+<ol start="1999" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action|Sci-Fi|Thriller
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:left;">
+Star Wars: Episode IV - A New Hope
+</td>
+<td style="text-align:left;">
+<ol start="1977" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
 </td>
 <td style="text-align:right;">
 5
@@ -593,98 +823,26 @@ Crime|Drama
 </tr>
 </tbody>
 </table>
-<p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
+<strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
 </div>
-<div id="boxplot-regarding-ratings-and-genres" class="section level1">
-<h1>Boxplot regarding ratings and genres</h1>
-<pre class="r"><code>movie_names = 
+<div id="find-the-average-rating-of-each-genres-in-different-year" class="section level1">
+<h1>Find the average rating of each genres in different year</h1>
+<pre class="r"><code>movie_names_ave = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
   separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
-
-filter_ratingscore = 
-  rating_tidy  
-
-boxplot_df = 
-  merge(filter_ratingscore, movie_names) %&gt;%
-  janitor::clean_names() %&gt;%
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
   separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
-  filter(!genres  %in% &quot;(no genres listed)&quot;) %&gt;% 
-  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
-boxplot_df </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<div id="boxplot-regarding-ratings-and-years" class="section level2">
-<h2>Boxplot regarding: ratings and years</h2>
-<pre class="r"><code>movie_names = 
-  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  rename(movie_id = movieId) %&gt;% 
-  separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
-boxplot_df2 = 
-  merge(filter_ratingscore, movie_names) %&gt;%
-  head(1000) %&gt;% 
-  ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
-  viridis::scale_fill_viridis(discrete = TRUE)
-boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-</div>
-<div id="boxplot-regarding-ratings-and-genres-genre-split" class="section level2">
-<h2>Boxplot regarding ratings and genres, (genre split)</h2>
-<pre class="r"><code>tags = read_csv(&quot;./data/small/tags.csv&quot;)
-tags.user = 
-  tags %&gt;%
-  janitor::clean_names() %&gt;%
-  mutate(
-    tag = strsplit(tag, &quot; &quot;)
-  ) %&gt;%
-  select(user_id, movie_id, tag) %&gt;%
-  nest(data = tag) 
-  
-
-tags.movie = 
-  tags %&gt;%
-  janitor::clean_names() %&gt;%
-  mutate(
-    tag = strsplit(tag, &quot; &quot;)
-  ) %&gt;%
-  select(user_id, movie_id, tag) %&gt;%
-  nest(data = c(user_id,tag))
-
-tags.full = 
-  tags %&gt;%
-  janitor::clean_names() %&gt;%
-  mutate(
-    tag = strsplit(tag, &quot; &quot;)
-  ) %&gt;%
-  unnest() 
-
-tag_review = 
-  merge(tags.full , movie_names) %&gt;% 
-  select(-timestamp, -genres) %&gt;% 
-  head(5) %&gt;% 
-  knitr::kable() %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
-</div>
-<div id="boxplot-regarding-split-genre-and-rating-see-if-there-is-trend" class="section level2">
-<h2>Boxplot regarding split genre and rating, see if there is trend</h2>
-<pre class="r"><code>tag_review_plot =
-  merge(tags.full ,filter_ratingscore) %&gt;% 
-  head(30) %&gt;%
-  ggplot(aes(x = rating, y = tag)) + geom_boxplot(aes(color = tag))+
-  viridis::scale_fill_viridis(discrete = TRUE)
-tag_review_plot</code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-</div>
-<div id="find-the-average-rating-of-each-categories-in-different-year" class="section level2">
-<h2>Find the average rating of each categories in different year</h2>
-<pre class="r"><code>movie_names = 
-  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  rename(movie_id = movieId) %&gt;% 
-  separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+  filter(!genres  %in% &quot;(no genres listed)&quot;) </code></pre>
+<pre class="r"><code>filter_ratingscore = 
+  rating_tidy  
 ave_rating = 
-  merge(filter_ratingscore, movie_names) %&gt;% 
+  merge(filter_ratingscore, movie_names_ave) %&gt;% 
   group_by(year,genres) %&gt;%
   summarize(mu_rating = mean(rating)) %&gt;% 
   head(10) %&gt;% 
@@ -711,10 +869,43 @@ mu_rating
 <ol start="1902" style="list-style-type: decimal">
 <li></td>
 <td style="text-align:left;">
-Action|Adventure|Fantasy|Sci-Fi
+Action
 </td>
 <td style="text-align:right;">
-3.50
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Adventure
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Fantasy
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+3.5
 </td>
 </tr>
 <tr>
@@ -722,10 +913,21 @@ Action|Adventure|Fantasy|Sci-Fi
 <ol start="1903" style="list-style-type: decimal">
 <li></td>
 <td style="text-align:left;">
-Crime|Western
+Crime
 </td>
 <td style="text-align:right;">
-2.50
+2.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1903" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Western
+</td>
+<td style="text-align:right;">
+2.5
 </td>
 </tr>
 <tr>
@@ -733,10 +935,32 @@ Crime|Western
 <ol start="1908" style="list-style-type: decimal">
 <li></td>
 <td style="text-align:left;">
-Animation|Comedy|Sci-Fi
+Animation
 </td>
 <td style="text-align:right;">
-4.00
+4.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1908" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1908" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+4.0
 </td>
 </tr>
 <tr>
@@ -744,80 +968,15 @@ Animation|Comedy|Sci-Fi
 <ol start="1915" style="list-style-type: decimal">
 <li></td>
 <td style="text-align:left;">
-Drama|War
-</td>
-<td style="text-align:right;">
-2.00
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<ol start="1916" style="list-style-type: decimal">
-<li></td>
-<td style="text-align:left;">
-Action|Adventure|Sci-Fi
-</td>
-<td style="text-align:right;">
-3.75
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<ol start="1916" style="list-style-type: decimal">
-<li></td>
-<td style="text-align:left;">
-Comedy
-</td>
-<td style="text-align:right;">
-3.50
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<ol start="1916" style="list-style-type: decimal">
-<li></td>
-<td style="text-align:left;">
 Drama
 </td>
 <td style="text-align:right;">
-3.50
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<ol start="1916" style="list-style-type: decimal">
-<li></td>
-<td style="text-align:left;">
-Fantasy|Romance
-</td>
-<td style="text-align:right;">
-3.50
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<ol start="1917" style="list-style-type: decimal">
-<li></td>
-<td style="text-align:left;">
-Comedy
-</td>
-<td style="text-align:right;">
-4.50
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<ol start="1919" style="list-style-type: decimal">
-<li></td>
-<td style="text-align:left;">
-Comedy|Drama
-</td>
-<td style="text-align:right;">
-2.00
+2.0
 </td>
 </tr>
 </tbody>
-</table></li>
+</table>
+<strong>Find the average rating of each genres in different year</strong>:</li>
 </ol></li>
 </ol></li>
 </ol></li>
@@ -829,9 +988,44 @@ Comedy|Drama
 </ol></li>
 </ol>
 </div>
-<div id="kruskal-test-regarding-user_id-and-rating" class="section level2">
-<h2>Kruskal Test regarding user_id and rating</h2>
-<p>Assumption: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.\)</span></p>
+<div id="boxplot-regarding-ratings-and-genres" class="section level1">
+<h1>Boxplot regarding ratings and genres</h1>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+
+filter_ratingscore = 
+  rating_tidy  </code></pre>
+<pre class="r"><code>boxplot_df = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  janitor::clean_names() %&gt;%
+  separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
+  filter(!genres  %in% &quot;(no genres listed)&quot;) %&gt;% 
+  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
+boxplot_df </code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="boxplot-regarding-ratings-and-years" class="section level1">
+<h1>Boxplot regarding: ratings and years</h1>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
+<pre class="r"><code>boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  head(1000) %&gt;% 
+  ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
+  viridis::scale_fill_viridis(discrete = TRUE)
+boxplot_df2 </code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="kruskal-test-regarding-user_id-and-rating" class="section level1">
+<h1>Kruskal Test regarding user_id and rating</h1>
+<p>Assumption:</p>
+<p><span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  knitr::kable() %&gt;% 
@@ -872,10 +1066,11 @@ Kruskal-Wallis rank sum test
 </table>
 <p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
 </div>
+
+
+
 </div>
-
-
-
+</div>
 
 </div>
 
@@ -907,7 +1102,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

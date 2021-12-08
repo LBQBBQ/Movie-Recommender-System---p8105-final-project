@@ -161,7 +161,7 @@ ave_rating =
 kable_styling(bootstrap_options = c("striped"))
 ave_rating
 ```
-**Find  the average rating of each genres in different year**:
+**Find  the average rating of each genres in different year**: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama's average ratings in 1915 is 2.0.
 
 
 
@@ -190,6 +190,7 @@ boxplot_df =
 boxplot_df 
 ```
 
+**The boxplot regarding ratings and genres shows**: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4. 
 
 
 # Boxplot regarding: ratings and years
@@ -204,18 +205,30 @@ movie_names =
 ```{r}
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%
-  head(1000) %>% 
+  head(2500) %>% 
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 
 ```
 
+**The boxplot regarding ratings and year shows**: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.
 
 
 
 
 
-# Kruskal Test regarding user_id and rating
+# Kruskal Test regarding user ID and rating
+
+- Here, we want to do a test to determine whether there are any statistically significant differences between  the mean ratings of the user from the 600 users are different(ANOVA)
+- First, we checked whether the rating is normally distributed.
+
+```{r}
+ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
+  geom_histogram(alpha = 0.3, bins = 30)
+```
+
+- The plot shows that the raing is not normally distributed, we need to use non parametric test.
+- Thus, we used the Kruskal Test regarding user ID and rating.
 
 Assumption:
 

@@ -976,7 +976,7 @@ Drama
 </tr>
 </tbody>
 </table>
-<strong>Find the average rating of each genres in different year</strong>:</li>
+<strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</li>
 </ol></li>
 </ol></li>
 </ol></li>
@@ -1006,6 +1006,7 @@ filter_ratingscore =
   ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
 </div>
 <div id="boxplot-regarding-ratings-and-years" class="section level1">
 <h1>Boxplot regarding: ratings and years</h1>
@@ -1016,14 +1017,26 @@ boxplot_df </code></pre>
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
 <pre class="r"><code>boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
-  head(1000) %&gt;% 
+  head(2500) %&gt;% 
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   viridis::scale_fill_viridis(discrete = TRUE)
 boxplot_df2 </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</p>
 </div>
-<div id="kruskal-test-regarding-user_id-and-rating" class="section level1">
-<h1>Kruskal Test regarding user_id and rating</h1>
+<div id="kruskal-test-regarding-user-id-and-rating" class="section level1">
+<h1>Kruskal Test regarding user ID and rating</h1>
+<ul>
+<li>Here, we want to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different(ANOVA)</li>
+<li>First, we checked whether the rating is normally distributed.</li>
+</ul>
+<pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
+  geom_histogram(alpha = 0.3, bins = 30)</code></pre>
+<p><img src="EDA_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<ul>
+<li>The plot shows that the raing is not normally distributed, we need to use non parametric test.</li>
+<li>Thus, we used the Kruskal Test regarding user ID and rating.</li>
+</ul>
 <p>Assumption:</p>
 <p><span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 

@@ -9,31 +9,20 @@
 
 library(shiny)
 
-
-
-    # Application title
-    titlePanel("Movie Recommendation")
-    
-    # Create a genre list
-    Genre <- c("Adventure", "Animation", "Children", "Comedy", "Fantasy", "Romance", "Drama", "Action", "Crime", "Thriller", "Horror", "Sci-Fi", "Mystery", "War", "Musical", "Documentary")
-    
-    # create a selection box 
-    shinyUI(
-      fluidPage(
-        titlePanel("Movie Recommender"),
-        fluidRow(
-          column(4,
-                 selectInput("movie_1", label = "movie 1",choices = ),
-                 submitButton("Select movie you like"),
-          column(5,
-                 selectInput("movie_2", label = "Movie 2",choices = "2"),
-                 submitButton("Select movie you like again")),
-          column(6,
-                 selectInput("movie_3", label = "Movie 3",choices = "3"),
-                 submitButton("Select movie you like (last time!)"))
-          )
-        )
-      )
-    )
-    
-    
+ui <- fluidPage(
+  headerPanel('Movie Recommendation'),
+  sidebarPanel(
+    sliderInput("year", "Filter movie year", 1990, 2018, value = c(1990, 2000),
+                sep = ""),
+    selectInput('movie', 'select movie', "1", "1" ),
+    selectInput('rate', 'Select rate', "2", "2"),
+    submitButton("Add rating"),
+    submitButton("See recommendation")),
+  mainPanel(
+    textOutput("text")
+))
+ 
+server <- function(input, output){
+ }
+ 
+ shinyApp(ui = ui, server = server)

@@ -6,6 +6,23 @@ output:
     html_document:
         theme: yeti
 ---
+# Overview of data sets
+- Dataset source used for EDA analysis:
+[MoiveLens dataset](https://grouplens.org/datasets/movielens/latest/)
+- Here, we decided to use "Small" dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).
+- Dataset "links.csv" has 3 variables, including movieId(movie ID),imdbId(IMDb ID) and tmdbId(TMDB ID).
+- "movies.csv" is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres).
+- In "ratings.csv" dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp
+```{r, message = FALSE, warning = FALSE}
+
+
+
+
+
+```
+
+
+
 # Data discription 
 
 **Import dependencies**
@@ -16,18 +33,6 @@ library(readr)
 library(ggplot2)
 library(kableExtra)
 ```
-
-**Overview of data sets**
-```{r, message = FALSE, warning = FALSE}
-
-
-
-
-
-```
-
-
-
 
 
 
@@ -71,6 +76,13 @@ high_rating_movienames =
 high_rating_movienames 
 ```
 **Find popular movies and high-rating movies** : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
+
+
+
+
+
+
+
 
 
 # Boxplot regarding ratings and genres
@@ -173,13 +185,6 @@ tag_review_plot
 ```
 
 
-
-
-
-
-
-
-
 ## Find  the average rating of each categories in different year
 ```{r,message = FALSE,warning = FALSE}
 movie_names = 
@@ -198,11 +203,18 @@ ave_rating
 ```
 
 
+
+
+
+
+
+
+
 ## Kruskal Test regarding user_id and rating
 
 Assumption:
 $H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x$
-$H_1: At\ least \ two \ of \ the \ mean \ ratings\ of \ the\  users\  are\  different.$
+$H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.$
 
 ```{r}
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
@@ -212,8 +224,5 @@ kruskal.test(rating ~ user_id, data = filter_ratingscore) %>%
 ```
 At 0.05 significance level, we reject the null hypothesis and conclude that at least two of 
 the mean ratings of the user from the 600 users are different.
-
-
-
 
 

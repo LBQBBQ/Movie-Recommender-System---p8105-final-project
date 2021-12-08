@@ -121,7 +121,7 @@ predict_rating = function(user, movie, sim_users){
   sum_sim_r_diff = calc_df %>% pull(sim_r_diff) %>% sum()
   sum_abs_sim = calc_df %>% pull(abs_sim) %>% sum()
   
-  r_u_mean = acquired_data(1)[[1]] %>% pull(rating) %>% mean()
+  r_u_mean = acquired_data(user)[[1]] %>% pull(rating) %>% mean()
   
   rating = r_u_mean + sum_sim_r_diff/sum_abs_sim
   
@@ -135,6 +135,7 @@ main = function(user){
   movies = sim_users %>% 
     select(user_id) %>% 
     left_join(ratings_tidy, by = "user_id") %>% 
+    distinct(movie_id) %>% 
     pull(movie_id) 
   
   calc_df = tibble(

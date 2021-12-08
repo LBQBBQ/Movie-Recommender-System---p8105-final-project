@@ -298,6 +298,16 @@ $(document).ready(function () {
 </div>
 
 
+<div id="overview-of-data-sets" class="section level1">
+<h1>Overview of data sets</h1>
+<ul>
+<li>Dataset source used for EDA analysis: <a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></li>
+<li>Here, we decided to use “Small” dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).</li>
+<li>Dataset “links.csv” has 3 variables, including movieId(movie ID),imdbId(IMDb ID) and tmdbId(TMDB ID).</li>
+<li>“movies.csv” is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres).</li>
+<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp</li>
+</ul>
+</div>
 <div id="data-discription" class="section level1">
 <h1>Data discription</h1>
 <p><strong>Import dependencies</strong></p>
@@ -306,7 +316,6 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 library(kableExtra)</code></pre>
-<p><strong>Overview of data sets</strong></p>
 </div>
 <div id="find-popular-movies-and-high-rating-movies" class="section level1">
 <h1>Find popular movies and high-rating movies</h1>
@@ -666,7 +675,7 @@ Comedy|Drama
 </div>
 <div id="kruskal-test-regarding-user_id-and-rating" class="section level2">
 <h2>Kruskal Test regarding user_id and rating</h2>
-<p>Assumption: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least \ two \ of \ the \ mean \ ratings\ of \ the\  users\  are\  different.\)</span></p>
+<p>Assumption: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  knitr::kable(digits = 100000) %&gt;% 

@@ -1,5 +1,5 @@
 ---
-title: "Tag based TF-IDF"
+title: "tag-based recommendation"
 author: "Shaocong Zhang"
 date: "11/22/2021"
 output: 
@@ -16,9 +16,9 @@ library(dplyr)
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE}
 # data import
-movies = read_csv("../data/small/movies.csv")
-ratings = read_csv("../data/small/ratings.csv")
-tags = read_csv("../data/small/tags.csv")
+movies = read_csv("./data/small/movies.csv")
+ratings = read_csv("./data/small/ratings.csv")
+tags = read_csv("./data/small/tags.csv")
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE}
@@ -32,7 +32,7 @@ tags.full =
   unnest() %>% 
   mutate(tag = tolower(tag))
 
-remove.list = read_csv("./stop_words_english.txt", col_names = FALSE) %>% 
+remove.list = read_csv("./data/stop_words_english.txt", col_names = FALSE) %>% 
   pull("X1") %>% 
   as_vector()
 
@@ -109,7 +109,7 @@ return(interest = round(sum(value), 2))
 After building the function, I want to select the most popular movies to see how this function works. However, the dataset only contains Since the dataset I have only contains about 3700 tags labeled by the users, I will then choose several movies that have labeled most by users. In this way, I select the movies that has labeled by more than 4 users. For example, Star Wars: Episode IV - A New Hope.
 
 
-<img src="starwar.jpg" style="width:75%">   
+<img src="./pics/starwar.jpg" style="width:75%">   
 
 ```{r}
 popular.movie = 

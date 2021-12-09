@@ -18,7 +18,7 @@
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -333,9 +333,6 @@ div.tocify {
 <li>
   <a href="EDA.html">Exploratory Analyses</a>
 </li>
-<li>
-  <a href="tag_system_recommendation.html">Tag based TF-IDF</a>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Recommendation Algorithm
@@ -344,18 +341,21 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="SVD.html">SVD</a>
-    </li>
-    <li>
       <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
     </li>
     <li>
       <a href="user_similarity.html">user-similarity based recommendation</a>
     </li>
+    <li>
+      <a href="SVD.html">SVD</a>
+    </li>
+    <li>
+      <a href="tag_system_recommendation.html">tag-based recommendation</a>
+    </li>
   </ul>
 </li>
 <li>
-  <a href="https://yw3608.shinyapps.io/Movie_Recommendation/">Shinyapps</a>
+  <a href="https://hzhong.shinyapps.io/movierecommender/">Shinyapp</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -418,8 +418,21 @@ library(ggpubr)</code></pre>
   janitor::clean_names() %&gt;% 
   summary(summary_df$rating) %&gt;% 
   knitr::kable() %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;))
-summary_df</code></pre>
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): strings not representable in native encoding will
+## be translated to UTF-8</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C4&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E4&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00DF&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E6&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D8&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F8&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C5&gt;&#39; to native encoding</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E5&gt;&#39; to native encoding</code></pre>
+<pre class="r"><code>summary_df</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>

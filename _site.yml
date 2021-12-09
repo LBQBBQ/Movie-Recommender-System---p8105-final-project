@@ -8,21 +8,21 @@ navbar:
 
     - text: "Exploratory Analyses"
       href: EDA.html
-
-    - text: "Tag based TF-IDF"
-      href: tag_system_recommendation.html 
    
     - text: "Recommendation Algorithm"
       menu:
-        - text: "SVD"
-          href: SVD.html
         - text: "tree-based bootstraping"
           href: tree-based-bootstraping.html
         - text: "user-similarity based recommendation"
           href: user_similarity.html
+        - text: "SVD"
+          href: SVD.html
+        - text: "tag-based recommendation"
+          href: tag_system_recommendation.html
+
           
-    - text: "Shinyapps"
-      href: https://yw3608.shinyapps.io/Movie_Recommendation/
+    - text: "Shinyapp"
+      href: https://hzhong.shinyapps.io/movierecommender/
       
       
   right:  
@@ -31,4 +31,4 @@ navbar:
       
 output:
   html_document:
-    theme: yeti
+    theme: readable

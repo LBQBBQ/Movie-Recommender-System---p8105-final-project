@@ -1,10 +1,8 @@
 ---
-title: "SVD"
+title: "SVD-based recommendation"
 author: 'Haolin Zhong (UNI: hz2771)'
 date: "2021/10/6"
-output: 
-    html_document:
-        theme: yeti
+output: html_document
 ---
 
 # Predicting Ratings Based on Funk-SVD

@@ -4,12 +4,13 @@ author: "Yuxuan Wang"
 date: "11/23/2021"
 output: 
     html_document:
-        theme: yeti
         toc: true
         toc_float: true
         code_folding: hide
 ---
+
 # Overview of data sets 
+
 - Dataset source used for EDA analysis:
 [MoiveLens dataset](https://grouplens.org/datasets/movielens/latest/)
 - Here, we decided to use "Small" dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).

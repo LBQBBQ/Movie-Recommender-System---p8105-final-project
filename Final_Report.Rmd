@@ -2,6 +2,24 @@
 title: "Final_Report"
 author: "Haolin Zhuo, Shaocong Zhang, Yuxuan Wang, Boqian Li"
 date: "12/7/2021"
-output: html_document
+output: 
+  html_document:
+  code_folding: hide
 ---
 
+# Motivation
+
+In the era of information overload, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this project, we proposed to explore the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset, a dataset consisting of users’ rating and tagging towards movies, and implement a demo movie recommendation system.
+
+# Related work
+
+# Initial questions
+
+# Data
+
+
+# Exploratory analysis
+
+# Additional analysis
+
+# Discussion

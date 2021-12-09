@@ -289,3 +289,106 @@ movie_info %>%
 
 
 <img src="pics/recsys.jpg" style="width:100%">
+
+
+## Result on movies released after 2010
+
+```{r}
+cut_year = function(string){
+  year_str = str_split(string, pattern = "\\(")[[1]]
+  year_str = str_remove(year_str[length(year_str)], "\\)")
+  return(as.integer(year_str))
+}
+
+movies = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %>% 
+  arrange(desc(year)) %>% 
+  drop_na(year) %>% 
+  filter(year >= 1994) %>% 
+  select(movie_id, year)
+
+movie_ids = movies %>% pull(movie_id)
+
+
+hot_movies = 
+  rating_tidy %>% 
+  count(movie_id) %>%
+  right_join(movies, by = "movie_id") %>% 
+  arrange(desc(n)) %>% 
+  head(100) %>% 
+  arrange(movie_id) %>% 
+  pull(movie_id) %>% 
+  as_vector()
+
+rating_dscts = 
+  rating_tidy %>% 
+  select(-timestamp) %>% 
+  filter(movie_id %in% hot_movies) %>% 
+  pivot_wider(names_from = movie_id, values_from = rating) %>% 
+  pivot_longer(cols = as.character(hot_movies), names_to = "movie_id", values_to = "rating")
+
+
+user_cate =
+  rating_dscts %>%
+  mutate(type = map(rating, classify)) %>% 
+  unnest(type) %>% 
+  mutate(movie_id = as.numeric(movie_id))
+
+
+
+root = find_movies(user_cate, 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+res
+
+```
+
+```{r after 2000}
+result = list(list(7143), list(5952, 6016, 6377), list(7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993))
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+movie_seq = 1:13
+
+movies_df = tibble(seq = movie_seq, movie_id = movies)
+
+movie_info = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names()
+
+movie_info %>% 
+  filter(movie_id %in% movies) %>% 
+  left_join(movies_df) %>% 
+  arrange(seq) %>% 
+  select(-seq) %>% 
+  distinct() %>% 
+  kableExtra::kbl() %>% 
+  kableExtra::kable_styling()
+  
+```
+
+```{r after 1994}
+result = list(list(208), list(2571, 48516, 2959), list(2028, 6, -1, 292, 44191, 2863, 2571, 1923, 1))
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+movie_seq = 1:13
+
+movies_df = tibble(seq = movie_seq, movie_id = movies)
+
+movie_info = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names()
+
+movie_info %>% 
+  filter(movie_id %in% movies) %>% 
+  left_join(movies_df) %>% 
+  arrange(seq) %>% 
+  select(-seq) %>% 
+  distinct() %>% 
+  kableExtra::kbl() %>% 
+  kableExtra::kable_styling()
+```
+
+

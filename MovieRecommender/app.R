@@ -5,7 +5,7 @@ library(tidyverse)
 
 ### movie information
 
-movies_path = "../data/small/movies.csv"
+movies_path = "./movies.csv"
 
 movies = read_csv(movies_path) %>% 
   janitor::clean_names()
@@ -42,7 +42,7 @@ genres =
 
 movieIds = movies %>% pull(movie_id) %>% as_vector()
 
-ratings_path = "../data/small/ratings.csv"
+ratings_path = "./ratings.csv"
 
 ratings_tidy = read_csv(ratings_path) %>% 
   janitor::clean_names() %>% 
@@ -387,7 +387,7 @@ server = function(input, output) {
       
       if (nrow(rec_movies) == 0) {
         
-        output$error = renderText("Error: No recommendations found. Please make additional selections and rerun.")
+        output$error = renderText("Error: No recommendations found. Please input additional ratings and rerun.")
         
       } else {
         output$recommendations = renderDataTable({ rec_movies },

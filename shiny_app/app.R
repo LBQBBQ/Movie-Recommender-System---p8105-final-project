@@ -5,7 +5,7 @@ library(tidyverse)
 
 ### movie information
 
-movies_path = "./data/small/movies.csv"
+movies_path = "../data/small/movies.csv"
 
 movies = read_csv(movies_path) %>% 
   janitor::clean_names()
@@ -42,7 +42,7 @@ genres =
 
 movieIds = movies %>% pull(movie_id) %>% as_vector()
 
-ratings_path = "./data/small/ratings.csv"
+ratings_path = "../data/small/ratings.csv"
 
 ratings_tidy = read_csv(ratings_path) %>% 
   janitor::clean_names() %>% 
@@ -51,7 +51,6 @@ ratings_tidy = read_csv(ratings_path) %>%
 
 
 mv_id_title = movies %>% select(movie_id, title)
-
 
 
 ## Main body
@@ -63,16 +62,16 @@ ui = fluidPage(
   
   # Custom css               
   tags$head(
-    tags$style(HTML('.selectize-input {
+    tags$style(HTML(".selectize-input {
                         white-space: nowrap;
                     }
                     .selectize-dropdown {
-                        width: 660px !important;
-                    }'
+                        width: 500px !important;
+                    }"
     ))
   ),
   
-  titlePanel('Movie Recommender'),
+  titlePanel("Movie Recommender"),
   
   sidebarLayout(
     sidebarPanel(
@@ -80,40 +79,40 @@ ui = fluidPage(
       tags$p("1. you can rate on the three movies we adaptly provided"),
       tags$p("2. you can provide ratings on any other movies you'd like to rate"),
       tags$p("3. click \"add (custom) rating\" to store your (custom) ratings"),
-      tags$p("4. click \"get recommendation\" in the bottom to see movies we recommend (computation may take several minutes)"),
+      tags$p("4. click \"get recommendation\" in the bottom of main panel to see movies we recommend (computation may take several minutes)"),
       tags$hr(),
       
       h4("Rate on movies we provided"),
-      tags$b('Please rate on the first movie: Waterworld (1995)'),
-      selectInput("firstRating", "select a rating (5 = best; 1 = worst; or choose \"Never seen it\")", append(c("Never seen it"), seq(1.0, 5.0, 0.5))),
+      htmlOutput("selectFirst"),
+      selectInput("firstRating", "select a rating (5 = best; 1 = worst; or choose \"Never watched it\")", append(c("Never watched it"), seq(1.0, 5.0, 0.5))),
       
-      htmlOutput('selectSecond'),
-      selectInput("secondRating", "select a rating (5 = best; 1 = worst; or choose \"Never seen it\")", append(c("Never seen it"), seq(1.0, 5.0, 0.5))),
+      htmlOutput("selectSecond"),
+      selectInput("secondRating", "select a rating (5 = best; 1 = worst; or choose \"Never watched it\")", append(c("Never watched it"), seq(1.0, 5.0, 0.5))),
       
-      htmlOutput('selectThird'),
-      selectInput("thirdRating", "select a rating (5 = best; 1 = worst; or choose \"Never seen it\")", append(c("Never seen it"), seq(1.0, 5.0, 0.5))),
+      htmlOutput("selectThird"),
+      selectInput("thirdRating", "select a rating (5 = best; 1 = worst; or choose \"Never watched it\")", append(c("Never watched it"), seq(1.0, 5.0, 0.5))),
       
-      actionButton('addRating', 'Add rating'),
+      actionButton("addRating", "Add rating"),
       
       tags$hr(),
       
       h4("Rate on any other movies in addition"),
-      sliderInput('yearFilter', 'Filter movie year', 1990, 2018, c(1990, 2018), sep = ''),
-      selectInput('genreFilter', 'Filter movie by genre', genres),
-      htmlOutput('selectCustomMovie'),
-      selectInput('customRatingInput', 'Select rating (5 = best; 1 = worst)', seq(1.0, 5.0, 0.5)),
-      actionButton('addCustomRating', 'Add custom rating'),
-      tags$p(),
-      actionButton('getRecommendation', 'Get recommendations')
+      sliderInput("yearFilter", "Filter movie year", 1990, 2018, c(1990, 2018), sep = ""),
+      selectInput("genreFilter", "Filter movie by genre", genres),
+      htmlOutput("selectCustomMovie"),
+      selectInput("customRatingInput", "Select rating (5 = best; 1 = worst)", seq(1.0, 5.0, 0.5)),
+      actionButton("addCustomRating", "Add custom rating")
     ),
     
     mainPanel(
-      tags$em(textOutput('error'), style = "color: red"),
-      h4('Custom movie recommendations'),
-      dataTableOutput('recommendations'),
+      tags$em(textOutput("error"), style = "color: red"),
+      h4("Custom movie recommendations"),
+      dataTableOutput("recommendations"),
       tags$hr(),
-      h4('User movie ratings'),
-      dataTableOutput('customSelections')
+      h4("User movie ratings"),
+      dataTableOutput("customSelections"),
+      tags$hr(),
+      actionButton("getRecommendation", "Get recommendations (computation may cost minutes)")
     )
   )
   
@@ -126,48 +125,53 @@ server = function(input, output) {
   
   #### rating on adaptively provided movies
   
+  
+  output$selectFirst = renderUI({
+   selectizeInput("firstMovieInput", "Please rate on the first movie:", c("Last Samurai, The (2003)")) 
+  })
+  
   generate_second = reactive({
-    if (input$firstRating == "Never seen it") {
-      return("Goodfellas (1990)")
+    if (input$firstRating == "Never watched it") {
+      return("City of God (Cidade de Deus) (2002)	")
     } else if (input$firstRating >= 3.5) {
-      return("Forrest Gump (1994)")
+      return("Lord of the Rings: The Two Towers, The (2002)")
     }
-    return("Star Wars: Episode IV - A New Hope (1977)")
+    return("Finding Nemo (2003)")
   })
   
   # create dynamic input options based on filters selected
   output$selectSecond = renderUI({
-    selectizeInput('secondMovieInput', "Please rate on the second movie:", generate_second())
+    selectizeInput("secondMovieInput", "Please rate on the second movie:", generate_second())
   })
   
   generate_third = reactive({
     second_movie = generate_second()
-    if(second_movie == "Goodfellas (1990)"){
+    if(second_movie == "Lord of the Rings: The Two Towers, The (2002)"){
       
-      if (input$secondRating == "Never seen it") {
-        return("American History X (1998)")
+      if (input$secondRating == "Never watched it") {
+        return("Lord of the Rings: The Return of the King, The (2003)")
       } else if (input$secondRating >= 3.5) {
-        return("Ocean’s Eleven (2001)")
+        return("Lord of the Rings: The Return of the King, The (2003)")
       }
-      return("The Matrix (1999)")
+      return("Lord of the Rings: The Fellowship of the Ring, The (2001)")
       
-    } else if (second_movie == "Forrest Gump (1994)") {
+    } else if (second_movie == "City of God (Cidade de Deus) (2002)") {
       
-      if (input$secondRating == "Never seen it") {
-        return("Apollo 13 (1995)")
+      if (input$secondRating == "Never watched it") {
+        return("Prestige, The (2006)")
       } else if (input$secondRating >= 3.5) {
-        return("Saving Private Ryan (1998)")
+        return("Eternal Sunshine of the Spotless Mind (2004)")
       }
-      return("Toy Story (1995)")
+      return("Shrek (2001)")
       
     }
     
-    if (input$secondRating == "Never seen it") {
+    if (input$secondRating == "Never watched it") {
       return("Lord of the Rings: The Fellowship of the Ring, The (2001)")
     } else if (input$secondRating >= 3.5) {
-      return("Star Wars: Episode V - The Empire Strikes Back (1980)")
+      return("Gladiator (2000)")
     }
-    return("Babe (1995)")
+    return("Lord of the Rings: The Fellowship of the Ring, The (2001)")
     
   })
   
@@ -187,7 +191,7 @@ server = function(input, output) {
   })
   
   output$selectCustomMovie = renderUI({
-    selectizeInput("customMovieInput", 'Select movie name', searchResults()) 
+    selectizeInput("customMovieInput", "Select movie name", searchResults()) 
   }
   )
   
@@ -198,14 +202,14 @@ server = function(input, output) {
   observeEvent(input$addRating, {
     # add selected movie and rating to custom data frame
     
-    tmpDf1 = tibble(title = "Waterworld (1995)", rating = input$firstRating)
+    tmpDf1 = tibble(title = "Last Samurai, The (2003)", rating = input$firstRating)
     tmpDf2 = tibble(title = input$secondMovieInput, rating = input$secondRating)
     tmpDf3 = tibble(title = input$thirdMovieInput, rating = input$thirdRating)
     
     tmpDf = bind_rows(tmpDf1, tmpDf2, tmpDf3)
     
     tmpDf = tmpDf %>% 
-      filter(!rating == "Never seen it") %>% 
+      filter(!rating == "Never watched it") %>% 
       filter(!title %in% customDf$title)
     
     # note the <<- which allows search to be made through parent environments
@@ -214,7 +218,7 @@ server = function(input, output) {
                                               options = list(lengthMenu = c(10, 25, 50), 
                                                              pageLength = 10,
                                                              autoWidth = TRUE,
-                                                             columnDefs = list(list(width = '15px', targets = c(1)))))
+                                                             columnDefs = list(list(width = "15px", targets = c(1)))))
   }
   )
   
@@ -232,7 +236,7 @@ server = function(input, output) {
                                               options = list(lengthMenu = c(10, 25, 50), 
                                                              pageLength = 10,
                                                              autoWidth = TRUE,
-                                                             columnDefs = list(list(width = '15px', targets = c(1)))))
+                                                             columnDefs = list(list(width = "15px", targets = c(1)))))
     }
   )
   
@@ -248,7 +252,7 @@ server = function(input, output) {
       
     } else {
       
-      output$error = renderText('')
+      output$error = renderText("")
       
       user_data = customDf %>% 
         mutate(
@@ -383,14 +387,14 @@ server = function(input, output) {
       
       if (nrow(rec_movies) == 0) {
         
-        output$error = renderText('Error: No recommendations found. Please make additional selections and rerun.')
+        output$error = renderText("Error: No recommendations found. Please make additional selections and rerun.")
         
       } else {
         output$recommendations = renderDataTable({ rec_movies },
                                                options = list(lengthMenu = c(10, 25, 50), 
                                                               pageLength = 10,
                                                               autoWidth = TRUE,
-                                                              columnDefs = list(list(width = '15px', targets = c(0)))))
+                                                              columnDefs = list(list(width = "15px", targets = c(0)))))
       }
     }
   }

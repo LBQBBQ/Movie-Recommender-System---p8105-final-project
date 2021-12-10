@@ -390,22 +390,32 @@ div.tocify {
 
 
 <p> </p>
+<div id="introduction-background-of-data-sets" class="section level1">
+<h1>Introduction &amp; Background of data sets</h1>
+<ul>
+<li>Dataset source used for EDA analysis: <a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></li>
+<li>MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created.</li>
+<li>The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied.</li>
+<li>The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data. Following are more details on the contents and use of each of these files.</li>
+</ul>
+<p> </p>
+</div>
 <div id="overview-of-data-sets" class="section level1">
 <h1>Overview of data sets</h1>
 <ul>
-<li>Dataset source used for EDA analysis: <a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></li>
 <li>Here, we decided to use “Small” dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).</li>
 <li>Dataset “links.csv” has 3 variables, including movieId(movie ID),imdbId(IMDb ID) and tmdbId(TMDB ID).</li>
-<li>“movies.csv” is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres).</li>
-<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp represent a digital record of the time of occurrence of a particular movie. Last but not the least, rating represent the ratings of movies.</li>
-<li>Dataset “tag.csv” has 4 variables, including userId(user ID),movieId(movie ID),tag(tag of movies) and timestamp(digital record of the time of occurrence of a particular movie) -In our Exploratory Analyses, we mainly focus on the following datasets :“ratings.csv”and “movies.csv”.</li>
+<li>“movies.csv” is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres). For variable title(movie title), it contains movies like “Toy Story (1995)”, “The Shape of Water (2017)”, “Holy Man (1998)”, “Class (1983)”,etc. The variable genres(movie genres) includes genres like Comedy, Drama, Sci-Fi, Horror, Thriller,etc.</li>
+<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp represent a digital record of the time of occurrence of a particular movie. Last but not the least, rating represent the ratings of movies. The rating variable includes score like 0.5, 2, 3, 4, 4.5, 5,etc.</li>
+<li>Dataset “tag.csv” has 4 variables, including userId(user ID),movieId(movie ID),tag(tag of movies) and timestamp(digital record of the time of occurrence of a particular movie). The variable tag includes tags like funny, brit-pop, wedding, revenge,etc.</li>
+<li>In our Exploratory Analyses, we mainly focus on the following datasets :“ratings.csv”and “movies.csv”.</li>
 </ul>
 <p> </p>
 </div>
 <div id="summary-of-the-used-packages-and-dependencies" class="section level1">
 <h1>Summary of the used packages and dependencies</h1>
 <ul>
-<li>tidyverse, readr, ggplot2, kableExtra, pastecs, ggpubr</li>
+<li>tidyverse, readr, ggplot2, kableExtra, pastecs, ggpubr, tm.</li>
 </ul>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -413,7 +423,8 @@ library(readr)
 library(ggplot2)
 library(kableExtra)
 library(pastecs)
-library(ggpubr)</code></pre>
+library(ggpubr)
+library(tm)</code></pre>
 <p> </p>
 </div>
 <div id="overview-of-dataset-ratings.csv" class="section level1">
@@ -1007,8 +1018,8 @@ Drama
 </ol>
 <p> </p>
 </div>
-<div id="boxplot-exporing-rating-distribution-among-different-genres" class="section level1">
-<h1>Boxplot exporing rating distribution among different genres</h1>
+<div id="boxplot-exploring-rating-distribution-among-different-genres" class="section level1">
+<h1>Boxplot exploring rating distribution among different genres</h1>
 <ul>
 <li><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</li>
 </ul>
@@ -1032,8 +1043,8 @@ boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p> </p>
 </div>
-<div id="boxplot-exporing-rating-distribution-among-different-years" class="section level1">
-<h1>Boxplot exporing rating distribution among different years</h1>
+<div id="boxplot-exploring-rating-distribution-among-different-years" class="section level1">
+<h1>Boxplot exploring rating distribution among different years</h1>
 <ul>
 <li><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</li>
 </ul>
@@ -1044,6 +1055,9 @@ boxplot_df </code></pre>
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
 <pre class="r"><code>boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
+  mutate(
+    year = removePunctuation(year)
+  ) %&gt;% 
   head(1000) %&gt;% 
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
   theme(legend.position=&quot;none&quot;) 
@@ -1060,11 +1074,13 @@ boxplot_df2 </code></pre>
 <li>First, we checked whether the rating is normally distributed.</li>
 </ul>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
-  geom_histogram(alpha = 0.3, bins = 30)</code></pre>
+  geom_histogram(alpha = 0.3, bins = 30) +
+  geom_density()</code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
 <li>The plot shows that the rating is not normally distributed, we need to use non parametric test.</li>
 <li>Thus, we used the Kruskal-Wallis Test regarding user ID and rating.</li>
+<li>The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021)</li>
 </ul>
 <p><strong>Assumption</strong></p>
 <p><span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span></p>
@@ -1107,8 +1123,9 @@ Kruskal-Wallis rank sum test
 </tr>
 </tbody>
 </table>
+<p><strong>Notice</strong>: The p values here is less than 2.2e-16 and is too small to be shown in r. Thus,the p value shown in table here is 0.</p>
 <ul>
-<li><strong>Conclusion</strong>:At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</li>
+<li><strong>Conclusion:At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</strong></li>
 </ul>
 </div>
 

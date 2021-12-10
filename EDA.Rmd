@@ -72,7 +72,8 @@ summary_df =
   janitor::clean_names() %>% 
   summary(summary_df$rating) %>% 
   knitr::kable() %>% 
-  kable_styling(bootstrap_options = c("striped"))
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
 summary_df
 ```
 
@@ -116,7 +117,8 @@ year_count =
   filter(n >= 690) %>% 
   arrange(desc(n)) %>%  
   knitr::kable() %>% 
-  kable_styling(bootstrap_options = c("striped"))
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
 year_count
 ```
 
@@ -163,7 +165,9 @@ high_rating_movienames =
   separate(
   title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
   knitr::kable() %>% 
-  kable_styling(bootstrap_options = c("striped"))
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+  
 high_rating_movienames 
 ```
 
@@ -193,7 +197,8 @@ ave_rating =
   summarize(mu_rating = mean(rating)) %>% 
   head(10) %>% 
   knitr::kable() %>%
-kable_styling(bootstrap_options = c("striped"))
+kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
 ave_rating
 ```
 
@@ -205,7 +210,7 @@ ave_rating
 
 &nbsp;
 
-# Boxplot exploring rating distribution among different genres
+# Rating distribution among different genres
 
 - **The boxplot regarding ratings and genres shows**: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4. 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
@@ -234,7 +239,7 @@ boxplot_df
 
 &nbsp;
 
-# Boxplot exploring rating distribution among different years
+# Rating distribution among different years
 
 - **The boxplot regarding ratings and year shows**: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.
 
@@ -278,8 +283,7 @@ boxplot_df2
 
 ```{r}
 ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
-  geom_histogram(alpha = 0.3, bins = 30) +
-  geom_density()
+  geom_histogram(alpha = 0.3, bins = 30) 
 ```
 
 - The plot shows that the rating is not normally distributed, we need to use non parametric test.
@@ -295,7 +299,8 @@ $H_1: \text{At least two of the mean ratings of the users are different}$
 kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
  broom::tidy() %>% 
  kableExtra::kbl() %>% 
- kable_styling(bootstrap_options = c("striped"))
+ kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
 ```
 **Notice**: The p values here is less than 2.2e-16 and is too small to be shown in r. Thus,the p value shown in table here is 0.
 

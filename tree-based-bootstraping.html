@@ -9,10 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
 
 
-<title>tree-based bootstraping</title>
+<title>tree-based bootstrapping</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -30,7 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
@@ -220,7 +223,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -230,6 +299,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -291,48 +370,62 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">tree-based bootstraping</h1>
-<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
-<h4 class="date">2021/11/20</h4>
+
+<h1 class="title toc-ignore">tree-based bootstrapping</h1>
 
 </div>
 
 
+<p> </p>
+<p>Recommend movies for new users can be knotty since we have no prior data about new users. One strategy to solve this problem is providing new users with some movies to rate on, after which recommendation can be generated based on the given ratings. Then, here comes the problem: What kind of movies should be provided to new users?</p>
+<p> </p>
+<p>Intuitively, these movies should be:</p>
 <ul>
-<li><p>Recommend movies for new users can be knotty since we have no prior data about new users.</p></li>
-<li><p>One strategy to solve this problem is providing new users with some movies and let them feedback their interest in provided movies.</p></li>
-<li><p>What kind of movies should be provided to new users? Intuitively, these movies should be:</p>
-<ul>
-<li><strong>Popular</strong>: Users can’t comment on movies they have never heard of.</li>
-<li><strong>Controversial</strong>: Movies unanimously praised can’t differentiate users of different tastes.</li>
-</ul></li>
+<li><p><strong>Popular</strong>: Users can’t comment on movies they have never heard of.</p></li>
+<li><p><strong>Differentiable</strong>: People who love the movie and who hate the movie should have varied taste.</p></li>
 </ul>
-<div id="tree-based-bootstraping" class="section level2">
-<h2>Tree-based bootstraping</h2>
-<ul>
-<li>Here we adopted the tree-based bootstraping algorithm proposed by <a href="https://dl.acm.org/doi/10.1145/1935826.1935910">Golbandi, N., et al. 2011.</a> to find movies meet above requirement.</li>
-</ul>
-</div>
-<div id="dependencies" class="section level2">
-<h2>Dependencies</h2>
-<pre class="r"><code>library(dplyr, warn.conflicts = FALSE)
-
+<p> </p>
+<p>In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the tree-based bootstrapping algorithm proposed by <a href="https://dl.acm.org/doi/10.1145/1935826.1935910">Golbandi, N., et al. 2011.</a> to find the most “differentiable” movies among these movies. Our findings was further implemented in our <a href="https://hzhong.shinyapps.io/movierecommender/">shiny app</a>, which can recommend you movies based on your ratings of the movies we found here.</p>
+<p> </p>
+<div id="dependencies" class="section level3">
+<h3>Dependencies</h3>
+<pre class="r fold-show"><code>library(dplyr, warn.conflicts = FALSE)
 # Suppress summarise info
 options(dplyr.summarise.inform = FALSE)
-
 library(tidyverse)</code></pre>
+<p> </p>
 </div>
-<div id="data-preparation" class="section level2">
-<h2>Data preparation</h2>
-<pre class="r"><code>rating_tidy = read_csv(&quot;./data/small/ratings.csv&quot;, col_types = &quot;iinc&quot;) %&gt;% 
-  janitor::clean_names()
-
-cut_year = function(string){
+<div id="data-preparation" class="section level1">
+<h1>Data Preparation</h1>
+<p>The data preparation process has done following things:</p>
+<ul>
+<li>extract <code>year</code> of release from the title of the movie</li>
+<li>filter on <code>year</code> to only include movies released after 2000</li>
+<li>find number of ratings of each movie, and select 100 movies with most ratings</li>
+<li>convert numerical ratings into categorical variable which has three levels, <code>lover</code>, <code>hater</code>, <code>unknown</code></li>
+</ul>
+<p> </p>
+<div id="filter-movies-released-after-2000" class="section level3">
+<h3>Filter movies released after 2000</h3>
+<pre class="r"><code>cut_year = function(string){
+  # str_split() returns a list with 1 element, 
+  # which is a vector containing splitted strings
   year_str = str_split(string, pattern = &quot;\\(&quot;)[[1]]
+  
+  # sometimes the movie name also contains brackets,
+  # so we only take the last element in the vector,
+  # which must be the release year.
   year_str = str_remove(year_str[length(year_str)], &quot;\\)&quot;)
-  return(as.integer(year_str))
+  return(year_str)
 }
 
 movies = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -345,111 +438,126 @@ movies = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;%
   drop_na(year) %&gt;% 
   filter(year &gt;= 2000) %&gt;% 
   select(movie_id, year)</code></pre>
-<pre><code>## Rows: 9742 Columns: 3</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (2): title, genres
-## dbl (1): movieId</code></pre>
-<pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre><code>## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
-
-## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA</code></pre>
-<pre class="r"><code>movie_ids = movies %&gt;% pull(movie_id)
+<p>We built a function <code>cut_year</code> to extract <code>year</code> from <code>title</code>, and filtered movies released after 2000. The format of <code>title</code> is <code>[movie name] ([release year])</code>, thus we extracted <code>year</code> through identifying brackets in <code>title</code>.</p>
+<p> </p>
+</div>
+<div id="find-100-movies-with-most-ratings" class="section level3">
+<h3>Find 100 movies with most ratings</h3>
+<pre class="r"><code>rating_tidy = read_csv(&quot;./data/small/ratings.csv&quot;, col_types = &quot;iinc&quot;) %&gt;% 
+  janitor::clean_names()
 
 
 hot_movies = 
   rating_tidy %&gt;% 
   count(movie_id) %&gt;%
+  # right join previous tibble to filter movies released after 2000
   right_join(movies, by = &quot;movie_id&quot;) %&gt;% 
   arrange(desc(n)) %&gt;% 
   head(100) %&gt;% 
   arrange(movie_id) %&gt;% 
   pull(movie_id) %&gt;% 
-  as_vector()
-
-rating_dscts = 
+  as_vector()</code></pre>
+<p>We built a data frame containing all users’ ratings on all movies, and found 100 movies with most ratings released after 2000.</p>
+<p> </p>
+</div>
+<div id="convert-rating-into-categorical-variable-type" class="section level3">
+<h3>Convert rating into categorical variable <code>type</code></h3>
+<p>The tree-based bootstrapping algorithm demands a variable suggest user’s attitude toward movies, which should have three levels: <code>lover</code>, <code>hater</code>, <code>unknown</code>. Therefore, We converted numerical ratings into this variable, <code>type</code>.</p>
+<div id="generate-the-cartesian-product-of-users-ratings-on-movies" class="section level5">
+<h5>Generate the Cartesian product of users’ ratings on movies</h5>
+<pre class="r"><code>rating_dscts = 
   rating_tidy %&gt;% 
   select(-timestamp) %&gt;% 
   filter(movie_id %in% hot_movies) %&gt;% 
+  # pivot_wider will generate a matrix of user&#39;s rating towards movies, 
+  # through which NA will be introduced when the user haven&#39;t seen the movie
   pivot_wider(names_from = movie_id, values_from = rating) %&gt;% 
+  # by using pivot_longer to transform this matrix back to tidy data,
+  # we introduced NA in the rating column, which suggest the user haven&#39;t seen the movie
   pivot_longer(cols = as.character(hot_movies), names_to = &quot;movie_id&quot;, values_to = &quot;rating&quot;)</code></pre>
+<p>For each user, the raw rating file only includes records for movies they rated. To generate a variable which can suggest that the user haven’t seen this movie, we generated the Cartesian product of users’ ratings on movies at first.</p>
 </div>
-<div id="function" class="section level2">
-<h2>Function</h2>
-<div id="cut-off-for-being-loverhaterunknown" class="section level3">
-<h3>cut-off for being lover/hater/unknown</h3>
+<div id="conversion" class="section level5">
+<h5>Conversion</h5>
 <pre class="r"><code>classify = function(rating) {
   res = &quot;&quot;
-  
+  # if rating is NA, then the user has not seen this movie yet.
   if (is.na(rating)) {
     res = &quot;unknown&quot;
+    
+  # if rating &gt; 3.5, we consider the user is a &quot;lover&quot; of this movie
   } else if (rating &gt;= 3.5) {
+    # 
     res = &quot;lover&quot;
+    
+  # otherwise, we consider the user the movie&#39;s hater 
   } else {
     res = &quot;hater&quot;
   }
   
   return(res)
-}</code></pre>
-</div>
-<div id="classify" class="section level3">
-<h3>classify</h3>
-<pre class="r"><code>user_cate =
+}
+
+user_cate =
   rating_dscts %&gt;%
   mutate(type = map(rating, classify)) %&gt;% 
   unnest(type) %&gt;% 
   mutate(movie_id = as.numeric(movie_id))</code></pre>
+<p>In our exploratory analysis, we found that the median of all ratings is 3.5. Thus, if a user’s rating towards a movie is greater or equal to 3.5, we consider the user to be a “lover” of this movie, otherwise we consider the user the movie’s hater. If the rating is <code>NA</code>, then we know the user has not seen this movie and denote “unknown”.</p>
+<p> </p>
 </div>
+</div>
+</div>
+<div id="tree-based-bootstrapping" class="section level1">
+<h1>Tree-based bootstrapping</h1>
+<p>The tree-based bootstrapping algorithm will find the most “differentiable” movie as the spliter to split users into three sub-groups, those who love it, those who dislike it and those who haven’t watched it. Then, for each sub-group, we repeat this process and split sub-groups into sub-sub groups. This recursive process will built a ternary tree whose nodes are movies, through which users will be divided into subgroups.</p>
+<p> </p>
 <div id="calculate-differentiation-score" class="section level3">
-<h3>calculate differentiation score</h3>
+<h3>Calculate differentiation score</h3>
 <pre class="r"><code>calc_score = function(data, id){
   
+  # find who are lovers, who are haters, who are unknown of the given movie.
   user_movie_type = 
     data %&gt;% 
     filter(movie_id == id) %&gt;% 
     select(user_id, type)
-
+  
+  # calculate differentiation score
   score = 
     data %&gt;% 
+    # In input data, in each row, the type column represent the user&#39;s attitude 
+    # towards the movie in this row. However, what we need is the user&#39;s attitude
+    # toward the given movie. So here we remove the original type column at first
     select(-type) %&gt;% 
+    # Then, by join, we re-introduced the type column, which now represent the 
+    # user&#39;s attitude toward the given movie.
     left_join(user_movie_type, by = &quot;user_id&quot;) %&gt;% 
+    # the given movie should be excluded for calculating variance
     filter(movie_id != id) %&gt;% 
+    # calculating sigma_{N+, m}, sigma_{N-, m}, sigma{\overline{N}, m}
     group_by(type, movie_id) %&gt;% 
     summarize(var = var(rating, na.rm = TRUE)) %&gt;% 
     pull(var) %&gt;% 
+    # sum up to get D(M)
     sum(na.rm = TRUE)
   
   return(score)
 }</code></pre>
+<p>To quantitatively describe the characteristic of “differentiable”, the algorithm defined the differentiation score, <span class="math inline">\(D(m)\)</span> for movie <span class="math inline">\(m\)</span>, which is the sum of subgroups’ standard deviation of ratings on other movies:</p>
+<p><span class="math display">\[D(m) = \sigma_{u \in N^{+}(m)} + \sigma_{u \in N^{-}(m)} + \sigma_{u \in \overline{N}(m)}\]</span></p>
+<ul>
+<li><span class="math inline">\(\sigma_{u \in N}\)</span>: the standard deviation of ratings on all movies users in <span class="math inline">\(N\)</span> have seen. <span class="math inline">\(\displaystyle \sigma_{u \in N} = \sum_{m} \sigma_{u \in N, m}\)</span>.</li>
+<li><span class="math inline">\(\sigma_{u \in N, m}\)</span>: the standard deviation of ratings on <span class="math inline">\(m\)</span> given by users in <span class="math inline">\(N\)</span>.</li>
+<li><span class="math inline">\(N^{+}(m)\)</span>: users who love <span class="math inline">\(m\)</span></li>
+<li><span class="math inline">\(N^{-}(m)\)</span>: users who dislike <span class="math inline">\(m\)</span></li>
+<li><span class="math inline">\(\overline{N}(m)\)</span>: users who haven’t seen <span class="math inline">\(m\)</span></li>
+</ul>
+<p>By the definition, the most differential movie, i.e. the best splitter, should have the lowest <span class="math inline">\(D(m)\)</span>, because bad splitters will divide people with different taste into the same sub-group, resulting in increased <span class="math inline">\(D(m)\)</span>.</p>
+<p>We built a function <code>calc_score</code> for calculating <span class="math inline">\(D(m)\)</span> for the given movie.</p>
+<p> </p>
 </div>
-</div>
-<div id="tree" class="section level2">
-<h2>Tree</h2>
-<p>We use ternary tree to save our result.</p>
+<div id="create-a-ternary-tree-class" class="section level3">
+<h3>Create a ternary tree class</h3>
 <pre class="r"><code>setClass(&quot;movieTreeNode&quot;,
   slots = c(
     mid = &quot;numeric&quot;,
@@ -458,32 +566,44 @@ rating_dscts =
     sub_hater = &quot;movieTreeNode&quot;
   ) 
 )</code></pre>
+<p>Because the algorithm will generate a tree like structure, we created a ternary tree class, <code>movieTreeNode</code> to store the calculation result.</p>
+<p> </p>
 </div>
-<div id="main-function" class="section level2">
-<h2>Main function</h2>
-<pre class="r"><code>find_movies = function(data, levels, root){
+<div id="main-function" class="section level3">
+<h3>Main function</h3>
+<pre class="r"><code># root is the root node of the ternary tree
+# levels is the depth of the tree
+
+find_movies = function(data, levels, root){
+  
+  # when level = 0, end the recursion process
+  # when nrow(data) = 0, there is no users in this subgroup, so emd recursion
   if (levels == 0 || nrow(data) == 0) {
     return(root)
   }
   
+  # list all movies
   movies = 
     data %&gt;% 
     pull(movie_id) %&gt;% 
     as_vector() %&gt;% 
     as.integer()
   
+  # for each movie, calculate its D(m)
   scores = list()
   for (i in 1:length(movies)) {
     scores[[i]] = calc_score(data, movies[[i]])
   }
   
+  # find the movie with lowest D(m)
   scores = as_vector(scores) %&gt;% as.numeric()
   ind = which(scores == min(scores))[1]
   movie = movies[ind]
   
+  # give the node this movie as its value
   root@mid = movie
 
-  
+  # generate subgroups of lovers of this movie
   lovers = 
     data %&gt;%
     filter(movie_id == movie, type == &quot;lover&quot;) %&gt;% 
@@ -494,7 +614,8 @@ rating_dscts =
     data %&gt;% 
     filter(user_id %in% lovers) %&gt;% 
     filter(movie_id != movie)
-    
+  
+  # generate subgroups of haters of this movie
   haters =
     data %&gt;%
     filter(movie_id == movie, type == &quot;hater&quot;) %&gt;% 
@@ -505,7 +626,8 @@ rating_dscts =
     data %&gt;% 
     filter(user_id %in% haters) %&gt;% 
     filter(movie_id != movie)
-    
+  
+  # generate subgroups of who unknown of this movie
   unknowns = 
     data %&gt;%
     filter(movie_id == movie, type == &quot;unknown&quot;) %&gt;% 
@@ -516,16 +638,19 @@ rating_dscts =
     data %&gt;% 
     filter(user_id %in% unknowns) %&gt;% 
     filter(movie_id != movie)
-    
+  
+  # recursion, find the most differentiable movie in each subgroup
   root@sub_lover = find_movies(lovers_data, levels - 1, new(&quot;movieTreeNode&quot;))
   root@sub_unknown = find_movies(unknowns_data, levels - 1, new(&quot;movieTreeNode&quot;))
   root@sub_hater = find_movies(haters_data, levels - 1, new(&quot;movieTreeNode&quot;))
   
   return(root)
 }</code></pre>
+<p>We implemented the algorithm in the main function <code>find_movies</code>, which will build the ternary movie tree at the given depth. Each movie node represent the most differentiable movie in the corresponding sub-group.</p>
+<p> </p>
 </div>
-<div id="level-order-traversal" class="section level2">
-<h2>level-order traversal</h2>
+<div id="read-the-tree-by-level-order-traversal" class="section level3">
+<h3>Read the tree by level-order traversal</h3>
 <pre class="r"><code>dfs = function(root, level, res){
   
   if (length(res) &lt; level) {
@@ -547,98 +672,69 @@ rating_dscts =
   
   return(res)
 }</code></pre>
+<p>After running the main function, we would get the ternary tree store differentiable movies. To read this tree, we used level order traversal, in which we set null node’s value to -1 for better readability.</p>
+<p> </p>
 </div>
-<div id="test" class="section level2">
-<h2>Test</h2>
-<ul>
-<li>For testing, we perform the bootstrapping on 5000 rows of sampled data, generate the ternary tree, and retrive movies thorugh level order traversal.</li>
-</ul>
-<pre><code>## [[1]]
-## [[1]][[1]]
-## [1] 7153
-## 
-## 
-## [[2]]
-## [[2]][[1]]
-## [1] 6934
-## 
-## [[2]][[2]]
-## [1] 3897
-## 
-## [[2]][[3]]
-## [1] 72998
-## 
-## 
-## [[3]]
-## [[3]][[1]]
-## [1] -1
-## 
-## [[3]][[2]]
-## [1] 3578
-## 
-## [[3]][[3]]
-## [1] -1
-## 
-## [[3]][[4]]
-## [1] 3949
-## 
-## [[3]][[5]]
-## [1] -1
-## 
-## [[3]][[6]]
-## [1] -1
-## 
-## [[3]][[7]]
-## [1] -1
-## 
-## [[3]][[8]]
-## [1] -1
-## 
-## [[3]][[9]]
-## [1] -1</code></pre>
 </div>
-<div id="running-on-the-whole-dataset" class="section level2">
-<h2>Running on the whole dataset</h2>
-<ul>
-<li><p>Here is the code we used to perform the bootstrapping on the whole dataset.</p></li>
-<li><p>The calculation is not perform while knitting this document due to large time cost. We performed calculation in advance, and recorded the result (showed in the following section).</p></li>
-</ul>
+<div id="implementation" class="section level1">
+<h1>Implementation</h1>
+<div id="test" class="section level3">
+<h3>Test</h3>
+<p>For testing, we perform the bootstrapping on 5000 rows of sampled data, generate a ternary tree with depth equals to 3, and retrieve the result to see among the 100 candidate movies which are differentiable movies.</p>
+<pre class="r"><code>set.seed(777)
+root = find_movies(sample_n(user_cate, 5000), 3, new(&quot;movieTreeNode&quot;))
+res = dfs(root, 1, list())
+
+# The last element must be a list completely made up of -1, 
+# as they represent null nodes subject to leaf nodes
+# so we directly discard it.
+res = res[1:length(res) - 1]
+
+format(res)</code></pre>
+<pre><code>## [1] &quot;3996&quot;                                             
+## [2] &quot;5349, 58559, 3994&quot;                                
+## [3] &quot;3897, 68157, -1, 44191, 4022, 48385, -1, 4226, -1&quot;</code></pre>
+<p> </p>
+</div>
+<div id="running-on-the-whole-dataset" class="section level3">
+<h3>Running on the whole dataset</h3>
+<p>We also performed the bootstrapping process on the whole dataset. Due to the large time cost, the calculation is not performed while knitting this document but in advance, and the result was recorded as showed in the following section</p>
 <pre class="r"><code>root = find_movies(user_cate, 3, new(&quot;movieTreeNode&quot;))
 res = dfs(root, 1, list())
 
 # The last element must be a list made up of several -1, so we directly discard it.
 res = res[1:length(res) - 1]
 
-res</code></pre>
+format(res)</code></pre>
+<p> </p>
 </div>
-<div id="result-on-movies-released-after-2000" class="section level2">
-<h2>Result on movies released after 2000</h2>
+<div id="result" class="section level3">
+<h3>Result</h3>
+<p>The movie id sequence obtained:</p>
 <pre class="r"><code>result = list(list(7143), list(5952, 6016, 6377), list(7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993))
-movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+
+format(result)</code></pre>
+<pre><code>## [1] &quot;7143&quot;                                                 
+## [2] &quot;5952, 6016, 6377&quot;                                     
+## [3] &quot;7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993&quot;</code></pre>
+<p>These movies are:</p>
+<pre class="r"><code>movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
 movie_seq = 1:13
 
 movies_df = tibble(seq = movie_seq, movie_id = movies)
 
 movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  janitor::clean_names()</code></pre>
-<pre><code>## Rows: 9742 Columns: 3</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (2): title, genres
-## dbl (1): movieId</code></pre>
-<pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>movie_info %&gt;% 
+  janitor::clean_names()
+
+movie_info %&gt;% 
   filter(movie_id %in% movies) %&gt;% 
   left_join(movies_df) %&gt;% 
   arrange(seq) %&gt;% 
   select(-seq) %&gt;% 
   distinct() %&gt;% 
   kableExtra::kbl() %&gt;% 
-  kableExtra::kable_styling()</code></pre>
-<pre><code>## Joining, by = &quot;movie_id&quot;</code></pre>
-<table class="table" style="margin-left: auto; margin-right: auto;">
+  kableExtra::kable_styling(font_size = 12)</code></pre>
+<table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:right;">
@@ -765,14 +861,19 @@ Action|Adventure|Drama
 </tr>
 </tbody>
 </table>
-<ul>
-<li>According to the result, when facing new users, we can let them show their preference for above movies:</li>
-</ul>
-<p><img src="pics/recsys.jpg" style="width:100%"></p>
+<p> </p>
+</div>
+<div id="graphic-interpretation" class="section level3">
+<h3>Graphic interpretation:</h3>
+<p>According to the result, when facing new users, we can let them show their attitude for above movies:</p>
+<p><img src="pics/recsys.png" style="width:100%"></p>
+</div>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -804,7 +905,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

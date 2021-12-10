@@ -389,50 +389,58 @@ div.tocify {
 </div>
 
 
+<p> </p>
+<div id="introduction-background-of-data-sets" class="section level1">
+<h1>Introduction &amp; Background of data sets</h1>
+<ul>
+<li>Dataset source used for EDA analysis: <a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></li>
+<li>MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created.</li>
+<li>The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied.</li>
+<li>The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data. Following are more details on the contents and use of each of these files.</li>
+</ul>
+<p> </p>
+</div>
 <div id="overview-of-data-sets" class="section level1">
 <h1>Overview of data sets</h1>
 <ul>
-<li>Dataset source used for EDA analysis: <a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></li>
 <li>Here, we decided to use “Small” dataset, which includes 100,000 ratings and 3,600 tag applications applied to 9,000 movies by 600 users(Last updated 9/2018).</li>
 <li>Dataset “links.csv” has 3 variables, including movieId(movie ID),imdbId(IMDb ID) and tmdbId(TMDB ID).</li>
-<li>“movies.csv” is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres).</li>
-<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp represent a digital record of the time of occurrence of a particular movie. Last but not the least, rating represent the ratings of movies.</li>
-<li>Dataset “tag.csv” has 4 variables, including userId(user ID),movieId(movie ID),tag(tag of movies) and timestamp(digital record of the time of occurrence of a particular movie) -In our Exploratory Analyses, we mainly focus on the following datasets :“ratings.csv”,“movies.csv” and “tag.csv”.</li>
+<li>“movies.csv” is a dataset which includes movieId(movie ID), title(movie title) and genres(movie genres). For variable title(movie title), it contains movies like “Toy Story (1995)”, “The Shape of Water (2017)”, “Holy Man (1998)”, “Class (1983)”,etc. The variable genres(movie genres) includes genres like Comedy, Drama, Sci-Fi, Horror, Thriller,etc.</li>
+<li>In “ratings.csv” dataset, there are 4 variables. userId represent the user ID, movieId represent movie ID, rating represent the ratings of movies, and timestamp represent a digital record of the time of occurrence of a particular movie. Last but not the least, rating represent the ratings of movies. The rating variable includes score like 0.5, 2, 3, 4, 4.5, 5,etc.</li>
+<li>Dataset “tag.csv” has 4 variables, including userId(user ID),movieId(movie ID),tag(tag of movies) and timestamp(digital record of the time of occurrence of a particular movie). The variable tag includes tags like funny, brit-pop, wedding, revenge,etc.</li>
+<li>In our Exploratory Analyses, we mainly focus on the following datasets :“ratings.csv”and “movies.csv”.</li>
 </ul>
+<p> </p>
 </div>
 <div id="summary-of-the-used-packages-and-dependencies" class="section level1">
 <h1>Summary of the used packages and dependencies</h1>
+<ul>
+<li>tidyverse, readr, ggplot2, kableExtra, pastecs, ggpubr, tm.</li>
+</ul>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(kableExtra)
 library(pastecs)
-library(ggpubr)</code></pre>
+library(ggpubr)
+library(tm)</code></pre>
+<p> </p>
 </div>
 <div id="overview-of-dataset-ratings.csv" class="section level1">
 <h1>Overview of dataset “ratings.csv”</h1>
+<ul>
+<li><p><strong>Here, we applied the “summarise()” function to briefly describe the variable “rating”</strong>: According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.</p></li>
+<li><p>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, <strong>we choose not to analyze those three variables </strong></p></li>
+</ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;</code></pre>
 <pre class="r"><code>summary_df = 
   read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
   janitor::clean_names() %&gt;% 
   summary(summary_df$rating) %&gt;% 
   knitr::kable() %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): strings not representable in native encoding will
-## be translated to UTF-8</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C4&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E4&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00DF&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E6&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00D8&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00F8&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00C5&gt;&#39; to native encoding</code></pre>
-<pre><code>## Warning in FUN(X[[i]], ...): unable to translate &#39;&lt;U+00E5&gt;&#39; to native encoding</code></pre>
-<pre class="r"><code>summary_df</code></pre>
+  kable_styling(bootstrap_options = c(&quot;striped&quot;))
+summary_df</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -551,11 +559,14 @@ NA
 </tr>
 </tbody>
 </table>
-<p><strong>Here, we applied the “summarise()” function to briefly describe the variable “rating”</strong>: According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.</p>
-<p>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, <strong>we choose not to analyze those three variables </strong></p>
+<p> </p>
 </div>
 <div id="overview-of-dataset-movies.csv" class="section level1">
 <h1>Overview of dataset “movies.csv”</h1>
+<ul>
+<li><strong>We count the 5 most appeared genres and made a table</strong> : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place._</li>
+<li><strong>We count the 5 most appeared year of the movie released, and made a table</strong>:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</li>
+</ul>
 <pre class="r"><code>data_path = &quot;./data/small/movies.csv&quot;
 
 movie_descriptive = 
@@ -696,10 +707,13 @@ n
 </ol></li>
 </ol></li>
 </ol>
-<p><strong>We count the 5 most appeared genres and made a table</strong> : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. <strong>We count the 5 most appeared year of the movie released, and made a table</strong>:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
+<p> </p>
 </div>
 <div id="find-popular-movies-and-high-rating-movies" class="section level1">
 <h1>Find popular movies and high-rating movies</h1>
+<ul>
+<li><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</li>
+</ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = 
@@ -835,16 +849,19 @@ Action|Adventure|Sci-Fi
 </td>
 </tr>
 </tbody>
-</table>
-<strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</li>
+</table></li>
 </ol></li>
 </ol></li>
 </ol></li>
 </ol></li>
 </ol>
+<p> </p>
 </div>
 <div id="find-the-average-rating-of-each-genres-in-different-year" class="section level1">
 <h1>Find the average rating of each genres in different year</h1>
+<ul>
+<li><strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</li>
+</ul>
 <pre class="r"><code>movie_names_ave = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -988,8 +1005,7 @@ Drama
 </td>
 </tr>
 </tbody>
-</table>
-<strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</li>
+</table></li>
 </ol></li>
 </ol></li>
 </ol></li>
@@ -1000,9 +1016,13 @@ Drama
 </ol></li>
 </ol></li>
 </ol>
+<p> </p>
 </div>
-<div id="boxplot-regarding-ratings-and-genres" class="section level1">
-<h1>Boxplot regarding ratings and genres</h1>
+<div id="boxplot-exploring-rating-distribution-among-different-genres" class="section level1">
+<h1>Boxplot exploring rating distribution among different genres</h1>
+<ul>
+<li><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</li>
+</ul>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -1016,13 +1036,18 @@ filter_ratingscore =
   janitor::clean_names() %&gt;%
   separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
   filter(!genres  %in% &quot;(no genres listed)&quot;) %&gt;% 
-  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres))
+  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres, alpha = .5)) +
+  theme(legend.position=&quot;none&quot;) 
+  viridis::scale_color_viridis(discrete = TRUE)
 boxplot_df </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
+<p> </p>
 </div>
-<div id="boxplot-regarding-ratings-and-years" class="section level1">
-<h1>Boxplot regarding: ratings and years</h1>
+<div id="boxplot-exploring-rating-distribution-among-different-years" class="section level1">
+<h1>Boxplot exploring rating distribution among different years</h1>
+<ul>
+<li><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</li>
+</ul>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -1030,31 +1055,39 @@ boxplot_df </code></pre>
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
 <pre class="r"><code>boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
-  head(2500) %&gt;% 
+  mutate(
+    year = removePunctuation(year)
+  ) %&gt;% 
+  head(1000) %&gt;% 
   ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
+  theme(legend.position=&quot;none&quot;) 
   viridis::scale_fill_viridis(discrete = TRUE)
+
 boxplot_df2 </code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<p><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</p>
+<p> </p>
 </div>
-<div id="kruskal-test-regarding-user-id-and-rating" class="section level1">
-<h1>Kruskal Test regarding user ID and rating</h1>
+<div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level1">
+<h1>Kruskal-Wallis Test regarding user ID and rating</h1>
 <ul>
 <li>Here, we want to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different(ANOVA)</li>
 <li>First, we checked whether the rating is normally distributed.</li>
 </ul>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
-  geom_histogram(alpha = 0.3, bins = 30)</code></pre>
+  geom_histogram(alpha = 0.3, bins = 30) +
+  geom_density()</code></pre>
 <p><img src="EDA_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <ul>
-<li>The plot shows that the raing is not normally distributed, we need to use non parametric test.</li>
-<li>Thus, we used the Kruskal Test regarding user ID and rating.</li>
+<li>The plot shows that the rating is not normally distributed, we need to use non parametric test.</li>
+<li>Thus, we used the Kruskal-Wallis Test regarding user ID and rating.</li>
+<li>The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021)</li>
 </ul>
-<p>Assumption:</p>
-<p><span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span> <span class="math inline">\(H_1: At\ least\ two\ of\ the\ mean\ ratings\ of\ the\  users\ are\ different.\)</span></p>
+<p><strong>Assumption</strong></p>
+<p><span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span></p>
+<p><span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
- knitr::kable() %&gt;% 
+ kableExtra::kbl() %&gt;% 
  kable_styling(bootstrap_options = c(&quot;striped&quot;))</code></pre>
 <table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -1090,7 +1123,10 @@ Kruskal-Wallis rank sum test
 </tr>
 </tbody>
 </table>
-<p>At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<p><strong>Notice</strong>: The p values here is less than 2.2e-16 and is too small to be shown in r. Thus,the p value shown in table here is 0.</p>
+<ul>
+<li><strong>Conclusion:At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</strong></li>
+</ul>
 </div>
 
 

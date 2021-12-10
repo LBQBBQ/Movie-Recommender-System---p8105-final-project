@@ -1,0 +1,460 @@
+---
+title: "tree-based bootstrapping"
+---
+
+&nbsp;
+
+Recommend movies for new users can be knotty since we have no prior data about new users. One strategy to solve this problem is providing new users with some movies to rate on, after which recommendation can be generated based on the given ratings. Then, here comes the problem: What kind of movies should be provided to new users?
+
+&nbsp;
+
+Intuitively, these movies should be:
+
+- **Popular**: Users can't comment on movies they have never heard of.
+
+- **Differentiable**: People who love the movie and who hate the movie should have varied taste. 
+
+&nbsp;
+
+In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the tree-based bootstrapping algorithm proposed by [Golbandi, N., et al. 2011.](https://dl.acm.org/doi/10.1145/1935826.1935910) to find the most "differentiable" movies among these movies. Our findings was further implemented in our [shiny app](https://hzhong.shinyapps.io/movierecommender/), which can recommend you movies based on your ratings of the movies we found here.
+
+&nbsp;
+
+### Dependencies
+
+```{r, message=FALSE, class.source = 'fold-show'}
+library(dplyr, warn.conflicts = FALSE)
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)
+```
+
+&nbsp;
+
+# Data Preparation
+
+The data preparation process has done following things:
+
+- extract `year` of release from the title of the movie 
+- filter on `year` to only include movies released after 2000
+- find number of ratings of each movie, and select 100 movies with most ratings
+- convert numerical ratings into categorical variable which has three levels, `lover`, `hater`, `unknown`
+
+&nbsp;
+
+### Filter movies released after 2000
+
+```{r, warning=FALSE, message=FALSE}
+
+cut_year = function(string){
+  # str_split() returns a list with 1 element, 
+  # which is a vector containing splitted strings
+  year_str = str_split(string, pattern = "\\(")[[1]]
+  
+  # sometimes the movie name also contains brackets,
+  # so we only take the last element in the vector,
+  # which must be the release year.
+  year_str = str_remove(year_str[length(year_str)], "\\)")
+  return(year_str)
+}
+
+movies = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %>% 
+  arrange(desc(year)) %>% 
+  drop_na(year) %>% 
+  filter(year >= 2000) %>% 
+  select(movie_id, year)
+```
+
+We built a function `cut_year` to extract `year` from `title`, and filtered
+movies released after 2000. The format of `title` is `[movie name] ([release year])`,
+thus we extracted `year` through identifying brackets in `title`.
+
+&nbsp;
+
+### Find 100 movies with most ratings 
+
+```{r, message=FALSE, warning=FALSE}
+rating_tidy = read_csv("./data/small/ratings.csv", col_types = "iinc") %>% 
+  janitor::clean_names()
+
+
+hot_movies = 
+  rating_tidy %>% 
+  count(movie_id) %>%
+  # right join previous tibble to filter movies released after 2000
+  right_join(movies, by = "movie_id") %>% 
+  arrange(desc(n)) %>% 
+  head(100) %>% 
+  arrange(movie_id) %>% 
+  pull(movie_id) %>% 
+  as_vector()
+```
+
+We built a data frame containing all users' ratings on all movies,
+and found 100 movies with most ratings released after 2000.
+
+&nbsp;
+
+### Convert rating into categorical variable `type`
+
+The tree-based bootstrapping algorithm demands a variable suggest user's attitude 
+toward movies, which should have three levels: `lover`, `hater`, `unknown`. 
+Therefore, We converted numerical ratings into this variable, `type`.
+
+
+
+##### Generate the Cartesian product of users' ratings on movies
+
+```{r}
+rating_dscts = 
+  rating_tidy %>% 
+  select(-timestamp) %>% 
+  filter(movie_id %in% hot_movies) %>% 
+  # pivot_wider will generate a matrix of user's rating towards movies, 
+  # through which NA will be introduced when the user haven't seen the movie
+  pivot_wider(names_from = movie_id, values_from = rating) %>% 
+  # by using pivot_longer to transform this matrix back to tidy data,
+  # we introduced NA in the rating column, which suggest the user haven't seen the movie
+  pivot_longer(cols = as.character(hot_movies), names_to = "movie_id", values_to = "rating")
+```
+
+For each user, the raw rating file only includes records for movies they rated. 
+To generate a variable which can suggest that the user haven't seen this movie, 
+we generated the Cartesian product of users' ratings on movies at first.
+
+
+
+##### Conversion
+
+```{r}
+classify = function(rating) {
+  res = ""
+  # if rating is NA, then the user has not seen this movie yet.
+  if (is.na(rating)) {
+    res = "unknown"
+    
+  # if rating > 3.5, we consider the user is a "lover" of this movie
+  } else if (rating >= 3.5) {
+    # 
+    res = "lover"
+    
+  # otherwise, we consider the user the movie's hater 
+  } else {
+    res = "hater"
+  }
+  
+  return(res)
+}
+
+user_cate =
+  rating_dscts %>%
+  mutate(type = map(rating, classify)) %>% 
+  unnest(type) %>% 
+  mutate(movie_id = as.numeric(movie_id))
+```
+
+In our exploratory analysis, we found that the median of all ratings is 3.5. Thus,
+if a user's rating towards a movie is greater or equal to 3.5, we consider the user 
+to be a "lover" of this movie, otherwise we consider the user the movie's hater.
+If the rating is `NA`, then we know the user has not seen this movie and denote
+"unknown".
+
+&nbsp;
+
+# Tree-based bootstrapping
+
+The tree-based bootstrapping algorithm will find the most "differentiable" movie
+as the spliter to split users into three sub-groups, those who love it, those who 
+dislike it and those who haven't watched it. Then, for each sub-group, we repeat 
+this process and split sub-groups into sub-sub groups. This recursive process will
+built a ternary tree whose nodes are movies, through which users will be divided 
+into subgroups.
+
+&nbsp;
+
+### Calculate differentiation score
+
+```{r}
+calc_score = function(data, id){
+  
+  # find who are lovers, who are haters, who are unknown of the given movie.
+  user_movie_type = 
+    data %>% 
+    filter(movie_id == id) %>% 
+    select(user_id, type)
+  
+  # calculate differentiation score
+  score = 
+    data %>% 
+    # In input data, in each row, the type column represent the user's attitude 
+    # towards the movie in this row. However, what we need is the user's attitude
+    # toward the given movie. So here we remove the original type column at first
+    select(-type) %>% 
+    # Then, by join, we re-introduced the type column, which now represent the 
+    # user's attitude toward the given movie.
+    left_join(user_movie_type, by = "user_id") %>% 
+    # the given movie should be excluded for calculating variance
+    filter(movie_id != id) %>% 
+    # calculating sigma_{N+, m}, sigma_{N-, m}, sigma{\overline{N}, m}
+    group_by(type, movie_id) %>% 
+    summarize(var = var(rating, na.rm = TRUE)) %>% 
+    pull(var) %>% 
+    # sum up to get D(M)
+    sum(na.rm = TRUE)
+  
+  return(score)
+}
+
+```
+
+
+To quantitatively describe the characteristic of "differentiable", the algorithm defined
+the differentiation score, $D(m)$ for movie $m$, which is the sum of subgroups' standard 
+deviation of ratings on other movies:
+
+$$D(m) = \sigma_{u \in N^{+}(m)} + \sigma_{u \in N^{-}(m)} + \sigma_{u \in \overline{N}(m)}$$
+
+- $\sigma_{u \in N}$: the standard deviation of ratings on all movies users in $N$ have seen. $\displaystyle \sigma_{u \in N} = \sum_{m} \sigma_{u \in N, m}$.
+- $\sigma_{u \in N, m}$: the standard deviation of ratings on $m$ given by users in $N$. 
+- $N^{+}(m)$: users who love $m$
+- $N^{-}(m)$: users who dislike $m$
+- $\overline{N}(m)$: users who haven't seen $m$
+
+By the definition, the most differential movie, i.e. the best splitter, should have the lowest $D(m)$,
+because bad splitters will divide people with different taste into the same sub-group, resulting in increased
+$D(m)$.
+
+We built a function `calc_score` for calculating $D(m)$ for the given
+movie.
+
+&nbsp;
+
+### Create a ternary tree class
+
+```{r, warning=FALSE}
+setClass("movieTreeNode",
+  slots = c(
+    mid = "numeric",
+    sub_lover = "movieTreeNode",
+    sub_unknown = "movieTreeNode",
+    sub_hater = "movieTreeNode"
+  ) 
+)
+```
+
+Because the algorithm will generate a tree like structure, we created a ternary 
+tree class, `movieTreeNode` to store the calculation result.
+
+&nbsp;
+
+### Main function
+
+```{r}
+# root is the root node of the ternary tree
+# levels is the depth of the tree
+
+find_movies = function(data, levels, root){
+  
+  # when level = 0, end the recursion process
+  # when nrow(data) = 0, there is no users in this subgroup, so emd recursion
+  if (levels == 0 || nrow(data) == 0) {
+    return(root)
+  }
+  
+  # list all movies
+  movies = 
+    data %>% 
+    pull(movie_id) %>% 
+    as_vector() %>% 
+    as.integer()
+  
+  # for each movie, calculate its D(m)
+  scores = list()
+  for (i in 1:length(movies)) {
+    scores[[i]] = calc_score(data, movies[[i]])
+  }
+  
+  # find the movie with lowest D(m)
+  scores = as_vector(scores) %>% as.numeric()
+  ind = which(scores == min(scores))[1]
+  movie = movies[ind]
+  
+  # give the node this movie as its value
+  root@mid = movie
+
+  # generate subgroups of lovers of this movie
+  lovers = 
+    data %>%
+    filter(movie_id == movie, type == "lover") %>% 
+    pull(user_id) %>% 
+    as.integer()
+    
+  lovers_data = 
+    data %>% 
+    filter(user_id %in% lovers) %>% 
+    filter(movie_id != movie)
+  
+  # generate subgroups of haters of this movie
+  haters =
+    data %>%
+    filter(movie_id == movie, type == "hater") %>% 
+    pull(user_id) %>% 
+    as.integer()
+  
+  haters_data = 
+    data %>% 
+    filter(user_id %in% haters) %>% 
+    filter(movie_id != movie)
+  
+  # generate subgroups of who unknown of this movie
+  unknowns = 
+    data %>%
+    filter(movie_id == movie, type == "unknown") %>% 
+    pull(user_id) %>% 
+    as.integer()
+    
+  unknowns_data =
+    data %>% 
+    filter(user_id %in% unknowns) %>% 
+    filter(movie_id != movie)
+  
+  # recursion, find the most differentiable movie in each subgroup
+  root@sub_lover = find_movies(lovers_data, levels - 1, new("movieTreeNode"))
+  root@sub_unknown = find_movies(unknowns_data, levels - 1, new("movieTreeNode"))
+  root@sub_hater = find_movies(haters_data, levels - 1, new("movieTreeNode"))
+  
+  return(root)
+}
+
+```
+
+We implemented the algorithm in the main function `find_movies`, which will build
+the ternary movie tree at the given depth. Each movie node represent the most 
+differentiable movie in the corresponding sub-group.
+
+&nbsp;
+
+### Read the tree by level-order traversal
+
+```{r}
+dfs = function(root, level, res){
+  
+  if (length(res) < level) {
+    res[[level]] = list()
+  }
+  
+  if (identical(root@mid, numeric(0))) {
+    # increasing the readability of future traversal result
+    # by using -1 of the null node value
+    res[[level]] = append(res[[level]], -1)
+    return(res)
+  }
+  
+  res[[level]] = append(res[[level]], root@mid)
+  
+  res = dfs(root@sub_lover, level + 1, res)
+  res = dfs(root@sub_unknown, level + 1, res)
+  res = dfs(root@sub_hater, level + 1, res)
+  
+  return(res)
+}
+
+```
+
+After running the main function, we would get the ternary tree store differentiable
+movies. To read this tree, we used level order traversal, in which we set null node's
+value to -1 for better readability.
+
+
+&nbsp;
+
+# Implementation
+
+### Test
+
+For testing, we perform the bootstrapping on 5000 rows of sampled data, 
+generate a ternary tree with depth equals to 3, and retrieve the result to 
+see among the 100 candidate movies which are differentiable movies.
+
+```{r, message=FALSE, warning=FALSE}
+
+set.seed(777)
+root = find_movies(sample_n(user_cate, 5000), 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list completely made up of -1, 
+# as they represent null nodes subject to leaf nodes
+# so we directly discard it.
+res = res[1:length(res) - 1]
+
+format(res)
+```
+
+
+&nbsp;
+
+### Running on the whole dataset
+
+We also performed the bootstrapping process on the whole dataset. Due to the 
+large time cost, the calculation is not performed while knitting this document
+but in advance, and the result was recorded as showed in the following section
+
+```{r, eval=FALSE}
+
+root = find_movies(user_cate, 3, new("movieTreeNode"))
+res = dfs(root, 1, list())
+
+# The last element must be a list made up of several -1, so we directly discard it.
+res = res[1:length(res) - 1]
+
+format(res)
+```
+
+
+&nbsp;
+
+### Result
+
+The movie id sequence obtained:
+
+```{r after 2000}
+result = list(list(7143), list(5952, 6016, 6377), list(7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993))
+
+format(result)
+```
+
+These movies are:
+
+```{r, message=FALSE}
+movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
+movie_seq = 1:13
+
+movies_df = tibble(seq = movie_seq, movie_id = movies)
+
+movie_info = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names()
+
+movie_info %>% 
+  filter(movie_id %in% movies) %>% 
+  left_join(movies_df) %>% 
+  arrange(seq) %>% 
+  select(-seq) %>% 
+  distinct() %>% 
+  kableExtra::kbl() %>% 
+  kableExtra::kable_styling(font_size = 12)
+```
+
+&nbsp;
+
+### Graphic interpretation:
+
+According to the result, when facing new users, we can let them show their attitude for above movies:
+
+
+<img src="pics/recsys.png" style="width:100%">
+

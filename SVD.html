@@ -9,7 +9,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
 
 
 <title>SVD-based recommendation</title>
@@ -30,7 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -218,7 +221,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -228,6 +297,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -289,48 +368,32 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">SVD-based recommendation</h1>
-<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
-<h4 class="date">2021/10/6</h4>
 
 </div>
 
 
-<div id="predicting-ratings-based-on-funk-svd" class="section level1">
-<h1>Predicting Ratings Based on Funk-SVD</h1>
-<div id="funk-svd" class="section level2">
-<h2>Funk-SVD</h2>
-<ul>
-<li>Authored by <a href="https://sifter.org/~simon/journal/20061211.html">Simon Funk</a></li>
-<li>Core idea: decompose the user-movie sparse matrix <span class="math inline">\(R\)</span> into two matrix, the user feature matrix <span class="math inline">\(P\)</span> and the movie feature matrix <span class="math inline">\(Q\)</span> which satisfies <span class="math inline">\(R = P \times Q^T\)</span>, then a user’s predicted rating towards a movie can be calculated by <span class="math inline">\(\displaystyle R_{um} = P_u \cdot Q^T_m\)</span>.</li>
-<li>To find <span class="math inline">\(P\)</span>, <span class="math inline">\(Q\)</span>, we will generate two random matrix, and perform gradient descent to minimize the loss (RMSE) to let their product approximate the matrix we have. (details were described in the later part.)</li>
-<li>Features are latent factors that we can’t and don’t have to directly measure or understand.</li>
-<li>In human words: the interaction between a user’s latent characteristics and a movie’s latent characteristics decides the user’s rating to the movie. Find values of these latent characteristics by decomposing the rating matrix, then predict ratings based on them.</li>
-</ul>
-</div>
-<div id="gradient-descent" class="section level2">
-<h2>Gradient Descent</h2>
-<ul>
-<li><p>loss function: RMSE + Reg <span class="math inline">\(\displaystyle \implies L(P, Q) = \sum_{(u, m) \in \text{Train}} \left(R_{um} - P_u \cdot Q^T_m \right)^2 + \lambda \sum_u||P_u||^2 + \lambda \sum_m ||Q_m||^2\)</span></p></li>
-<li><p><span class="math inline">\(\displaystyle \frac {\partial}{\partial P_u}L = \sum_{m} 2(P_uQ_m^T - R_{um})Q_m + 2\lambda P_u\)</span>, <span class="math inline">\(\quad \displaystyle \frac {\partial}{\partial Q_m}L = \sum_{u} 2(P_uQ_m^T - R_{um})P_u + 2\lambda Q_m\)</span></p></li>
-<li><p><span class="math inline">\(P_u = P_u - \alpha \frac {\partial L}{\partial P_u}\)</span>, <span class="math inline">\(\quad Q_m = Q_m - \alpha \frac {\partial L}{\partial Q_m}\)</span></p></li>
-</ul>
-</div>
-</div>
-<div id="implementation" class="section level1">
-<h1>Implementation</h1>
-<div id="import-dependencies" class="section level2">
-<h2>Import dependencies</h2>
-<pre class="r"><code>library(tidyverse)
+<p> </p>
+<p>One fundamental idea about personalized recommendation is, recommend items with features matching preferences of users. In the setting of movie recommendation, for example, recommend to people who love martial art Jackie Chan’s or Donnie Yen’s movies, recommend people stressed out for relaxing movies. (not necessarily comedy, as horror film can also be relaxing sometimes.) However, these characteristics in users or movies are usually latent or hard to measure. Therefore, here we built a latent factor model, Funk-SVD, to predict ratings for existing users in the dataset.</p>
+<p> </p>
+<div id="dependencies" class="section level3">
+<h3>Dependencies</h3>
+<pre class="r fold-show"><code>library(tidyverse)
 library(patchwork)</code></pre>
+<p> </p>
 </div>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
-<ul>
-<li>Due to the limitation of computing power, we only predict ratings for the first 20 users and the first 20 movies in the dataset.</li>
-</ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
@@ -347,57 +410,114 @@ users = rownames(rating_matrix)[1:20]
 movies = colnames(rating_matrix)[1:20]
 
 rating_matrix = rating_matrix[users, movies]</code></pre>
+<p>In the data preparation process, we built dataframe from the raw rating file. Then, we transformed the tidy data into a rating matrix, with column represent movies, rows represent users, and values in each grid represent ratings.</p>
+<p>Due to the limitation of computing power, we only predict ratings for the first 20 users and the first 20 movies in the dataset, and didn’t implement this algorithm in our shiny app.</p>
+<p> </p>
 </div>
-<div id="algorithm-implementation" class="section level2">
-<h2>Algorithm implementation</h2>
-<ul>
-<li>Hyper-parameters of our model:
-<ul>
-<li><span class="math inline">\(K\)</span>: number of latent factors</li>
-<li><span class="math inline">\(\text{max iter}\)</span>: number of rounds performing gradient descent</li>
-<li><span class="math inline">\(\alpha\)</span>: learning rate</li>
-<li><span class="math inline">\(\lambda\)</span>: coefficient of regularization term</li>
-</ul></li>
-</ul>
-<pre class="r"><code>funk_svd = function(R, K, max_iter, alpha, lambda){
+<div id="funk-svd" class="section level2">
+<h2>Funk-SVD</h2>
+<p>Funk-SVD was named and authored by <a href="https://sifter.org/~simon/journal/20061211.html">Simon Funk</a>.</p>
+<p>The core idea of this algorithm is that decompose the user-movie sparse matrix <span class="math inline">\(R\)</span> into two matrix, the user feature matrix <span class="math inline">\(P\)</span> and the movie feature matrix <span class="math inline">\(Q\)</span> which satisfies <span class="math inline">\(R = P \times Q^T\)</span>, then predicted rating by calculating <span class="math inline">\(\displaystyle R_{um} = P_u \cdot Q^T_m\)</span>. Features are latent factors that we can’t and don’t have to directly measure or understand.</p>
+<p>In human words, the interaction between a user’s latent characteristics and a movie’s latent characteristics decides the user’s rating to the movie. Find values of these latent characteristics by decomposing the rating matrix, then predict ratings based on them.</p>
+<p>To find <span class="math inline">\(P\)</span>, <span class="math inline">\(Q\)</span>, we will generate two random matrix, and perform gradient descent to minimize the loss to let their product approximate the matrix we have.</p>
+<p> </p>
+</div>
+<div id="gradient-descent" class="section level2">
+<h2>Gradient Descent</h2>
+<div id="loss-function" class="section level4">
+<h4>Loss function</h4>
+<p>The gradient descent will try to minimize the loss, which is defined by the loss function made up by two parts: sum of squared error and regularization terms. The regularization terms were added to prevent the model becoming over-fitted, as it penalize models with more complex <span class="math inline">\(P\)</span>, <span class="math inline">\(Q\)</span> matrix.</p>
+<p><span class="math display">\[\displaystyle L(P, Q) = \sum_{(u, m) \in \text{Train}} \left(R_{um} - P_u \cdot Q^T_m \right)^2  + \lambda \sum_u||P_u||^2 + \lambda \sum_m ||Q_m||^2\]</span></p>
+<p> </p>
+</div>
+<div id="gradient" class="section level4">
+<h4>Gradient:</h4>
+<p>Through partial differentiation, we can find the gradients:</p>
+<p><span class="math display">\[\frac {\partial}{\partial P_u}L = \sum_{m} 2(P_uQ_m^T - R_{um})Q_m + 2\lambda P_u \\ \frac {\partial}{\partial Q_m}L = \sum_{u} 2(P_uQ_m^T - R_{um})P_u + 2\lambda Q_m\]</span>  </p>
+</div>
+<div id="formula-for-iteration" class="section level4">
+<h4>Formula for iteration:</h4>
+<p>Subsequently, we can update the value of <span class="math inline">\(P_u\)</span>, <span class="math inline">\(Q_m\)</span> in each iteration:</p>
+<p><span class="math display">\[P_u := P_u - \alpha \frac {\partial L}{\partial P_u} \\ Q_m := Q_m - \alpha \frac {\partial L}{\partial Q_m}\]</span>  </p>
+</div>
+</div>
+<div id="implementation" class="section level2">
+<h2>Implementation</h2>
+<div id="gradient-descent-function" class="section level4">
+<h4>Gradient descent function</h4>
+<pre class="r"><code>grad_desc = function(R, P, Q, K, alpha, lambda) {
+  
+  M = nrow(R)
+  N = ncol(R)
+  
+  for (u in 1:M) {
+    for (m in 1:N) {
+      if (R[u, m] &gt; 0) {
+        e_um = P[u, ] %*% as.matrix(Q[, m]) - R[u, m]
+        
+        for (k in 1:K) {
+          P[u, k] = P[u, k] - alpha * (2 * e_um * Q[k, m] + 2 * lambda * P[u, k])
+          Q[k, m] = Q[k, m] - alpha * (2 * e_um * P[u, k] + 2 * lambda * Q[k, m])
+        }
+      }
+    }
+  }
+  
+  return(list(P, Q))
+  
+}</code></pre>
+<p>We built the function <code>grad_desc</code> to perform the gradient descent process.</p>
+<p> </p>
+</div>
+<div id="calculate-loss" class="section level4">
+<h4>Calculate loss</h4>
+<pre class="r"><code>calc_loss = function(R, P, Q, K, lambda) {
+  
+  M = nrow(R)
+  N = ncol(R)
+  
+  R_pred = P %*% Q
+        
+  loss = 0
+  for (u in 1:M) {
+    for (m in 1:N) {
+      if (R[u, m] &gt; 0) {
+        loss = loss + (R_pred[u, m] - R[u, m]) ** 2
+          for (k in 1:K) {
+            loss = loss + lambda * (P[u, k]**2 + Q[k, m]**2)
+          }
+      }
+    }
+  }
+  
+  return(loss)
+}</code></pre>
+<p>We built the function <code>calc_loss</code> to calculate loss.</p>
+<p> </p>
+</div>
+<div id="main-function" class="section level4">
+<h4>Main function</h4>
+<pre class="r"><code>train = function(R, K, max_iter, alpha, lambda){
+
     M = nrow(R)
     N = ncol(R)
     
     set.seed(7)
     
+    # generate random matrix
     P = matrix(runif(M*K), nrow = M)
     Q = matrix(runif(N*K), nrow = N) %&gt;% t()
     
+    # record the loss of each iteration
     loss_record = list()
     
     for (step in 1:max_iter) {
         
-        for (u in 1:M) {
-            for (m in 1:N) {
-                if (R[u, m] &gt; 0) {
-                    e_um = P[u, ] %*% as.matrix(Q[, m]) - R[u, m]
-                    
-                    for (k in 1:K) {
-                        P[u, k] = P[u, k] - alpha * (2 * e_um * Q[k, m] + 2 * lambda * P[u, k])
-                        Q[k, m] = Q[k, m] - alpha * (2 * e_um * P[u, k] + 2 * lambda * Q[k, m])
-                    }
-                }
-            }
-        }
+        res = grad_desc(R, P, Q, K, alpha, lambda)
+        P = res[[1]]
+        Q = res[[2]]
         
-        R_pred = P %*% Q
-        
-        loss = 0
-        for (u in 1:M) {
-            for (m in 1:N) {
-                if (R[u, m] &gt; 0) {
-                    loss = loss + (R_pred[u, m] - R[u, m]) ** 2
-                    for (k in 1:K) {
-                        loss = loss + lambda * (P[u, k]**2 + Q[k, m]**2)
-                    }
-                }
-            }
-        }
+        loss = calc_loss(R, P, Q, K, lambda)
         
         loss_record[step] = round(loss, 2)
         
@@ -405,15 +525,24 @@ rating_matrix = rating_matrix[users, movies]</code></pre>
     
     return(list(P, t(Q), loss_record))
 }</code></pre>
+<p>The main function has several hyper-parameters:</p>
+<ul>
+<li><span class="math inline">\(K\)</span>: number of latent factors</li>
+<li><span class="math inline">\(\text{max iter}\)</span>: number of iterations performing gradient descent</li>
+<li><span class="math inline">\(\alpha\)</span>: learning rate</li>
+<li><span class="math inline">\(\lambda\)</span>: coefficient of regularization term</li>
+</ul>
+<p> </p>
 </div>
-<div id="test" class="section level2">
-<h2>Test</h2>
-<pre class="r"><code>K = 10
-max_iter = 1000
-alpha = 0.01
-lambda = 0.0004
-
-res = funk_svd(rating_matrix, K, max_iter, alpha, lambda)
+</div>
+<div id="train" class="section level2">
+<h2>Train</h2>
+<p>Here we performed the train process, and plot the loss over iterations. We can see that after about 100 iterations, the loss is close to 0, suggest the model is well fitted.</p>
+<pre class="r"><code>res = train(rating_matrix, 
+            K = 10, 
+            max_iter = 300, 
+            alpha = 0.01, 
+            lambda = 0.0004)
 
 P = res[[1]]
 Q = res[[2]]
@@ -423,64 +552,71 @@ loss_vec = loss_record %&gt;% as.vector()
 
 loss_path = tibble(
     loss = as.numeric(loss_vec),
-    round = as.numeric(1:length(loss_vec)))
+    iteration = as.numeric(1:length(loss_vec)))
 
 loss_path %&gt;% 
-    ggplot(aes(y = loss, x = round)) +
+    ggplot(aes(y = loss, x = iteration)) +
     geom_line(group = 1) +
     scale_y_sqrt()</code></pre>
-<p><img src="SVD_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="SVD_files/figure-html/unnamed-chunk-6-1.png" width="480" /></p>
+<p> </p>
 </div>
-<div id="visualization" class="section level2">
-<h2>visualization</h2>
+<div id="predict-visualization" class="section level2">
+<h2>Predict &amp; visualization</h2>
+<p>After training, we then predict user’s ratings on movies they haven’t seen, and visualize the predict result.</p>
 <pre class="r"><code>R_pred = 
     P %*% as.matrix(t(Q)) %&gt;% 
-    tibble::as_tibble()</code></pre>
-<pre><code>## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
-## Using compatibility `.name_repair`.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
-<pre class="r"><code>colnames(R_pred) = colnames(rating_matrix)
+    tibble::as_tibble()
 
+colnames(R_pred) = colnames(rating_matrix)
+
+movie_info = read_csv(&quot;./data/small/movies.csv&quot;, col_types = &quot;ccc&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(movie_id, title)
 
 R_pred_tidy = 
     R_pred %&gt;% 
     mutate(user_id = rownames(rating_matrix)) %&gt;%  
-    pivot_longer(movies, names_to = &quot;movie_id&quot;, values_to = &quot;rating&quot;)</code></pre>
-<pre><code>## Note: Using an external vector in selections is ambiguous.
-## i Use `all_of(movies)` instead of `movies` to silence this message.
-## i See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
-## This message is displayed once per session.</code></pre>
-<pre class="r"><code>pred_score =
+    pivot_longer(movies, names_to = &quot;movie_id&quot;, values_to = &quot;rating&quot;) %&gt;% 
+    left_join(movie_info)
+
+
+pred_score =
     R_pred_tidy %&gt;% 
-    ggplot(aes(x = reorder(movie_id, as.numeric(movie_id)), y = reorder(user_id, -as.numeric(user_id)), fill = rating)) +
+    ggplot(aes(x = reorder(title, as.numeric(movie_id)), y = reorder(user_id, -as.numeric(user_id)), fill = rating)) +
     geom_tile() +
-    theme_minimal()
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+    labs(x = &quot;movie&quot;, y = &quot;user id&quot;, title = &quot;Predicted Ratings&quot;)
 
 plot_df = 
     rating_matrix %&gt;%
     tibble::as_tibble() %&gt;% 
     rownames_to_column(&quot;user_id&quot;) %&gt;% 
     pivot_longer(movies, names_to = &quot;movie_id&quot;, values_to = &quot;rating&quot;) %&gt;% 
-    mutate(user_id = as.integer(user_id))
+    mutate(user_id = as.integer(user_id)) %&gt;% 
+    left_join(movie_info)
 
 plot_df[plot_df == 0] = NA
 
 
 original_score = 
     plot_df %&gt;% 
-    ggplot(aes(x = reorder(movie_id, as.numeric(movie_id)), y = reorder(user_id, -as.numeric(user_id)), fill = rating)) +
+    ggplot(aes(x = reorder(title, as.numeric(movie_id)), y = reorder(user_id, -as.numeric(user_id)), fill = rating)) +
     geom_tile() +
-    theme_minimal()
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+    labs(x = &quot;movie&quot;, y = &quot;user id&quot;, title = &quot;Collected Ratings&quot;)
 
 
 original_score + pred_score</code></pre>
-<p><img src="SVD_files/figure-html/unnamed-chunk-5-1.png" width="1152" /></p>
+<p><img src="SVD_files/figure-html/unnamed-chunk-7-1.png" width="960" /></p>
+</div>
+
+
+
 </div>
 </div>
-
-
-
 
 </div>
 
@@ -512,7 +648,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

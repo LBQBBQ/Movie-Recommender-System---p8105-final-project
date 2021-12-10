@@ -584,9 +584,10 @@ genres_count =
   filter(n &gt;= 1500) %&gt;% 
   arrange(desc(n)) %&gt;% 
   knitr::kable() %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;))
+  kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)
 genres_count</code></pre>
-<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">

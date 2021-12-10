@@ -383,6 +383,10 @@ server = function(input, output) {
         rec_movies %>% 
         inner_join(mv_id_title, by = "movie_id") %>% 
         select(-movie_id) %>% 
+        mutate(
+          `predicted rating` = round(pred_rating, 1)
+        ) %>% 
+        select(-pred_rating) %>% 
         head(10)
       
       if (nrow(rec_movies) == 0) {

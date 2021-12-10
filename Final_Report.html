@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
+<meta name="author" content="Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li" />
 
 
-<title>similarity-based recommendation</title>
+<title>Final_Report</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -31,6 +31,7 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -218,6 +219,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -289,190 +293,45 @@ $(document).ready(function () {
 
 <div id="header">
 
-
-
-<h1 class="title toc-ignore">similarity-based recommendation</h1>
-<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
-<h4 class="date">2021/12/5</h4>
-
-</div>
-
-
-<p>A basic strategy for recommendation is, find users similar to the new user, and recommend the new user with what similar users like.</p>
-<p>Let’s denote <span class="math inline">\(w_{uv}\)</span> as the similarity between two users(<span class="math inline">\(u\)</span>, <span class="math inline">\(v\)</span>), <span class="math inline">\(r\)</span> as movie ratings, <span class="math inline">\(m\)</span> as movie, then <span class="math inline">\(w_{uv}\)</span> can be quantitatively defined by pearson correlation:</p>
-<p><span class="math display">\[
-w_{u v}=\frac{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right) \cdot\left(r_{v m}-\bar{r}_{v}\right)}{\sqrt{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right)^{2} \sum_{m \in M}\left(r_{v m}-\bar{r}_{v}\right)^{2}}}
-\]</span></p>
-<p>Once we found users similar to the new user, we can predict the new users rating towards a movie: - <span class="math inline">\(S(u, K)\)</span>: the most similar <span class="math inline">\(K\)</span> users of <span class="math inline">\(u\)</span> - <span class="math inline">\(N(m)\)</span>: users who have rated on movie <span class="math inline">\(m\)</span></p>
-<p><span class="math display">\[
-\hat{r}_{u m}=\bar{r}_{u}+\frac{\sum_{v \in S(u, K) \cap N(m)} w_{u v}\left(r_{v m}-\bar{r}_{v}\right)}{\sum_{v \in S(u, K) \cap N(m)}\left|w_{u v}\right|}
-\]</span> ## Implementation</p>
-<div id="dependencies" class="section level3">
-<h3>Dependencies</h3>
-<pre class="r"><code>library(tidyverse)</code></pre>
-</div>
-<div id="data-preparation" class="section level3">
-<h3>Data preparation</h3>
-<pre class="r"><code>path = &quot;./data/small/ratings.csv&quot;
-
-ratings_tidy = read_csv(path) %&gt;% 
-  janitor::clean_names() %&gt;% 
-  select(-timestamp)</code></pre>
-<pre><code>## Rows: 100836 Columns: 4</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## dbl (4): userId, movieId, rating, timestamp</code></pre>
-<pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>ratings = ratings_tidy %&gt;% 
-  nest(movie_id, rating)</code></pre>
-</div>
-<div id="core-functions" class="section level3">
-<h3>core functions</h3>
-<pre class="r"><code>acquired_data = function(user){
-  return(ratings %&gt;% filter(user_id == user) %&gt;% pull(data))
-}
-
-get_similar = function(user){
-  
-  user_data = acquired_data(user)
-  calc_df = ratings %&gt;% 
-    filter(user_id != user) %&gt;%
-    rename(v_data = data) %&gt;% 
-    mutate(u_data = user_data) %&gt;% 
-    mutate(
-      sim = map2_dbl(u_data, v_data, calc_sim)
-    ) %&gt;% 
-    select(-u_data, -v_data) %&gt;% 
-    arrange(desc(sim)) %&gt;% 
-    head(10)
-  
-  return(calc_df)
-}
-
-
-
-calc_sim = function(u_data, v_data){
-  
-  calc_df = u_data %&gt;% 
-    inner_join(v_data, by = &quot;movie_id&quot;, suffix = c(&quot;_u&quot;, &quot;_v&quot;))
-  
-  # two users should at least watched 5 same movie
-  if (nrow(calc_df) &lt; 5) {
-    return(-1)
-  }
-  
-  r_mean_u = u_data %&gt;% pull(rating) %&gt;% mean()
-  r_mean_v = v_data %&gt;% pull(rating) %&gt;% mean()
-  
-  calc_df = calc_df %&gt;% 
-    mutate(
-      r_u_ct = rating_u - r_mean_u,
-      r_v_ct = rating_v - r_mean_v,
-      r_uv_ct = r_u_ct * r_v_ct,
-      r_u_ct_sq = r_u_ct^2,
-      r_v_ct_sq = r_v_ct^2
-    )
-  
-  sum_r_uv_ct = calc_df %&gt;% pull(r_uv_ct) %&gt;% sum()
-  sum_r_u_ct_sq = calc_df %&gt;% pull(r_u_ct_sq) %&gt;% sum()
-  sum_r_v_ct_sq = calc_df %&gt;% pull(r_v_ct_sq) %&gt;% sum()
-  
-  sim = sum_r_uv_ct / sqrt(sum_r_u_ct_sq * sum_r_v_ct_sq)
-  
-  return(sim)
-}
-
-predict_rating = function(user, movie, sim_users){
-  
-  r_means = ratings_tidy %&gt;% 
-    group_by(user_id) %&gt;% 
-    summarize(r_mean = mean(rating))
-  
-  calc_df = 
-    ratings_tidy %&gt;% 
-    filter(movie_id == movie) %&gt;% 
-    inner_join(sim_users, by = &quot;user_id&quot;) %&gt;% 
-    left_join(r_means, by = &quot;user_id&quot;) %&gt;% 
-    mutate(
-      sim_r_diff = sim * (rating - r_mean),
-      abs_sim = abs(sim)
-    )
-  
-  sum_sim_r_diff = calc_df %&gt;% pull(sim_r_diff) %&gt;% sum()
-  sum_abs_sim = calc_df %&gt;% pull(abs_sim) %&gt;% sum()
-  
-  r_u_mean = acquired_data(user)[[1]] %&gt;% pull(rating) %&gt;% mean()
-  
-  rating = r_u_mean + sum_sim_r_diff/sum_abs_sim
-  
-  return(rating)
-}
-
-main = function(user){
-  
-  sim_users = get_similar(user)
-  
-  movies = sim_users %&gt;% 
-    select(user_id) %&gt;% 
-    left_join(ratings_tidy, by = &quot;user_id&quot;) %&gt;% 
-    distinct(movie_id) %&gt;% 
-    pull(movie_id) 
-  
-  calc_df = tibble(
-    user_id = user,
-    movie_id = movies
-  )
-  
-  watched = acquired_data(user)[[1]] %&gt;% pull(movie_id) %&gt;% as.vector()
-  
-  rec_movies = 
-    calc_df %&gt;% 
-    filter(!movie_id %in% watched) %&gt;% 
-    mutate(
-      r_pred = map2_dbl(user_id, movie_id, ~predict_rating(user = .x, movie = .y, sim_users = sim_users))
-    ) %&gt;% 
-    arrange(desc(r_pred)) %&gt;% 
-    head(10) %&gt;% 
-    select(movie_id, pred_rating = r_pred)
-  
-  return(rec_movies)
-}</code></pre>
-</div>
-<div id="test" class="section level3">
-<h3>test</h3>
-<ul>
-<li>Recommend movies for user 1 and user 77</li>
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
 </ul>
-<pre class="r"><code>main(1)</code></pre>
-<pre><code>## # A tibble: 10 x 2
-##    movie_id pred_rating
-##       &lt;dbl&gt;       &lt;dbl&gt;
-##  1    27611        6.22
-##  2     4223        6.22
-##  3    60684        6.22
-##  4   106489        6.22
-##  5      785        5.89
-##  6     5882        5.84
-##  7     3555        5.72
-##  8     5152        5.72
-##  9    66934        5.72
-## 10    96079        5.72</code></pre>
-<pre class="r"><code>main(77)</code></pre>
-<pre><code>## # A tibble: 10 x 2
-##    movie_id pred_rating
-##       &lt;dbl&gt;       &lt;dbl&gt;
-##  1     1658        6.39
-##  2     3358        6.39
-##  3     3200        6.24
-##  4     3404        6.24
-##  5     1252        5.88
-##  6      913        5.84
-##  7     1234        5.75
-##  8      750        5.61
-##  9      899        5.61
-## 10      912        5.61</code></pre>
+</div>
+
+
+
+<h1 class="title toc-ignore">Final_Report</h1>
+<h4 class="author">Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li</h4>
+<h4 class="date">12/7/2021</h4>
+
+</div>
+
+
+<div id="motivation" class="section level1">
+<h1>Motivation</h1>
+<p>Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people’s need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.</p>
+</div>
+<div id="related-work" class="section level1">
+<h1>Related work</h1>
+<p>Haolin has previous exposure to the movielens dataset in his studies and has had some ideas about it. Shaocong, Yuxuan and Boqian all have some good knowledge of statistics, and are good at data analysis with R. At the same time, all of us hope to learn something new and complete the challenge through this project. We are eager to improve ourselves and with this thought in mind, we decide to complete this difficult project.</p>
+</div>
+<div id="initial-questions" class="section level1">
+<h1>Initial questions</h1>
+</div>
+<div id="data" class="section level1">
+<h1>Data</h1>
+</div>
+<div id="exploratory-analysis" class="section level1">
+<h1>Exploratory analysis</h1>
+</div>
+<div id="additional-analysis" class="section level1">
+<h1>Additional analysis</h1>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
 </div>
 
 
@@ -508,6 +367,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Shaocong Zhang" />
+
+<meta name="date" content="2021-11-22" />
+
+<title>tag-based recommendation</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="Proposal.html">Proposal</a>
+</li>
+<li>
+  <a href="EDA.html">Exploratory Analyses</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Recommendation Algorithm
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
+    </li>
+    <li>
+      <a href="user_similarity.html">user-similarity based recommendation</a>
+    </li>
+    <li>
+      <a href="SVD.html">SVD</a>
+    </li>
+    <li>
+      <a href="tag_system_recommendation.html">tag-based recommendation</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://hzhong.shinyapps.io/movierecommender/">Shinyapp</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/ShaocongZ/Final_Project/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">tag-based recommendation</h1>
+<h4 class="author">Shaocong Zhang</h4>
+<h4 class="date">11/22/2021</h4>
+
+</div>
+
+
+<p>Now I get the user tagging behavior data. The dataset contains user id, movie id, tag and time stamp (it represents seconds since midnight Coordinated Universal Time of January 1, 1970, but I will not use this variable in this part). Based on these information, I can construct a personalized recommendation algorithm by:</p>
+<ol style="list-style-type: decimal">
+<li><p>Count the most commonly used tags of the user.</p></li>
+<li><p>For each tag, count the movies that have been labeled the most times.</p></li>
+<li><p>For a user, first find his commonly used tags, and then find the most popular movies with these tags to recommend to the user.</p></li>
+</ol>
+<p>For the above algorithm, the formula of user u’s interest in movie i is as follows:</p>
+<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
+<p>where <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, I should build our function first.</p>
+<pre class="r"><code># Set up interest function
+fc.interest = function(u, i) {
+B.u = 
+  remove.tag %&gt;% 
+  filter(user_id == u)
+
+B.u.distinct = 
+  B.u %&gt;% 
+  distinct(tag)
+
+remove.tag.distinct = 
+  remove.tag %&gt;% 
+  select(-movie_id, -timestamp) %&gt;% 
+  distinct()
+
+B.i = 
+  remove.tag %&gt;% 
+  filter(movie_id == i)
+
+B.i.distinct = 
+  B.i %&gt;% 
+  select(-tag, -timestamp) %&gt;% 
+  distinct()
+
+n_ub = c()
+n_bi = c()
+n_bu = c()
+lg.value = c()
+n_iu = nrow(B.i.distinct)
+value = c()
+
+for (b in 1:nrow(B.u.distinct)) {
+  n_ub[b] = sum(B.u$tag == as.character(B.u.distinct[b, 1]))
+  n_bi[b] = sum(B.i$tag == as.character(B.u.distinct[b, 1]))
+  n_bu[b] = sum(remove.tag.distinct$tag == as.character(B.u.distinct[b, 1]))
+  lg.value[b] = log(1 + n_bu[b]) * log(1 + n_iu)
+  value[b] = n_ub[b] * n_bi[b] / lg.value[b]
+}
+return(interest = round(sum(value), 2))
+}</code></pre>
+<div id="find-the-most-popular-movies-and-the-most-active-users" class="section level3">
+<h3>Find the most popular movies and the most active users</h3>
+<p>After building the function, I want to select the most popular movies to see how this function works. However, the dataset only contains Since the dataset I have only contains about 3700 tags labeled by the users, I will then choose several movies that have labeled most by users. In this way, I select the movies that has labeled by more than 4 users. For example, Star Wars: Episode IV - A New Hope.</p>
+<p><img src="pics/starwar.jpg" style="width:75%"></p>
+<pre class="r"><code>popular.movie = 
+  remove.tag %&gt;% 
+  select(-tag, -timestamp) %&gt;% 
+  distinct() %&gt;%
+  group_by(movie_id) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  filter(count &gt; 3) %&gt;% 
+  mutate(
+    &quot;movie id&quot; = movie_id
+  ) %&gt;% 
+  select(-movie_id) %&gt;% 
+  select(&quot;movie id&quot;, count) %&gt;% 
+  arrange(desc(count))
+
+active.user = 
+  remove.tag %&gt;% 
+  select(-tag, -timestamp) %&gt;%
+  distinct() %&gt;% 
+  group_by(user_id) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  filter(count &gt; 20) %&gt;% 
+  arrange(desc(count))
+
+active.user.vec = as.vector(active.user$user_id)
+popular.movie.vec = as.vector(popular.movie$`movie id`)
+
+movie.name = 
+  movies %&gt;% 
+  janitor::clean_names() %&gt;%
+  filter(movie_id %in% popular.movie.vec) %&gt;% 
+  knitr::kable()
+
+movie.name</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+movie_id
+</th>
+<th style="text-align:left;">
+title
+</th>
+<th style="text-align:left;">
+genres
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+260
+</td>
+<td style="text-align:left;">
+Star Wars: Episode IV - A New Hope (1977)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+296
+</td>
+<td style="text-align:left;">
+Pulp Fiction (1994)
+</td>
+<td style="text-align:left;">
+Comedy|Crime|Drama|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+527
+</td>
+<td style="text-align:left;">
+Schindler’s List (1993)
+</td>
+<td style="text-align:left;">
+Drama|War
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+541
+</td>
+<td style="text-align:left;">
+Blade Runner (1982)
+</td>
+<td style="text-align:left;">
+Action|Sci-Fi|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+750
+</td>
+<td style="text-align:left;">
+Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb (1964)
+</td>
+<td style="text-align:left;">
+Comedy|War
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2959
+</td>
+<td style="text-align:left;">
+Fight Club (1999)
+</td>
+<td style="text-align:left;">
+Action|Crime|Drama|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4226
+</td>
+<td style="text-align:left;">
+Memento (2000)
+</td>
+<td style="text-align:left;">
+Mystery|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4878
+</td>
+<td style="text-align:left;">
+Donnie Darko (2001)
+</td>
+<td style="text-align:left;">
+Drama|Mystery|Sci-Fi|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7361
+</td>
+<td style="text-align:left;">
+Eternal Sunshine of the Spotless Mind (2004)
+</td>
+<td style="text-align:left;">
+Drama|Romance|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8641
+</td>
+<td style="text-align:left;">
+Anchorman: The Legend of Ron Burgundy (2004)
+</td>
+<td style="text-align:left;">
+Comedy
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+79132
+</td>
+<td style="text-align:left;">
+Inception (2010)
+</td>
+<td style="text-align:left;">
+Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="create-heat-map" class="section level3">
+<h3>Create heat map</h3>
+<p>After having the movie list that I want to further investigate, I will then randomly select 30 users to create a heat map for visualization.</p>
+<pre class="r"><code># construct a new table of the selected id and movie
+heat.map = tibble(user_id = rep(active.user.vec, length(popular.movie.vec)), movie_id = rep(popular.movie.vec, length(active.user.vec)))
+
+# add insterest value to the table
+interest = c()
+for (i in 1:nrow(heat.map)) {
+  interest[i] = fc.interest(as.numeric(heat.map[i, 1]), as.numeric(heat.map[i, 2]))
+}
+
+heat.map = add_column(heat.map, interest)
+
+# build heat map
+heat.map %&gt;% 
+  ggplot(aes(y = as.factor(user_id), x = as.factor(movie_id), fill = interest)) +
+  geom_tile() +
+  geom_raster() +
+  labs(
+    x = &quot;Movie ID&quot;,
+    y = &quot;User ID&quot;
+  )</code></pre>
+<p><img src="tag_system_recommendation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="discussion" class="section level3">
+<h3>Discussion</h3>
+<p>Tag based TF-IDF can help us predict the user’s interest on a certain movie (or item). The molecule of the formula, which is <span class="math inline">\(\sum_{b} n_{u, b} n_{b, i}\)</span>, firstly compute the user’s interest on a certain movie by finding the sets. <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b and <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b</p>
+<p>However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problem, I improve this formula by drawing on the idea of TF-IDF and construct the new formula.</p>
+<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span>,</p>
+<p>where <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. The denominator of the formula is used to appropriately punish popular labels and popular items, but the results will not reduce the offline accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p>Although I got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, <span class="math inline">\(n_{b, i}\)</span>, which is the number of times that movie i has been labeled tag b, will always be 0. Then I cannot predict the user’s interest anymore and the heat map then will be bad and doesn’t contain useful information.</p>
+<p>Luckily, there are several movies are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. I selected the popular movies and active users and then created a heat map.</p>
+<p>It is conceivable that if the sample data set is large enough, then I will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the size of the interest is delineated, and the movie is recommended to the user if it is larger than a certain value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users’ will be recommended. In this project, because of the limited sample dataset, time and experience, I could not go deeper. But I am confident that this is a successful attempt.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

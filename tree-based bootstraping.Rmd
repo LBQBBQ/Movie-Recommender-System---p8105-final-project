@@ -34,14 +34,34 @@ library(tidyverse)
 ## Data preparation
 
 ```{r}
-path = "./data/small/ratings.csv"
 
-rating_tidy = read_csv(path, col_types = "iinc") %>% 
+rating_tidy = read_csv("./data/small/ratings.csv", col_types = "iinc") %>% 
   janitor::clean_names()
+
+cut_year = function(string){
+  year_str = str_split(string, pattern = "\\(")[[1]]
+  year_str = str_remove(year_str[length(year_str)], "\\)")
+  return(as.integer(year_str))
+}
+
+movies = read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %>% 
+  arrange(desc(year)) %>% 
+  drop_na(year) %>% 
+  filter(year >= 2000) %>% 
+  select(movie_id, year)
+
+movie_ids = movies %>% pull(movie_id)
+
 
 hot_movies = 
   rating_tidy %>% 
-  count(movie_id) %>% 
+  count(movie_id) %>%
+  right_join(movies, by = "movie_id") %>% 
   arrange(desc(n)) %>% 
   head(100) %>% 
   arrange(movie_id) %>% 
@@ -87,6 +107,7 @@ user_cate =
   mutate(type = map(rating, classify)) %>% 
   unnest(type) %>% 
   mutate(movie_id = as.numeric(movie_id))
+
 ```
 
 ### calculate differentiation score
@@ -232,7 +253,7 @@ dfs = function(root, level, res){
 - For testing, we perform the bootstrapping on 5000 rows of sampled data, generate the ternary tree, and retrive movies thorugh level order traversal.
 
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
-root = find_movies(sample_n(user_cate, 5000), 3, new("movieTreeNode"))
+root = find_movies(sample_n(user_cate, 1000), 3, new("movieTreeNode"))
 res = dfs(root, 1, list())
 
 # The last element must be a list made up of several -1, so we directly discard it.
@@ -251,6 +272,7 @@ res
 - The calculation is not perform while knitting this document due to large time cost. We performed calculation in advance, and recorded the result (showed in the following section).
 
 ```{r, eval=FALSE}
+
 root = find_movies(user_cate, 3, new("movieTreeNode"))
 res = dfs(root, 1, list())
 
@@ -258,14 +280,15 @@ res = dfs(root, 1, list())
 res = res[1:length(res) - 1]
 
 res
+
 ```
 
-## Result on the overall dataset
 
-- After perform on the overall dataset, we find the following movies have the highest differentiation score.
 
-```{r}
-result = list(list(208), list(356, 1213, 260), list(2028, 150, 1, 4963, 2329, 2571, 1196, 4993, 34))
+## Result on movies released after 2000
+
+```{r after 2000}
+result = list(list(7143), list(5952, 6016, 6377), list(7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993))
 movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
 movie_seq = 1:13
 
@@ -279,6 +302,7 @@ movie_info %>%
   left_join(movies_df) %>% 
   arrange(seq) %>% 
   select(-seq) %>% 
+  distinct() %>% 
   kableExtra::kbl() %>% 
   kableExtra::kable_styling()
   
@@ -289,3 +313,4 @@ movie_info %>%
 
 
 <img src="pics/recsys.jpg" style="width:100%">
+

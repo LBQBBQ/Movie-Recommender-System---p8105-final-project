@@ -1,0 +1,27 @@
+---
+title: "Final_Report"
+author: "Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li"
+date: "12/7/2021"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+# Motivation
+
+Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people's need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.
+
+# Related work
+
+Haolin has previous exposure to the movielens dataset in his studies and has had some ideas about it. Shaocong, Yuxuan and Boqian all have some good knowledge of statistics, and are good at data analysis with R. At the same time, all of us hope to learn something new and complete the challenge through this project. We are eager to improve ourselves and with this thought in mind, we decide to complete this difficult project.
+
+# Initial questions
+
+# Data
+
+
+# Exploratory analysis
+
+# Additional analysis
+
+# Discussion

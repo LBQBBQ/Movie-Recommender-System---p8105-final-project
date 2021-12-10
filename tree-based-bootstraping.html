@@ -17,7 +17,7 @@
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -260,18 +260,21 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="SVD.html">SVD</a>
-    </li>
-    <li>
       <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
     </li>
     <li>
       <a href="user_similarity.html">user-similarity based recommendation</a>
     </li>
+    <li>
+      <a href="SVD.html">SVD</a>
+    </li>
+    <li>
+      <a href="tag_system_recommendation.html">tag-based recommendation</a>
+    </li>
   </ul>
 </li>
 <li>
-  <a href="https://yw3608.shinyapps.io/Movie_Recommendation/">Shinyapps</a>
+  <a href="https://hzhong.shinyapps.io/movierecommender/">Shinyapp</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -323,14 +326,65 @@ library(tidyverse)</code></pre>
 </div>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
-<pre class="r"><code>path = &quot;./data/small/ratings.csv&quot;
-
-rating_tidy = read_csv(path, col_types = &quot;iinc&quot;) %&gt;% 
+<pre class="r"><code>rating_tidy = read_csv(&quot;./data/small/ratings.csv&quot;, col_types = &quot;iinc&quot;) %&gt;% 
   janitor::clean_names()
+
+cut_year = function(string){
+  year_str = str_split(string, pattern = &quot;\\(&quot;)[[1]]
+  year_str = str_remove(year_str[length(year_str)], &quot;\\)&quot;)
+  return(as.integer(year_str))
+}
+
+movies = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %&gt;% 
+  arrange(desc(year)) %&gt;% 
+  drop_na(year) %&gt;% 
+  filter(year &gt;= 2000) %&gt;% 
+  select(movie_id, year)</code></pre>
+<pre><code>## Rows: 9742 Columns: 3</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): title, genres
+## dbl (1): movieId</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre><code>## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA</code></pre>
+<pre class="r"><code>movie_ids = movies %&gt;% pull(movie_id)
+
 
 hot_movies = 
   rating_tidy %&gt;% 
-  count(movie_id) %&gt;% 
+  count(movie_id) %&gt;%
+  right_join(movies, by = &quot;movie_id&quot;) %&gt;% 
   arrange(desc(n)) %&gt;% 
   head(100) %&gt;% 
   arrange(movie_id) %&gt;% 
@@ -501,35 +555,35 @@ rating_dscts =
 </ul>
 <pre><code>## [[1]]
 ## [[1]][[1]]
-## [1] 356
+## [1] 7153
 ## 
 ## 
 ## [[2]]
 ## [[2]][[1]]
-## [1] 1580
+## [1] 6934
 ## 
 ## [[2]][[2]]
-## [1] 527
+## [1] 3897
 ## 
 ## [[2]][[3]]
-## [1] 293
+## [1] 72998
 ## 
 ## 
 ## [[3]]
 ## [[3]][[1]]
-## [1] 1089
+## [1] -1
 ## 
 ## [[3]][[2]]
-## [1] 1265
+## [1] 3578
 ## 
 ## [[3]][[3]]
-## [1] 1206
+## [1] -1
 ## 
 ## [[3]][[4]]
-## [1] 586
+## [1] 3949
 ## 
 ## [[3]][[5]]
-## [1] 1721
+## [1] -1
 ## 
 ## [[3]][[6]]
 ## [1] -1
@@ -538,7 +592,7 @@ rating_dscts =
 ## [1] -1
 ## 
 ## [[3]][[8]]
-## [1] 380
+## [1] -1
 ## 
 ## [[3]][[9]]
 ## [1] -1</code></pre>
@@ -557,12 +611,9 @@ res = res[1:length(res) - 1]
 
 res</code></pre>
 </div>
-<div id="result-on-the-overall-dataset" class="section level2">
-<h2>Result on the overall dataset</h2>
-<ul>
-<li>After perform on the overall dataset, we find the following movies have the highest differentiation score.</li>
-</ul>
-<pre class="r"><code>result = list(list(208), list(356, 1213, 260), list(2028, 150, 1, 4963, 2329, 2571, 1196, 4993, 34))
+<div id="result-on-movies-released-after-2000" class="section level2">
+<h2>Result on movies released after 2000</h2>
+<pre class="r"><code>result = list(list(7143), list(5952, 6016, 6377), list(7153, 7153, 4993, 7361, 48780, 4306, 3578, 4993, 4993))
 movies = c(as_vector(result[[1]]), as_vector(result[[2]]), as_vector(result[[3]]))
 movie_seq = 1:13
 
@@ -583,6 +634,7 @@ movie_info = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;%
   left_join(movies_df) %&gt;% 
   arrange(seq) %&gt;% 
   select(-seq) %&gt;% 
+  distinct() %&gt;% 
   kableExtra::kbl() %&gt;% 
   kableExtra::kable_styling()</code></pre>
 <pre><code>## Joining, by = &quot;movie_id&quot;</code></pre>
@@ -603,123 +655,57 @@ genres
 <tbody>
 <tr>
 <td style="text-align:right;">
-208
+7143
 </td>
 <td style="text-align:left;">
-Waterworld (1995)
+Last Samurai, The (2003)
 </td>
 <td style="text-align:left;">
-Action|Adventure|Sci-Fi
+Action|Adventure|Drama|War
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-356
+5952
 </td>
 <td style="text-align:left;">
-Forrest Gump (1994)
+Lord of the Rings: The Two Towers, The (2002)
 </td>
 <td style="text-align:left;">
-Comedy|Drama|Romance|War
+Adventure|Fantasy
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-1213
+6016
 </td>
 <td style="text-align:left;">
-Goodfellas (1990)
+City of God (Cidade de Deus) (2002)
 </td>
 <td style="text-align:left;">
-Crime|Drama
+Action|Adventure|Crime|Drama|Thriller
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-260
+6377
 </td>
 <td style="text-align:left;">
-Star Wars: Episode IV - A New Hope (1977)
+Finding Nemo (2003)
 </td>
 <td style="text-align:left;">
-Action|Adventure|Sci-Fi
+Adventure|Animation|Children|Comedy
 </td>
 </tr>
 <tr>
 <td style="text-align:right;">
-2028
+7153
 </td>
 <td style="text-align:left;">
-Saving Private Ryan (1998)
+Lord of the Rings: The Return of the King, The (2003)
 </td>
 <td style="text-align:left;">
-Action|Drama|War
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-150
-</td>
-<td style="text-align:left;">
-Apollo 13 (1995)
-</td>
-<td style="text-align:left;">
-Adventure|Drama|IMAX
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-Toy Story (1995)
-</td>
-<td style="text-align:left;">
-Adventure|Animation|Children|Comedy|Fantasy
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4963
-</td>
-<td style="text-align:left;">
-Ocean’s Eleven (2001)
-</td>
-<td style="text-align:left;">
-Crime|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2329
-</td>
-<td style="text-align:left;">
-American History X (1998)
-</td>
-<td style="text-align:left;">
-Crime|Drama
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2571
-</td>
-<td style="text-align:left;">
-Matrix, The (1999)
-</td>
-<td style="text-align:left;">
-Action|Sci-Fi|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1196
-</td>
-<td style="text-align:left;">
-Star Wars: Episode V - The Empire Strikes Back (1980)
-</td>
-<td style="text-align:left;">
-Action|Adventure|Sci-Fi
+Action|Adventure|Drama|Fantasy
 </td>
 </tr>
 <tr>
@@ -735,13 +721,46 @@ Adventure|Fantasy
 </tr>
 <tr>
 <td style="text-align:right;">
-34
+7361
 </td>
 <td style="text-align:left;">
-Babe (1995)
+Eternal Sunshine of the Spotless Mind (2004)
 </td>
 <td style="text-align:left;">
-Children|Drama
+Drama|Romance|Sci-Fi
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+48780
+</td>
+<td style="text-align:left;">
+Prestige, The (2006)
+</td>
+<td style="text-align:left;">
+Drama|Mystery|Sci-Fi|Thriller
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4306
+</td>
+<td style="text-align:left;">
+Shrek (2001)
+</td>
+<td style="text-align:left;">
+Adventure|Animation|Children|Comedy|Fantasy|Romance
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3578
+</td>
+<td style="text-align:left;">
+Gladiator (2000)
+</td>
+<td style="text-align:left;">
+Action|Adventure|Drama
 </td>
 </tr>
 </tbody>

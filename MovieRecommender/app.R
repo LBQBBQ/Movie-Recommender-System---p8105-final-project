@@ -386,7 +386,7 @@ server = function(input, output) {
         mutate(
           `predicted rating` = round(pred_rating, 1)
         ) %>% 
-        select(-pred_rating) %>% 
+        select(`predicted rating`, title, -pred_rating) %>% 
         head(10)
       
       if (nrow(rec_movies) == 0) {

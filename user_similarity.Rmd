@@ -252,7 +252,6 @@ $$
 
 ### Experiment design
 
-
 ```{r}
 experiment = function(experiment_data){
   
@@ -369,13 +368,13 @@ The experiment result reveals that choosing pearson correlation as the measure
 of similarity could yield lower RMSE values. Therefore, in our shiny app, we choose to 
 use `calc_pc_sim`.
 
-```{r, eval=FALSE}
+```{r, message=FALSE}
 rmse_df = read_csv("./data/experiment_rmse.csv") 
 
 rmse_df %>% 
-  ggplot(aes(x = sim_type, y = rmse)) %>% 
-  geom_violin() %>% 
-  labs(x = "Similarity Measurement", y = "RMSE")
+  ggplot(aes(x = sim_type, y = rmse)) +
+  geom_violin() +
+  labs(x = "Similarity Measurement", y = "RMSE of Prediction")
 ```
 
 &nbsp;
@@ -421,7 +420,7 @@ movies with the highest predicted rating to recommend to the user.
 
 &nbsp;
 
-# test
+# Test
 
 Now, we can use the main function to recommend movies for a random user:
 

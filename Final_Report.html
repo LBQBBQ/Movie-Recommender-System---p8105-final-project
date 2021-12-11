@@ -12,10 +12,10 @@
 <meta name="author" content="Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li" />
 
 
-<title>Final_Report</title>
+<title>Final Report</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -384,7 +384,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Final_Report</h1>
+<h1 class="title toc-ignore">Final Report</h1>
 <h4 class="author">Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li</h4>
 <h4 class="date">12/7/2021</h4>
 
@@ -399,6 +399,8 @@ div.tocify {
 </div>
 <div id="related-work" class="section level1">
 <h1>Related work</h1>
+<p>For film industry, good recommendation algorithm may worth billions of dollars. A living example is <a href="https://en.wikipedia.org/wiki/Netflix_Prize">Netflix Prize</a>, where <a href="https://sifter.org/~simon/journal/20061211.html">Funk-SVD</a> was proposed.</p>
+<p>As we are short in computing power needed to train the Funk-SVD model, we then turned to consult the book, Implementation of Recommend System by Liang Xiang, to learn other applicable algorithms.</p>
 <p> </p>
 </div>
 <div id="initial-questions" class="section level1">
@@ -1183,6 +1185,30 @@ boxplot_df2 </code></pre>
 <p>Our train process on the train data <a href="https://shaocongz.github.io/Final_Project/SVD.html#Train">minimized the loss to approximately 0</a>. We further applied this model to <a href="https://shaocongz.github.io/Final_Project/SVD.html#Predict__Visualization">predict ratings for NA value in the original rating matrix</a>. With the size of the matrix in the train data enlarges, the time cost for training this model accurately increases. Therefore, we didn’t apply this model in our shiny app or try to optimize this model.</p>
 <p> </p>
 </div>
+<div id="tag-based-recommendation" class="section level3">
+<h3>Tag-based recommendation</h3>
+<p>In this project, we have implemented several algorithms for recommendation systems, such as tree-based bootstraping, user-similarity based recommendation, and tree-based bootstrapping. The next one I want to introduce is the tag-based recommendation system algorithm. Before introducing the new recommendation system, we need a new dataset to carry on the thoughts. The “tag.csv” in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and time stamp (it represents seconds since midnight Coordinated Universal Time of January 1, 1970, but we will not use this variable in this part). Based on these information, we can construct a personalized recommendation algorithm by:</p>
+<ol style="list-style-type: decimal">
+<li><p>Count the most commonly used tags of the user.</p></li>
+<li><p>For each tag, count the movies that have been labeled the most times.</p></li>
+<li><p>For a user, first find his commonly used tags, and then find the most popular movies with these tags to recommend to the user.</p></li>
+</ol>
+<p>For the above algorithm, the formula of user u’s interest in movie i is as follows:</p>
+<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
+<p>where <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, we should build our function first.</p>
+<p> </p>
+<p>The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item). The function code can be seen <a href="https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Construct_interest_function">here</a>.</p>
+<p> </p>
+<p>After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags labeled by the users. The limited dataset will destroy the credibility of the tag-based recommendation system, as the user we want to analyze may have a few tags and there may also a few tags for movies. In order to making sure that the interest values to be nonzero, we will then choose several movies that have labeled most by users and select several active users. In this way, we select the users that have labeled more than 20 movies and select movies that has labeled by more than 4 users. The selected movies for example, Star Wars: Episode IV - A New Hope. The selected movies’ table is <a href="https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Find_the_most_popular_movies_and_the_most_active_users">here</a>.</p>
+<p> </p>
+<p>To visualize the users’ interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user’s interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest. The detailed code is <a href="https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Create_heat_map">here</a>.</p>
+<p><img src="heat_map.png" style="width:75%"></p>
+<p> </p>
+<p>Tag based TF-IDF can help us predict the user’s interest on a certain movie (or item). The algorithm’s validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups.</p>
+<p> </p>
+<p>The algorithm above have punishment for popular tags and popular movies, and doesn’t reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p> </p>
+</div>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
@@ -1201,7 +1227,18 @@ boxplot_df2 </code></pre>
 <p>Future analysis could provide more information about what factors cause different rating score and try to provides information of the findings.</p>
 <p>Future modifications should aim to provide other types of visualization results. In stead of boxplot, we could try to use density plot, scatter plot, etc.</p>
 <p>Future research should focus on how to do more tests or modelings for nonparametric variable.</p>
+<p> </p>
 </div>
+</div>
+<div id="tag-based-recommendation-1" class="section level2">
+<h2>Tag-based recommendation</h2>
+<p>A tag-based recommendation system can calculate a numerical value by algorithmically visualizing a user’s interest in a movie. Based on the user’s tag set and the tag set of a specific movie, the system calculates the interest value of the movie and recommends the movie to the user based on this value. The molecule of the formula, which is <span class="math inline">\(\sum_{b} n_{u, b} n_{b, i}\)</span>, firstly compute the user’s interest in a certain movie by finding the sets. <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that the user u has labeled tag b and <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b</p>
+<p>However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problems, scholars improve this formula by drawing on the idea of TF-IDF and constructing the new formula.</p>
+<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span>,</p>
+<p>where <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. The denominator of the formula is used to appropriately punish popular labels and popular items, but the results will not reduce the offline accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p>Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, <span class="math inline">\(n_{b, i}\)</span>, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user’s interest anymore and the heat map then will be bad and doesn’t contain useful information.</p>
+<p>Luckily, there are several movies that are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.</p>
+<p>It is confirmed that if the sample dataset is large enough, then a person will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the interest value is held, and the movie is recommended to the user if it is larger than a certain standard value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users’ will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. A further investigation can be done in the future.</p>
 </div>
 </div>
 

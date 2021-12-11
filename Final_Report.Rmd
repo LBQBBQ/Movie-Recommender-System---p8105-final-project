@@ -19,8 +19,7 @@ The prosperity of Internet industry enabled massive knowledge and entertainments
 
 For film industry, good recommendation algorithm may worth billions of dollars. A living example is [Netflix Prize](https://en.wikipedia.org/wiki/Netflix_Prize), where [Funk-SVD](https://sifter.org/~simon/journal/20061211.html) was proposed. 
 
-As we are short in computing power needed to train the Funk-SVD model, we then turned to consult the book, Implementation of Recommend System by Liang Xiang, to learn
-other applicable algorithms.
+As we are short in computing power needed to train the Funk-SVD model, we then turned to consult the book, [Implementation of Recommend System by Liang Xiang](https://book.douban.com/subject/10769749/), to learn other applicable algorithms.
 
 
 &nbsp;
@@ -414,6 +413,24 @@ Future analysis could provide more information about what factors cause differen
 Future modifications should aim to provide other types of visualization results. In stead of boxplot, we could try to use density plot, scatter plot, etc. 
 
 Future research should focus on how to do more tests or modelings for nonparametric variable. 
+
+
+## Additional Analyses
+
+### Finding Differentiable Movies
+
+Through adaptive bootstrapping, we found the most "differentiable" movies in the dataset. However, we noticed that these movies are basically high-rating movies. 
+
+While finding differentiable movies, we demands movies to be both popular and differentiable. 
+
+However, the two terms sometimes can be fundamentally controversial, because movies received more ratings tends to be high-rating movies. That is to say, for such movies, most people will love them and only a small proportion of people may dislike them. The unbalanced population sizes of lovers and haters may affect the calculation of variance of ratings, as a larger population generally has lower variance compared to smaller population, which can subsequently affect the power of $D(m)$ in measuring differentiability. To avoid such problem, if given a dataset with ample records of ratings, we can further filter popular movies to only including those with balanced population of lovers and haters.
+
+### Considering timepoint of rating
+
+In our analysis, we excluded the variable `timestamp`, which describes the timepoint that the rating was given at. However, integration of timepoint may significantly improve the performance of models, because a user's taste may change with time and does not always stay the same. To integrate timepoint, ratings can be adjusted by timepoint, making ratings given earlier become smaller to reward recent ratings as they reflect users' current taste.
+
+### Optimization of calculation process
+
 
 
 

@@ -2,8 +2,9 @@
 title: "**Movie Recommender**"
 output: 
   html_document:
-    code_folding: hide
+    code_folding: null
 ---
+
 <style type="text/css">
 
 h1.title {
@@ -29,9 +30,17 @@ A demo movie recommendation system
 </font>
 </center>
 
-<iframe width="600" height="315" src="https://www.youtube.com/watch?v=6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
 
-![](https://youtu.be/zNzZ1PfUDNk){width="560" height="315"}
+
+</style>
+
+<center>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
+
+</font>
+</center>
+
  
 $\quad$
 $\quad$

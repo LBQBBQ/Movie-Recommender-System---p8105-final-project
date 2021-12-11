@@ -9,12 +9,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
 
 
-<title>Movie Recommender</title>
+<title>test_shiny</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -33,6 +34,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -220,6 +222,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -367,75 +372,77 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore"><strong>Movie Recommender</strong></h1>
+
+<h1 class="title toc-ignore">test_shiny</h1>
+<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
+<h4 class="date">2021/12/7</h4>
 
 </div>
 
 
-<style type="text/css">
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>mv = read_csv(&quot;./data/small/movies.csv&quot;)</code></pre>
+<pre><code>## Rows: 9742 Columns: 3</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): title, genres
+## dbl (1): movieId</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>mv_genres =
+  mv %&gt;% 
+  mutate(genres = map(genres, ~str_split(string = .x, pattern = &quot;\\|&quot;))) %&gt;% 
+  unnest(genres) %&gt;% 
+  unnest(genres)
 
-h1.title {
-  font-size: 38px;
-  color: Black;
-  text-align: center;
+cut_year = function(string){
+  year_str = str_split(string, pattern = &quot;\\(&quot;)[[1]]
+  year_str = str_remove(year_str[length(year_str)], &quot;\\)&quot;)
+  return(as.integer(year_str))
 }
 
-h4.author { /* Header 4 - and the author and data headers use this too  */
-    font-size: 18px;
-  font-family: "Times New Roman", Times, serif;
-  color: DarkRed;
-  text-align: center;
-}
+mv_year = 
+  mv %&gt;%
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %&gt;% 
+  arrange(desc(year))</code></pre>
+<pre><code>## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-</style>
-<center>
-<p><font size = "5"></p>
-<p>A demo movie recommendation system</p>
-</font>
-</center>
-</style>
-<center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/6vIq99VgxkE" frameborder="0" allowfullscreen>
-</iframe>
-</font>
-</center>
-<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
-<div id="about-the-project" class="section level1">
-<h1>About the project</h1>
-<p>The progress of computer and Internet technology has promoted the development of society. In terms of entertainment, the vibrant film industry is now facing another revolution with the Internet and big data support. How to accurately recommend information to users that match their preferences has become an important application and a major challenge in the field of data science. In this way, many websites have established complex, reliable and highly accurate film preference recommendation algorithms or systems. These algorithms or systems are great inventions, which can effectively meet the users’ need to watch movies and greatly reduce the time required for users to search movies. In this context, we want to try to make a demo movie recommendation system based on <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset and try to apply the recommendation system used in daily life to our own website.</p>
-<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
-</div>
-<div id="website-overview" class="section level1">
-<h1>Website Overview</h1>
-<p>This website is designed to construct a demo movie recommendation based on the <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset. The dataset describes 5-star rating and free-text tagging activity from the movie recommendation service. When exploring the website, you will find the <a href="EDA.html">Exploratory Analyses</a>, <a href="tree-based-bootstraping.html">Differentiable Movies</a>, Recommendation Algorithm and Shinyapp tabs.</p>
-<p><span class="math inline">\(\quad\)</span></p>
-<p>In the <a href="EDA.html">Exploratory Analyses</a> tab, you will find:</p>
-<p><span class="math inline">\(\bullet\)</span> Brief analyses of the dataset</p>
-<p><span class="math inline">\(\bullet\)</span> In-depth analyses of the dataset, through statistical tests and visualization</p>
-<p><span class="math inline">\(\quad\)</span></p>
-<p>In the <a href="tree-based-bootstraping.html">Differentiable Movies</a> tab, you will find:</p>
-<p><span class="math inline">\(\bullet\)</span> The logical concept of the algorithm</p>
-<p><span class="math inline">\(\bullet\)</span> Processes of implementing the algorithm</p>
-<p><span class="math inline">\(\bullet\)</span> Results and interpretations</p>
-<p><span class="math inline">\(\quad\)</span></p>
-<p>In the Recommendation Algorithm tab, you will find the concepts, working process and results of:</p>
-<p><span class="math inline">\(\bullet\)</span> <a href="user_similarity.html">Similarity-based recommendation</a></p>
-<p><span class="math inline">\(\bullet\)</span> <a href="SVD.html">SVD-based recommendation</a></p>
-<p><span class="math inline">\(\bullet\)</span> <a href="tag_system_recommendation.html">Tag-based recommendation</a></p>
-<p><span class="math inline">\(\quad\)</span></p>
-<p>The <a href="https://hzhong.shinyapps.io/movierecommender/">shinyapp</a> tab will lead you have an amazing experience of how the movie recommendation system works.</p>
-<p>You can also see our proposal <a href="Proposal.html">here</a>.</p>
-<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
-<div id="collaborators" class="section level3">
-<h3>Collaborators</h3>
-<p><span class="math inline">\(\bullet\)</span> Haoling Zhong</p>
-<p><span class="math inline">\(\bullet\)</span> Shaocong Zhang</p>
-<p><span class="math inline">\(\bullet\)</span> Yuxuan Wang</p>
-<p><span class="math inline">\(\bullet\)</span> Boqian Li</p>
-</div>
-</div>
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA</code></pre>
 
 
 
@@ -472,6 +479,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {

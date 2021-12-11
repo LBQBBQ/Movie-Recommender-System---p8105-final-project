@@ -31,6 +31,7 @@ A demo movie recommendation system
 
 <iframe width="600" height="315" src="https://www.youtube.com/watch?v=6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
 
+![](https://youtu.be/zNzZ1PfUDNk){width="560" height="315"}
  
 $\quad$
 $\quad$

@@ -556,13 +556,12 @@ loss_path = tibble(
 
 loss_path %&gt;% 
     ggplot(aes(y = loss, x = iteration)) +
-    geom_line(group = 1) +
-    scale_y_sqrt()</code></pre>
+    geom_line(group = 1)</code></pre>
 <p><img src="SVD_files/figure-html/unnamed-chunk-6-1.png" width="480" /></p>
 <p> </p>
 </div>
 <div id="predict-visualization" class="section level2">
-<h2>Predict &amp; visualization</h2>
+<h2>Predict &amp; Visualization</h2>
 <p>After training, we then predict user’s ratings on movies they haven’t seen, and visualize the predict result.</p>
 <pre class="r"><code>R_pred = 
     P %*% as.matrix(t(Q)) %&gt;% 

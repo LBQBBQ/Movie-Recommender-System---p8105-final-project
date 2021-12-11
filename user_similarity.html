@@ -517,6 +517,7 @@ get_similar = function(user, calc_sim){
   
   return(calc_df)
 }</code></pre>
+<p>We calculate the similarity score between the given user and every other users, and choose 10 users with highest similarity as similar users.</p>
 <p> </p>
 </div>
 <div id="rating-prediction" class="section level3">
@@ -676,9 +677,10 @@ rmse_df %&gt;% write_csv(&quot;./data/experiment_rmse.csv&quot;)</code></pre>
 <pre class="r"><code>rmse_df = read_csv(&quot;./data/experiment_rmse.csv&quot;) 
 
 rmse_df %&gt;% 
-  ggplot(aes(x = sim_type, y = rmse)) %&gt;% 
-  geom_violin() %&gt;% 
-  labs(x = &quot;Similarity Measurement&quot;, y = &quot;RMSE&quot;)</code></pre>
+  ggplot(aes(x = sim_type, y = rmse)) +
+  geom_violin() +
+  labs(x = &quot;Similarity Measurement&quot;, y = &quot;RMSE of Prediction&quot;)</code></pre>
+<p><img src="user_similarity_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p> </p>
 </div>
 </div>
@@ -717,7 +719,7 @@ rmse_df %&gt;%
 <p> </p>
 </div>
 <div id="test" class="section level1">
-<h1>test</h1>
+<h1>Test</h1>
 <p>Now, we can use the main function to recommend movies for a random user:</p>
 <pre class="r"><code>set.seed(777)
 

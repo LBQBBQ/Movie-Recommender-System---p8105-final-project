@@ -1,5 +1,6 @@
 ---
-title: "tree-based bootstrapping"
+title: "Find most differentiable movies"
+subtitle: "- by tree-based bootstrapping"
 ---
 
 &nbsp;

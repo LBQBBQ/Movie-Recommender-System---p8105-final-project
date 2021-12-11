@@ -9,10 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
 
 
-<title>similarity-based recommendation</title>
+<title>User-similarity-based recommendation</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -30,9 +29,15 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -218,7 +223,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -228,6 +299,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -250,6 +331,9 @@ $(document).ready(function () {
 <li>
   <a href="EDA.html">Exploratory Analyses</a>
 </li>
+<li>
+  <a href="tree-based-bootstraping.html">Differentiable Movies</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Recommendation Algorithm
@@ -258,16 +342,13 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
+      <a href="user_similarity.html">Similarity-based Recommendation</a>
     </li>
     <li>
-      <a href="user_similarity.html">user-similarity based recommendation</a>
+      <a href="SVD.html">Latent-factor-based Recommendation</a>
     </li>
     <li>
-      <a href="SVD.html">SVD</a>
-    </li>
-    <li>
-      <a href="tag_system_recommendation.html">tag-based recommendation</a>
+      <a href="tag_system_recommendation.html">Tag-based Recommendation</a>
     </li>
   </ul>
 </li>
@@ -289,77 +370,70 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">similarity-based recommendation</h1>
-<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
-<h4 class="date">2021/12/5</h4>
+
+<h1 class="title toc-ignore">User-similarity-based recommendation</h1>
 
 </div>
 
 
-<p>A basic strategy for recommendation is, find users similar to the new user, and recommend the new user with what similar users like.</p>
-<p>Let’s denote <span class="math inline">\(w_{uv}\)</span> as the similarity between two users(<span class="math inline">\(u\)</span>, <span class="math inline">\(v\)</span>), <span class="math inline">\(r\)</span> as movie ratings, <span class="math inline">\(m\)</span> as movie, then <span class="math inline">\(w_{uv}\)</span> can be quantitatively defined by pearson correlation:</p>
-<p><span class="math display">\[
-w_{u v}=\frac{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right) \cdot\left(r_{v m}-\bar{r}_{v}\right)}{\sqrt{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right)^{2} \sum_{m \in M}\left(r_{v m}-\bar{r}_{v}\right)^{2}}}
-\]</span></p>
-<p>Once we found users similar to the new user, we can predict the new users rating towards a movie: - <span class="math inline">\(S(u, K)\)</span>: the most similar <span class="math inline">\(K\)</span> users of <span class="math inline">\(u\)</span> - <span class="math inline">\(N(m)\)</span>: users who have rated on movie <span class="math inline">\(m\)</span></p>
-<p><span class="math display">\[
-\hat{r}_{u m}=\bar{r}_{u}+\frac{\sum_{v \in S(u, K) \cap N(m)} w_{u v}\left(r_{v m}-\bar{r}_{v}\right)}{\sum_{v \in S(u, K) \cap N(m)}\left|w_{u v}\right|}
-\]</span> ## Implementation</p>
+<p> </p>
+<p>A basic strategy for recommendation is, find users similar to the new user, and recommend the new user with what similar users like. Based on this strategy, a technique, collaborative filtering, was invented to making predictions (filtering) about the interests of a user by collecting preferences or taste information from many similar users (collaborating).</p>
+<p> </p>
+<p>Here we implemented a user similarity based collaborating filtering algorithm to predict ratings, and this algorithm was further applied to our <a href="https://hzhong.shinyapps.io/movierecommender/">shiny app</a>.</p>
+<p> </p>
 <div id="dependencies" class="section level3">
 <h3>Dependencies</h3>
-<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r fold-show"><code>library(tidyverse)</code></pre>
+<p> </p>
 </div>
-<div id="data-preparation" class="section level3">
-<h3>Data preparation</h3>
+<div id="data-preparation" class="section level1">
+<h1>Data preparation</h1>
 <pre class="r"><code>path = &quot;./data/small/ratings.csv&quot;
 
 ratings_tidy = read_csv(path) %&gt;% 
   janitor::clean_names() %&gt;% 
-  select(-timestamp)</code></pre>
-<pre><code>## Rows: 100836 Columns: 4</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## dbl (4): userId, movieId, rating, timestamp</code></pre>
-<pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>ratings = ratings_tidy %&gt;% 
+  select(-timestamp)
+
+ratings = ratings_tidy %&gt;% 
   nest(movie_id, rating)</code></pre>
+<p>In the data preparation process, we read the raw rating file and nested the two column <code>movie_id</code> and <code>rating</code> for following analyses’ convenience.</p>
+<p> </p>
 </div>
-<div id="core-functions" class="section level3">
-<h3>core functions</h3>
-<pre class="r"><code>acquired_data = function(user){
-  return(ratings %&gt;% filter(user_id == user) %&gt;% pull(data))
-}
-
-get_similar = function(user){
-  
-  user_data = acquired_data(user)
-  calc_df = ratings %&gt;% 
-    filter(user_id != user) %&gt;%
-    rename(v_data = data) %&gt;% 
-    mutate(u_data = user_data) %&gt;% 
-    mutate(
-      sim = map2_dbl(u_data, v_data, calc_sim)
-    ) %&gt;% 
-    select(-u_data, -v_data) %&gt;% 
-    arrange(desc(sim)) %&gt;% 
-    head(10)
-  
-  return(calc_df)
-}
-
-
-
-calc_sim = function(u_data, v_data){
+<div id="algorithm" class="section level1">
+<h1>Algorithm</h1>
+<p>The user similarity based recommendation algorithm predict ratings with the following procedures:</p>
+<ul>
+<li>Find <span class="math inline">\(X\)</span> most similar users to the given user (Here we set <span class="math inline">\(X\)</span> to 10)</li>
+<li>Find all movies that these similar users have rated and the given user has not watched</li>
+<li>Predict the given user’s ratings on these movies based on the similarity measure and ratings of similar user’s</li>
+</ul>
+<p> </p>
+<div id="measure-of-similarity" class="section level3">
+<h3>Measure of similarity</h3>
+<p>We built two functions, <code>calc_pc_sim</code>, <code>calc_cos_sim</code>, to calculate the similarity between users. In subsequent analysis, we will compare the performance of these two measure and choose the better one.</p>
+<p> </p>
+<div id="measure-by-pearson-correlation" class="section level5">
+<h5>Measure by Pearson correlation</h5>
+<p>Let’s denote <span class="math inline">\(w_{uv}\)</span> as the similarity between two users(<span class="math inline">\(u\)</span>, <span class="math inline">\(v\)</span>), <span class="math inline">\(r\)</span> as movie ratings, <span class="math inline">\(m\)</span> as movie, then <span class="math inline">\(w_{uv}\)</span> can be quantitatively defined by Pearson correlation:</p>
+<p><span class="math display">\[
+w_{u v}=\frac{\displaystyle \sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right) \cdot\left(r_{v m}-\bar{r}_{v}\right)}{\displaystyle \sqrt{\sum_{m \in M}\left(r_{u m}-\bar{r}_{u}\right)^{2} \sum_{m \in M}\left(r_{v m}-\bar{r}_{v}\right)^{2}}}
+\]</span></p>
+<pre class="r"><code>calc_pc_sim = function(u_data, v_data){
   
   calc_df = u_data %&gt;% 
     inner_join(v_data, by = &quot;movie_id&quot;, suffix = c(&quot;_u&quot;, &quot;_v&quot;))
   
-  # two users should at least watched 5 same movie
-  if (nrow(calc_df) &lt; 5) {
+  # two users should at least watched 3 same movie
+  if (nrow(calc_df) &lt; 3) {
     return(-1)
   }
   
@@ -382,9 +456,80 @@ calc_sim = function(u_data, v_data){
   sim = sum_r_uv_ct / sqrt(sum_r_u_ct_sq * sum_r_v_ct_sq)
   
   return(sim)
+}</code></pre>
+<p>We built a function, <code>calc_pc_sim</code>, to calculate the pearson correlation according to the above formula.</p>
+<p> </p>
+</div>
+<div id="measure-by-cosine-similarity" class="section level5">
+<h5>Measure by cosine similarity</h5>
+<p>Alternatively, <span class="math inline">\(w_{uv}\)</span> can also be defined by cosine similarity:</p>
+<p><span class="math display">\[
+w_{u v}=\frac{\displaystyle \sum_{m \in M} r_{u m} \cdot r_{v m}}{ \displaystyle \sqrt{\sum_{m \in M}r_{u m}^{2} \cdot \sum_{m \in M}r_{v m}^{2}}}
+\]</span></p>
+<pre class="r"><code>calc_cos_sim = function(u_data, v_data){
+  
+  calc_df = u_data %&gt;% 
+    inner_join(v_data, by = &quot;movie_id&quot;, suffix = c(&quot;_u&quot;, &quot;_v&quot;))
+  
+  # two users should at least watched 3 same movie
+  if (nrow(calc_df) &lt; 3) {
+    return(-1)
+  }
+  
+  calc_df = calc_df %&gt;% 
+    mutate(
+      r_uv = rating_u * rating_v,
+      r_u_sq = rating_u^2,
+      r_v_sq = rating_v^2
+    )
+  
+  sum_r_uv = calc_df %&gt;% pull(r_uv) %&gt;% sum()
+  sum_r_u_sq = calc_df %&gt;% pull(r_u_sq) %&gt;% sum()
+  sum_r_v_sq = calc_df %&gt;% pull(r_v_sq) %&gt;% sum()
+  
+  sim = sum_r_uv / sqrt(sum_r_u_sq * sum_r_v_sq)
+  
+  return(sim)
+}</code></pre>
+<p>We built the function <code>calc_cos_sim</code> to calculate the cosine similarity according to the above formula.</p>
+<p> </p>
+</div>
+</div>
+<div id="identify-similar-users" class="section level3">
+<h3>Identify similar users</h3>
+<pre class="r"><code>acquire_data = function(user){
+  return(ratings %&gt;% filter(user_id == user) %&gt;% pull(data))
 }
 
-predict_rating = function(user, movie, sim_users){
+get_similar = function(user, calc_sim){
+  
+  user_data = acquire_data(user)
+  calc_df = ratings %&gt;% 
+    filter(user_id != user) %&gt;%
+    rename(v_data = data) %&gt;% 
+    mutate(u_data = user_data) %&gt;% 
+    mutate(
+      sim = map2_dbl(u_data, v_data, calc_sim)
+    ) %&gt;% 
+    select(-u_data, -v_data) %&gt;% 
+    arrange(desc(sim)) %&gt;% 
+    head(10)
+  
+  return(calc_df)
+}</code></pre>
+<p> </p>
+</div>
+<div id="rating-prediction" class="section level3">
+<h3>Rating prediction</h3>
+<p>Once we found users similar to the new user, we can predict the new user’s rating towards a movie <span class="math inline">\(m\)</span> by:</p>
+<p><span class="math display">\[
+\hat{r}_{u m}=\bar{r}_{u}+\frac{\sum_{v \in S(u, K) \cap N(m)} w_{u v}\left(r_{v m}-\bar{r}_{v}\right)}{\sum_{v \in S(u, K) \cap N(m)}\left|w_{u v}\right|}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(S(u, K)\)</span>: the most similar <span class="math inline">\(K\)</span> users of <span class="math inline">\(u\)</span></li>
+<li><span class="math inline">\(N(m)\)</span>: users who have rated on movie <span class="math inline">\(m\)</span></li>
+</ul>
+<pre class="r"><code>predict_rating = function(user, movie, sim_users){
   
   r_means = ratings_tidy %&gt;% 
     group_by(user_id) %&gt;% 
@@ -403,16 +548,145 @@ predict_rating = function(user, movie, sim_users){
   sum_sim_r_diff = calc_df %&gt;% pull(sim_r_diff) %&gt;% sum()
   sum_abs_sim = calc_df %&gt;% pull(abs_sim) %&gt;% sum()
   
-  r_u_mean = acquired_data(user)[[1]] %&gt;% pull(rating) %&gt;% mean()
+  r_u_mean = acquire_data(user)[[1]] %&gt;% pull(rating) %&gt;% mean()
   
   rating = r_u_mean + sum_sim_r_diff/sum_abs_sim
   
   return(rating)
+}</code></pre>
+<p> </p>
+</div>
+</div>
+<div id="test-comparison" class="section level1">
+<h1>Test &amp; Comparison</h1>
+<div id="experiment-data" class="section level3">
+<h3>experiment data</h3>
+<pre class="r"><code>set.seed(777)
+experiment_data = ratings_tidy %&gt;% 
+  sample_frac(0.01, weight = user_id)</code></pre>
+<p>Due to limited computing power, we sample 1% of all ratings data as our experiment data.</p>
+<p> </p>
+</div>
+<div id="measure-of-performance" class="section level3">
+<h3>Measure of performance</h3>
+<p>To compare the performance of Pearson correlation and cosine similarity, we use RMSE as the measurement:</p>
+<p><span class="math display">\[
+\operatorname{RMSE}=\frac{\displaystyle\sqrt{\sum_{(u, m) \in Train}\left(r_{u m}-\hat{r}_{u m}\right)^{2}}}{\mid \text { Test } \mid}
+\]</span></p>
+<p> </p>
+</div>
+<div id="experiment-design" class="section level3">
+<h3>Experiment design</h3>
+<pre class="r"><code>experiment = function(experiment_data){
+  
+  test = experiment_data %&gt;% 
+    sample_frac(0.2, weight = user_id)
+
+  train = experiment_data %&gt;% 
+    anti_join(test)
+
+  ratings_tidy = train
+
+  ratings = ratings_tidy %&gt;% 
+    nest(movie_id, rating)
+  
+  cos_sim_users =
+    test %&gt;% 
+    select(user_id) %&gt;% 
+    distinct() %&gt;% 
+    mutate(
+      sim_users = map(user_id, ~get_similar(user = .x, calc_sim = calc_cos_sim))
+      )
+  
+  pc_sim_users = 
+    test %&gt;% 
+    select(user_id) %&gt;% 
+    distinct() %&gt;% 
+    mutate(
+      sim_users = map(user_id, ~get_similar(user = .x, calc_sim = calc_pc_sim))
+      )
+  
+  cos_sum_r_diff_sq_df = 
+    test %&gt;%
+    left_join(cos_sim_users, by = &quot;user_id&quot;) %&gt;% 
+    mutate(
+      r_pred = pmap_dbl(list(user_id, movie_id, sim_users), predict_rating)
+    ) %&gt;% 
+    drop_na(r_pred) %&gt;% 
+    mutate(
+      r_diff_sq = (rating - r_pred)^2
+    ) 
+  
+  cos_sum_r_diff_sq = 
+    cos_sum_r_diff_sq_df %&gt;% 
+    pull(r_diff_sq) %&gt;% 
+    sum(na.rm = TRUE)
+  
+  pc_sum_r_diff_sq_df = 
+    test %&gt;%
+    left_join(pc_sim_users, by = &quot;user_id&quot;) %&gt;% 
+    mutate(
+      r_pred = pmap_dbl(list(user_id, movie_id, sim_users), predict_rating)
+    ) %&gt;% 
+    drop_na(r_pred) %&gt;% 
+    mutate(
+      r_diff_sq = (rating - r_pred)^2
+    ) 
+  
+  pc_sum_r_diff_sq = 
+    pc_sum_r_diff_sq_df %&gt;% 
+    pull(r_diff_sq) %&gt;% 
+    sum(na.rm = TRUE)
+  
+  cos_rmse = sqrt(cos_sum_r_diff_sq) / nrow(cos_sum_r_diff_sq_df)
+  pc_rmse = sqrt(pc_sum_r_diff_sq) / nrow(pc_sum_r_diff_sq_df)
+  
+  return(list(cos_rmse, pc_rmse))
+}</code></pre>
+<p>In each round of experiment, for each user, we randomly extract 20% records of their ratings as the test dataset, and the remained dataset as train dataset. Then, we use the two similarity measures separately to find similar users and subsequently predict ratings on corresponding movies in the test dataset. Finally, we compute the RMSE between predicted ratings and actual ratings in the test data set, and get the two RMSE values.</p>
+<p> </p>
+</div>
+<div id="perform-experiment" class="section level3">
+<h3>Perform experiment</h3>
+<pre class="r"><code>cos_rmse_list = list()
+pc_rmse_list = list()
+
+
+for (i in 1:30) {
+  exp_res = experiment(experiment_data)
+
+  cos_rmse_list = append(cos_rmse_list, exp_res[[1]])
+  pc_rmse_list = append(pc_rmse_list, exp_res[[2]])
+
 }
 
-main = function(user){
+cos_rmse_df = tibble(rmse = cos_rmse_list) %&gt;% unnest()
+pc_rmse_df = tibble(rmse = pc_rmse_list) %&gt;% unnest()
+
+rmse_df = bind_rows(cos_rmse_df, pc_rmse_df, .id = &quot;sim_type&quot;) %&gt;% 
+  mutate(sim_type = if_else(sim_type == 1, &quot;cosine similarity&quot;, &quot;pearson correlation&quot;))
+
+rmse_df %&gt;% write_csv(&quot;./data/experiment_rmse.csv&quot;)</code></pre>
+<p>We performed 30 times of experiment and recorded RMSE values. This process took several hours, so we wrote the result into a document. When knitting this file, we read the result from the document and ignored this chunk.</p>
+<p> </p>
+</div>
+<div id="compare-rmse" class="section level3">
+<h3>Compare RMSE</h3>
+<p>The experiment result reveals that choosing pearson correlation as the measure of similarity could yield lower RMSE values. Therefore, in our shiny app, we choose to use <code>calc_pc_sim</code>.</p>
+<pre class="r"><code>rmse_df = read_csv(&quot;./data/experiment_rmse.csv&quot;) 
+
+rmse_df %&gt;% 
+  ggplot(aes(x = sim_type, y = rmse)) %&gt;% 
+  geom_violin() %&gt;% 
+  labs(x = &quot;Similarity Measurement&quot;, y = &quot;RMSE&quot;)</code></pre>
+<p> </p>
+</div>
+</div>
+<div id="main-function" class="section level1">
+<h1>Main function</h1>
+<pre class="r"><code>main = function(user){
   
-  sim_users = get_similar(user)
+  sim_users = get_similar(user, calc_pc_sim)
   
   movies = sim_users %&gt;% 
     select(user_id) %&gt;% 
@@ -425,7 +699,7 @@ main = function(user){
     movie_id = movies
   )
   
-  watched = acquired_data(user)[[1]] %&gt;% pull(movie_id) %&gt;% as.vector()
+  watched = acquire_data(user)[[1]] %&gt;% pull(movie_id) %&gt;% as.vector()
   
   rec_movies = 
     calc_df %&gt;% 
@@ -439,44 +713,125 @@ main = function(user){
   
   return(rec_movies)
 }</code></pre>
+<p>We built the main function to implement the whole process of recommendation. For the given user, we will find top 10 users similar to him/her, and predicts his/her ratings on movies similar users have seen yet he/she has not watched. Finally, we select 10 movies with the highest predicted rating to recommend to the user.</p>
+<p> </p>
 </div>
-<div id="test" class="section level3">
-<h3>test</h3>
-<ul>
-<li>Recommend movies for user 1 and user 77</li>
-</ul>
-<pre class="r"><code>main(1)</code></pre>
-<pre><code>## # A tibble: 10 x 2
-##    movie_id pred_rating
-##       &lt;dbl&gt;       &lt;dbl&gt;
-##  1    27611        6.22
-##  2     4223        6.22
-##  3    60684        6.22
-##  4   106489        6.22
-##  5      785        5.89
-##  6     5882        5.84
-##  7     3555        5.72
-##  8     5152        5.72
-##  9    66934        5.72
-## 10    96079        5.72</code></pre>
-<pre class="r"><code>main(77)</code></pre>
-<pre><code>## # A tibble: 10 x 2
-##    movie_id pred_rating
-##       &lt;dbl&gt;       &lt;dbl&gt;
-##  1     1658        6.39
-##  2     3358        6.39
-##  3     3200        6.24
-##  4     3404        6.24
-##  5     1252        5.88
-##  6      913        5.84
-##  7     1234        5.75
-##  8      750        5.61
-##  9      899        5.61
-## 10      912        5.61</code></pre>
+<div id="test" class="section level1">
+<h1>test</h1>
+<p>Now, we can use the main function to recommend movies for a random user:</p>
+<pre class="r"><code>set.seed(777)
+
+user = round(runif(1, 1, 610))
+
+movies = read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(-genres)
+  
+main(user) %&gt;% 
+  left_join(movies, by = &quot;movie_id&quot;) %&gt;% 
+  select(title, pred_rating) %&gt;% 
+  kableExtra::kbl(digits = 1) %&gt;% 
+  kableExtra::kable_styling(font_size = 12)</code></pre>
+<table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+title
+</th>
+<th style="text-align:right;">
+pred_rating
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Godfather: Part II, The (1974)
+</td>
+<td style="text-align:right;">
+5.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+American Pie (1999)
+</td>
+<td style="text-align:right;">
+5.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Being John Malkovich (1999)
+</td>
+<td style="text-align:right;">
+5.6
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Crouching Tiger, Hidden Dragon (Wo hu cang long) (2000)
+</td>
+<td style="text-align:right;">
+5.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Snatch (2000)
+</td>
+<td style="text-align:right;">
+5.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Batman (1989)
+</td>
+<td style="text-align:right;">
+5.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Seven (a.k.a. Se7en) (1995)
+</td>
+<td style="text-align:right;">
+5.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark) (1981)
+</td>
+<td style="text-align:right;">
+4.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Minority Report (2002)
+</td>
+<td style="text-align:right;">
+4.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gone Girl (2014)
+</td>
+<td style="text-align:right;">
+4.7
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -508,7 +863,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

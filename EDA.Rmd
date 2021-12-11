@@ -1,12 +1,5 @@
 ---
-title: "EDA"
-author: "Yuxuan Wang"
-date: "11/23/2021"
-output: 
-    html_document:
-        toc: true
-        toc_float: true
-        code_folding: hide
+title: "Exploratory data analysis"
 ---
 
 &nbsp;

@@ -13,8 +13,8 @@
 
 <title>Movie Recommender</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -29,7 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -217,7 +221,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -227,6 +297,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -249,6 +329,9 @@ $(document).ready(function () {
 <li>
   <a href="EDA.html">Exploratory Analyses</a>
 </li>
+<li>
+  <a href="tree-based-bootstraping.html">Differentiable Movies</a>
+</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Recommendation Algorithm
@@ -257,16 +340,13 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="tree-based-bootstraping.html">tree-based bootstraping</a>
+      <a href="user_similarity.html">Similarity-based Recommendation</a>
     </li>
     <li>
-      <a href="user_similarity.html">user-similarity based recommendation</a>
+      <a href="SVD.html">Latent-factor-based Recommendation</a>
     </li>
     <li>
-      <a href="SVD.html">SVD</a>
-    </li>
-    <li>
-      <a href="tag_system_recommendation.html">tag-based recommendation</a>
+      <a href="tag_system_recommendation.html">Tag-based Recommendation</a>
     </li>
   </ul>
 </li>
@@ -288,22 +368,82 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore"><strong>Movie Recommender</strong></h1>
+<h3 class="subtitle">A demo movie recommendation system</h3>
 
 </div>
 
 
-<p><span style="font-size:2em;">a demo movie recommendation system</span></p>
+<style type="text/css">
+
+h1.title {
+  font-size: 38px;
+  color: Black;
+  text-align: center;
+}
+
+h4.author { /* Header 4 - and the author and data headers use this too  */
+    font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkRed;
+  text-align: center;
+}
+
+</style>
 <p><img src="pics/movies.jpg" style="width:80%"></p>
 <p>Image source: 38 Top Fall Movies To Get You In the Autumn Mood( Leah Hall 2021)</p>
-<ul>
-<li>See our <a href="Proposal.html">proposal</a></li>
-</ul>
+<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
+<div id="about-the-project" class="section level1">
+<h1>About the project</h1>
+<p>Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people’s need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.</p>
+<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
+</div>
+<div id="website-overview" class="section level1">
+<h1>Website Overview</h1>
+<p>This website is designed to construct a demo movie recommendation based on the <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset. The dataset describes 5-star rating and free-text tagging activity from the movie recommendation service. When exploring the website, you will find the <a href="EDA.html">Exploratory Analyses</a>, Recommendation Algorithm and Shinyapp tabs.</p>
+<p><span class="math inline">\(\quad\)</span></p>
+<p>In the <a href="EDA.html">Exploratory Analyses</a> tab, you will find:</p>
+<p><span class="math inline">\(\bullet\)</span> Brief analyses of the dataset</p>
+<p><span class="math inline">\(\bullet\)</span> Deeper analyses of the dataset, through statistical tests and visualization</p>
+<p><span class="math inline">\(\quad\)</span></p>
+<p>In the Recommendation Algorithm tab, you will find the concepts, working process and results of:</p>
+<p><span class="math inline">\(\bullet\)</span> <a href="tree-based-bootstraping.html">Tree-based bootstrapping</a></p>
+<p><span class="math inline">\(\bullet\)</span> <a href="user_similarity.html">Similarity-based recommendation</a></p>
+<p><span class="math inline">\(\bullet\)</span> <a href="SVD.html">SVD-based recommendation</a></p>
+<p><span class="math inline">\(\bullet\)</span> <a href="tag_system_recommendation.html">Tag-based recommendation</a></p>
+<p><span class="math inline">\(\quad\)</span></p>
+<p>The <a href="https://hzhong.shinyapps.io/movierecommender/">shinyapp</a> tab will lead you have an amazing experience of how the movie recommendation system works.</p>
+<p>You can also see our proposal <a href="Proposal.html">here</a>.</p>
+<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
+</div>
+<div id="additional-information" class="section level1">
+<h1>Additional Information</h1>
+<p><span class="math inline">\(\bullet\)</span> Watch our project <a href="https://www.youtube.com/watch?v=6vIq99VgxkE">Youtube video</a> and get a brief understanding of this amazing project.</p>
+<p><span class="math inline">\(\bullet\)</span> You can read our final project report here to get a comprehensive understanding of how this wonderful project was constructed from start to finish.</p>
+<p><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span></p>
+<div id="collaborators" class="section level3">
+<h3>Collaborators:</h3>
+<p><span class="math inline">\(\bullet\)</span> Haoling Zhong</p>
+<p><span class="math inline">\(\bullet\)</span> Shaocong Zhang</p>
+<p><span class="math inline">\(\bullet\)</span> Yuxuan Wang</p>
+<p><span class="math inline">\(\bullet\)</span> Boqian Zhang</p>
+</div>
+</div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -335,7 +475,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

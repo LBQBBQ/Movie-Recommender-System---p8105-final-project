@@ -1,5 +1,5 @@
 ---
-title: "Final_Report"
+title: "Final Report"
 author: "Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li"
 date: "12/7/2021"
 output: 
@@ -17,7 +17,10 @@ The prosperity of Internet industry enabled massive knowledge and entertainments
 
 # Related work
 
+For film industry, good recommendation algorithm may worth billions of dollars. A living example is [Netflix Prize](https://en.wikipedia.org/wiki/Netflix_Prize), where [Funk-SVD](https://sifter.org/~simon/journal/20061211.html) was proposed. 
 
+As we are short in computing power needed to train the Funk-SVD model, we then turned to consult the book, Implementation of Recommend System by Liang Xiang, to learn
+other applicable algorithms.
 
 
 &nbsp;

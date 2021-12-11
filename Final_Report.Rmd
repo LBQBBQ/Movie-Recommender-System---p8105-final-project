@@ -11,24 +11,25 @@ output:
 
 # Motivation
 
-The progress of computer and Internet technology has promoted the development of society. In terms of entertainment, the vibrant film industry is now facing another revolution with the Internet and big data support. How to accurately recommend information to users that match their preferences has become an important application and a major challenge in the field of data science. In this way, many websites have established complex, reliable and highly accurate film preference recommendation algorithms or systems. These algorithms or systems are great inventions, which can effectively meet the users' need to watch movies and greatly reduce the time required for users to search movies. In this context, we want to try to make a demo movie recommendation system based on [movielens](https://grouplens.org/datasets/movielens/latest/) dataset and try to apply the recommendation system used in daily life to our own website.
-
+The prosperity of Internet industry enabled massive knowledge and entertainments to be accessible at one's fingertips, making people no longer in thirst for feeds. However, massive information also trapped people into another dilemma: we got numerous choices for our limited attentions. Therefore, many Internet companies, such as Youtube, Tiktok and Bilibili, has equipped their website with personalized recommendation service in their backend to attract users' attentions as much as possible. Curious about what's behind the curtain, we decide to learn and implement recommendation algorithms to build our own recommendation system.
 
 &nbsp;
 
 # Related work
 
-Haolin has previous exposure to the movielens dataset in his studies and has had some ideas about it. Shaocong, Yuxuan and Boqian all have some good knowledge of statistics, and are good at data analysis with R. At the same time, all of us hope to learn something new and complete the challenge through this project. We are eager to improve ourselves and with this thought in mind, we decide to complete this difficult project.
+
+
 
 &nbsp;
 
 # Initial questions
+
 - Which movies have the highest ratings? 
 - Are there any significant differences in ratings of movies in different categories? (Which types of movies do people like)
-- Is there any relationship between movie ratings and movie release year? (Have movie ratings worsened in recent years？)
-- Is there any relationship between movie ratings and review time? (Is it harder and harder to cater to the tastes of the audience？)
-- What kind of movies should be provided to new users?
-- How do we recommend movies to the users that alreday in our dataset?
+- Is there any relationship between movie ratings and movie release year? (Have movie ratings worsened in recent years?)
+- Is there any relationship between movie ratings and review time? (Is it harder and harder to cater to the tastes of the audience?)
+- For new users entering into the recommendation system, how to gain the first batch of rating information?
+
 
 &nbsp;
 
@@ -223,58 +224,4 @@ shiny app or try to optimize this model.
 
 &nbsp;
 
-### Tag-based recommendation
-
-In this project, we have implemented several algorithms for recommendation systems, such as tree-based bootstraping, user-similarity based recommendation, and tree-based bootstrapping. The next one I want to introduce is the tag-based recommendation system algorithm. Before introducing the new recommendation system, we need a new dataset to carry on the thoughts. The "tag.csv" in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and time stamp (it represents seconds since midnight Coordinated Universal Time of January 1, 1970, but we will not use this variable in this part). Based on these information, we can construct a personalized recommendation algorithm by:
-
-1. Count the most commonly used tags of the user.
-
-2. For each tag, count the movies that have been labeled the most times.
-
-3. For a user, first find his commonly used tags, and then find the most popular movies with these tags to recommend to the user.
-
-For the above algorithm, the formula of user u's interest in movie i is as follows:
-
-$p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}$
-
-where $B(u)$ is the set of tags that user u has labeled, $B(i)$ is the set of tags that movie i is labeled, $n_{u, b}$ is the number of times that user u has labeled tag b, $n_{b, i}$ is the number of times that movie i has been labeled tag b, $n_b^{(u)}$ records how many different users have used tag b, $n_i^{(u)}$records how many different users have tagged the movie i. To get the specific value, we should build our function first.
-
-&nbsp;
-
-The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item). The function code can be seen [here](https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Construct_interest_function).
-
-&nbsp;
-
-After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags labeled by the users. The limited dataset will destroy the credibility of the tag-based recommendation system, as the user we want to analyze may have a few tags and there may also a few tags for movies. In order to making sure that the interest values to be nonzero, we will then choose several movies that have labeled most by users and select several active users. In this way, we select the users that have labeled more than 20 movies and select movies that has labeled by more than 4 users. The selected movies for example, Star Wars: Episode IV - A New Hope. The selected movies' table is [here](https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Find_the_most_popular_movies_and_the_most_active_users).
-
-&nbsp;
-
-To visualize the users' interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user's interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest. The detailed code is [here](https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Create_heat_map).
-
-<img src="heat_map.PNG" style="width:75%">
-
-&nbsp;
-
-Tag based TF-IDF can help us predict the user's interest on a certain movie (or item). The algorithm's validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups. 
-
-&nbsp;
-
-The algorithm above have punishment for popular tags and popular movies, and doesn't reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.
-
-&nbsp;
-
 # Discussion
-
-A tag-based recommendation system can calculate a numerical value by algorithmically visualizing a user's interest in a movie. Based on the user's tag set and the tag set of a specific movie, the system calculates the interest value of the movie and recommends the movie to the user based on this value. The molecule of the formula, which is $\sum_{b} n_{u, b} n_{b, i}$, firstly compute the user's interest in a certain movie by finding the sets. $B(u)$ is the set of tags that user u has labeled, $B(i)$ is the set of tags that movie i is labeled, $n_{u, b}$ is the number of times that the user u has labeled tag b and $n_{b, i}$ is the number of times that movie i has been labeled tag b
-
-However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problems, scholars improve this formula by drawing on the idea of TF-IDF and constructing the new formula.
-
-$p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}$,
-
-where $n_b^{(u)}$ records how many different users have used tag b, $n_i^{(u)}$records how many different users have tagged the movie i. The denominator of the formula is used to appropriately punish popular labels and popular items, but the results will not reduce the offline accuracy of the recommendation results while enhancing the personalization of the recommendation results.
-
-Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, $n_{b, i}$, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user's interest anymore and the heat map then will be bad and doesn't contain useful information.
-
-Luckily, there are several movies that are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.
-
-It is confirmed that if the sample dataset is large enough, then a person will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the interest value is held, and the movie is recommended to the user if it is larger than a certain standard value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users' will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. A further investigation can be done in the future.

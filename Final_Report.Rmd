@@ -225,3 +225,29 @@ shiny app or try to optimize this model.
 &nbsp;
 
 # Discussion
+
+## EDA
+
+### Key finding & insights
+We first found out some overview information about the datasets that were mainly used in the EDA. This step helped us to decide which variables are more necessary to be included in the analysis.
+
+In our closer look at the relationship between movies and ratings, we found out a lot of useful information which can answer some of our initial questions. We filtered movies with a rating of less than 5 and counted the top 5 most rated movies to discover the top 5 most popular movies with the highest rating. The Shawshank Redemption (1994) is the most popular film, with a user rating of 153 times. No. 2 Pulp Fiction (1994) has been rated 123 times by users. Forrest Gump (1994) comes in third position with 116 user ratings. The Matrix (1999) is ranked fourth among the top five most popular films, with a user rating of 109 times. Star Wars: Episode IV - A New Hope (1977) is ranked No. 5 with a 104 percent user rating. We also discover that drama is the most prevalent genre among the top 5 most rated and highest rated films (appearing three times in Forrest Gump (1994), Pulp Fiction (1994), and The Shawshank Redemption (1994)). We also discover an intriguing fact: three of the top five most popular and highest-rated films were released in 1994, while four were released in the 1990s.Besides what we found out about the relationship between movies and ratings, we also got information about the average rating of each genres in different year. The average rating for the categories Action, Adventure, Fantasy, and Science Fiction in 1902 is 3.5. The average rating for the genres of crime and western in 1903 is 2.5. In 1908, the averages for the categories Animation, Comedy, and Science Fiction were all 4.0. In 1915, the average rating for the category Drama was 2.0.
+
+In addition to the abstract digital results, we also got a lot of more intuitive visualization results. The boxplot of rating distribution namong different genres shows us the spread of the ratings of different genres of movies. Outliers in all of the ratings are around 1.0 or 0.5 points. Outliers of 1.5 points are seen in the Film-Noir and Documentary category ratings. We may also deduce that the average rating for genres such as Thriller, Science Fiction, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure, and Action is 3.5. Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime, and Animation all have a mean of 4 out of 5 stars. The boxplot which explore the rating distribution among different years also provide some stright forward results. We choose to present only a portion of the boxplot related year and rating because this dataset contains too many years. According to the boxplot, the rating data records for the years 2010, 2009, 2007, 2006, and 1998 have the fewest rating records. In the plot, there is no obvious trend.
+
+Except the visualization results, we also did the Kruskal-Wallis Test and thus found out that At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.
+
+&nbsp;
+
+### Suggestions for further research and analysis of EDA
+
+Future analysis could provide more information about what factors cause different rating score and try to provides information of the findings.
+
+Future modifications should aim to provide other types of visualization results. In stead of boxplot, we could try to use density plot, scatter plot, etc. 
+
+Future research should focus on how to do more tests or modelings for nonparametric variable. 
+
+
+
+
+

@@ -62,12 +62,63 @@ Dataset source used for EDA analysis:[MoiveLensdataset](https://grouplens.org/da
 ### Overview of dataset "ratings.csv"
 
 We applied the "summarise()" function to briefly describe the variable "rating". According to the result, variable rating show that the minimum is 0.5, the first quantile is 3, median is 3.5, mean is 3.502, third quantile is 4 and the maximum is 5.Since userid, movieid, timestamp only represent the ID of users, id of movies respectively, and digital record of the time of occurrence of a particular movie, we choose not to analyze those three variables.
+```{r, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(kableExtra)
+library(pastecs)
+library(ggpubr)
+library(tm)
+data_path = "./data/small/ratings.csv"
+summary_df = 
+  read_csv(data_path, col_types = "ccnc") %>% 
+  janitor::clean_names() %>% 
+  summary(summary_df$rating) %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+summary_df
+```
 
 &nbsp;
 
 ### Overview of dataset "movies.csv"
 
 We count the 5 most appeared genres and made a table. The result are as following. Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. Next, we also count the 5 most appeared year of the movie released, and made a table which shoes the result. 2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.
+```{r, message = FALSE, warning = FALSE}
+data_path = "./data/small/movies.csv"
+
+movie_descriptive = 
+  read_csv("./data/small/movies.csv") %>% 
+  janitor::clean_names() %>%
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
+  separate_rows(genres, sep = "[|]") 
+  
+genres_count =
+  movie_descriptive %>% 
+  group_by(genres) %>% 
+  count(genres) %>% 
+  filter(n >= 1500) %>% 
+  arrange(desc(n)) %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+genres_count
+
+year_count =
+  movie_descriptive %>% 
+  group_by(year) %>% 
+  count(year) %>% 
+  filter(n >= 690) %>% 
+  arrange(desc(n)) %>%  
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+year_count
+```
 
 
 
@@ -80,6 +131,41 @@ We count the 5 most appeared genres and made a table. The result are as followin
 ### Find popular movies and high-rating movies
 
  In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
+```{r, message = FALSE, warning = FALSE}
+data_path = "./data/small/ratings.csv"
+
+rating_tidy = 
+  read_csv(data_path, col_types = "ccnc") %>% 
+    janitor::clean_names() %>% 
+    select(-timestamp) %>% 
+    mutate(rating = as.double(rating))  
+
+high_rating = 
+  rating_tidy %>% 
+  filter(rating == 5.0) 
+
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId)
+```
+```{r, message = FALSE, warning = FALSE}
+high_rating_movienames = 
+  merge(high_rating, movie_names) %>% 
+  group_by(title, genres,rating) %>% 
+  count(movie_id) %>% 
+  filter(n >= 100) %>% 
+  select(n,title,genres,rating) %>% 
+  ungroup(title, genres,rating) %>% 
+  arrange(desc(n)) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
+  knitr::kable() %>% 
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+  
+high_rating_movienames 
+```
+
 
 
 
@@ -88,6 +174,28 @@ We count the 5 most appeared genres and made a table. The result are as followin
 ### Find  the average rating of each genres in different year
 
 As to find out the average rating of each genres in different year, we first seperrate the combined genre and find out the average rating in different by using groupby and summarize functions. The table clearly shows that in 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama's average ratings in 1915 is 2.0.
+```{r,message = FALSE,warning = FALSE}
+movie_names_ave = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
+  separate_rows(genres, sep = "[|]") %>%
+  filter(!genres  %in% "(no genres listed)") 
+```
+```{r,message = FALSE,warning = FALSE}
+filter_ratingscore = 
+  rating_tidy  
+ave_rating = 
+  merge(filter_ratingscore, movie_names_ave) %>% 
+  group_by(year,genres) %>%
+  summarize(mu_rating = mean(rating)) %>% 
+  head(10) %>% 
+  knitr::kable() %>%
+kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+ave_rating
+```
 
 
 
@@ -96,7 +204,17 @@ As to find out the average rating of each genres in different year, we first sep
 ### Kruskal-Wallis Test regarding user ID and rating
 
 We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the "one-way ANOVA on ranks") is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: $H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x$,$H_1: \text{At least two of the mean ratings of the users are different}$. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.
-
+```{r}
+ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
+  geom_histogram(alpha = 0.3, bins = 30) 
+```
+```{r}
+kruskal.test(rating ~ user_id, data = filter_ratingscore) %>% 
+ broom::tidy() %>% 
+ kableExtra::kbl() %>% 
+ kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::kable_styling(font_size = 12)
+```
 
 
 
@@ -108,6 +226,27 @@ We first wanted to do a test to determine whether there are any statistically si
 
 In order to find the rating distribution among different genres, we decided to use boxplot .The boxplot regarding ratings and genres shows that the spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4. 
 
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
+
+filter_ratingscore = 
+  rating_tidy  
+```
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
+boxplot_df = 
+  merge(filter_ratingscore, movie_names) %>%
+  janitor::clean_names() %>%
+  separate_rows(genres, sep = "[|]") %>%
+  filter(!genres  %in% "(no genres listed)") %>% 
+  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres, alpha = .5)) +
+  theme(legend.position="none") 
+  viridis::scale_color_viridis(discrete = TRUE)
+boxplot_df 
+```
 
 
 &nbsp;
@@ -116,6 +255,32 @@ In order to find the rating distribution among different genres, we decided to u
 
 Next up, we also decided to use boxplot to show the rating distribution among different years.
 Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.
+
+```{r, message = FALSE, warning = FALSE}
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId) %>% 
+  separate(
+  title, c("name", "year"), sep="\\s+(?=\\S*$)") 
+
+```
+
+
+```{r,message = FALSE, warning = FALSE, results = 'hide'}
+boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %>%
+  mutate(
+    year = removePunctuation(year)
+  ) %>% 
+  head(1000) %>% 
+  ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
+  theme(legend.position="none") 
+  viridis::scale_fill_viridis(discrete = TRUE)
+
+boxplot_df2 
+```
+
+
 
 
 

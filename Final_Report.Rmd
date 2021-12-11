@@ -18,9 +18,101 @@ Haolin has previous exposure to the movielens dataset in his studies and has had
 # Initial questions
 
 # Data
+**source**: - Dataset source used for EDA analysis:
+[MoiveLens dataset](https://grouplens.org/datasets/movielens/latest/)
+- MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created.
+- The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied.
+- The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data. 
 
 
 # Exploratory analysis
+
+
+&nbsp;
+
+## Summaries
+
+### Overview of dataset "ratings.csv"
+
+**Here, we applied the "summarise()" function to briefly describe the variable "rating"**:
+According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.
+
+Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, **we choose not to analyze those three variables **
+
+&nbsp;
+
+### Overview of dataset "movies.csv"
+
+**We count the 5 most appeared genres and made a table** : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place._
+**We count the 5 most appeared year of the movie released, and made a table**:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.
+
+
+
+
+&nbsp;
+
+## Exploratory Statistical Analyses
+
+
+### Find popular movies and high-rating movies
+
+**Find popular movies and high-rating movies** : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994),  has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.
+
+
+
+&nbsp;
+
+### Find  the average rating of each genres in different year
+
+**Find  the average rating of each genres in different year**: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama's average ratings in 1915 is 2.0.
+
+
+
+&nbsp;
+
+### Kruskal-Wallis Test regarding user ID and rating
+
+Here, we want to do a test to determine whether there are any statistically significant differences between  the mean ratings of the user from the 600 users are different(ANOVA)
+ First, we checked whether the rating is normally distributed.
+The plot shows that the rating is not normally distributed, we need to use non parametric test.
+Thus, we used the Kruskal-Wallis Test regarding user ID and rating.
+The Kruskal-Wallis H test (also known as the "one-way ANOVA on ranks") is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021)
+ Our assumption here is $H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x$,$H_1: \text{At least two of the mean ratings of the users are different}$
+Conclusion:At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.
+
+
+
+
+&nbsp;
+
+## Visualizations
+
+### Rating distribution among different genres
+
+**The boxplot regarding ratings and genres shows**: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4. 
+
+
+
+&nbsp;
+
+### Rating distribution among different years
+
+**The boxplot regarding ratings and year shows**: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
 
 # Additional analysis
 

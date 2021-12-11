@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)" />
+<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
 
 
-<title>Project Proposal: Movie Recommender</title>
+<title>test_shiny</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -37,8 +37,6 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -384,206 +382,67 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Project Proposal: Movie Recommender</h1>
-<h3 class="subtitle">a demo movie recommendation system</h3>
-<h4 class="author">Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)</h4>
+<h1 class="title toc-ignore">test_shiny</h1>
+<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
+<h4 class="date">2021/12/7</h4>
 
 </div>
 
 
-<p> </p>
-<div id="motivation" class="section level2">
-<h2>Motivation</h2>
-<p>In the era of information overload, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this project, we proposed to explore the movielens dataset, a dataset consisting of users’ rating and tagging towards movies, and implement a demo movie recommendation system.</p>
-<p> </p>
-</div>
-<div id="intended-final-products" class="section level2">
-<h2>Intended final products</h2>
-<ul>
-<li><p>A report summarizing exploratory analysis results, recommendation algorithms used and predicted user-movie rating</p></li>
-<li><p>A shiny app or dashboard giving movie recommendation</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="anticipated-data-sources" class="section level2">
-<h2>Anticipated data sources</h2>
-<ul>
-<li><p><a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a></p></li>
-<li><p>Movie information scraped from <a href="https://www.imdb.com/">IMDb</a></p></li>
-</ul>
-<p> </p>
-</div>
-<div id="planned-analyses-visualizations-coding-challenges" class="section level2">
-<h2>Planned analyses/ visualizations / coding challenges</h2>
-<p> </p>
-<div id="planned-analyses" class="section level3">
-<h3>Planned analyses</h3>
-<ul>
-<li><p>Find popular movies and high-rating movies</p></li>
-<li><p>Investigate the relationship among ratings and various factors, including movie genre, release year, rating time</p></li>
-<li><p>Evaluate the similarity among users and among movies</p></li>
-<li><p>Test the average ratings of the users, to investigate whether the rating criteria are different.(ANOVA)</p></li>
-<li><p>Analyze the changes in the ratings of the same movie every year, or the changes in the ratings of each category of movies,and try to get a rule through the analysis</p></li>
-<li><p>Construct model to predict the rating of a specific user towards a specific movie. Preference on specific genre</p></li>
-</ul>
-<p>  - Find the average rating after every year a movie published. And find the trend of that.</p>
-<ul>
-<li>Find the the average rating of each categories in different year.</li>
-</ul>
-</div>
-<div id="visualizations" class="section level3">
-<h3>Visualizations:</h3>
-<ul>
-<li><p>Boxplot regarding: ratings and years; ratings and genres;</p></li>
-<li><p>Clustering map of users and movies</p></li>
-<li><p>Heatmaps denoting user / movie similarity</p></li>
-<li><p>maybe a linear regression graph to show a specific user’s rating on genre</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="coding-challenges" class="section level3">
-<h3>Coding challenges:</h3>
-<ul>
-<li><p>Convert collected-in-seconds timestamp into years</p></li>
-<li><p>Split and group movie by different genre</p></li>
-<li><p>Select proper loss function and decompose the user-movie rating matrix through gradient descent</p></li>
-<li><p>Scrape movie basic information (length, director, actor, date…) from IMDb for calculating movie-movie similarity</p></li>
-<li><p>Calculate movie-movie similarity based on movie description and user-generated tags</p></li>
-<li><p>Build models to calculate user-similarity</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="planned-timeline" class="section level3">
-<h3>Planned timeline</h3>
-<table class="table" style="font-size: 15px; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;">
-Date
-</th>
-<th style="text-align:left;">
-Task
-</th>
-<th style="text-align:left;">
-Due
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Nov 4
-</td>
-<td style="text-align:left;">
-Brainstorm
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 9
-</td>
-<td style="text-align:left;">
-Finish draft proposal
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 13
-</td>
-<td style="text-align:left;">
-Submit formal proposal
-</td>
-<td style="text-align:left;">
-Nov 13 by 1:00 pm
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 15
-</td>
-<td style="text-align:left;">
-Assign tasks
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 16 - 19
-</td>
-<td style="text-align:left;">
-Project review meeting
-</td>
-<td style="text-align:left;">
-Nov 16-19
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Nov 30
-</td>
-<td style="text-align:left;">
-Finish coding part
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 7
-</td>
-<td style="text-align:left;">
-Construct website
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 11
-</td>
-<td style="text-align:left;">
-Report &amp; Webpage and screencast &amp; Peer asessment
-</td>
-<td style="text-align:left;">
-Dec 11 by 4:00 pm
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 14
-</td>
-<td style="text-align:left;">
-Presentation practice
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Dec 16
-</td>
-<td style="text-align:left;">
-In class discussion
-</td>
-<td style="text-align:left;">
-Dec 16
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>mv = read_csv(&quot;./data/small/movies.csv&quot;)</code></pre>
+<pre><code>## Rows: 9742 Columns: 3</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): title, genres
+## dbl (1): movieId</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>mv_genres =
+  mv %&gt;% 
+  mutate(genres = map(genres, ~str_split(string = .x, pattern = &quot;\\|&quot;))) %&gt;% 
+  unnest(genres) %&gt;% 
+  unnest(genres)
+
+cut_year = function(string){
+  year_str = str_split(string, pattern = &quot;\\(&quot;)[[1]]
+  year_str = str_remove(year_str[length(year_str)], &quot;\\)&quot;)
+  return(as.integer(year_str))
+}
+
+mv_year = 
+  mv %&gt;%
+  mutate(
+    year = map(title, cut_year),
+    year = as.integer(year)
+  ) %&gt;% 
+  arrange(desc(year))</code></pre>
+<pre><code>## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA</code></pre>
 
 
 

@@ -37,6 +37,8 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -430,11 +432,288 @@ div.tocify {
 <div id="overview-of-dataset-ratings.csv" class="section level3">
 <h3>Overview of dataset “ratings.csv”</h3>
 <p>We applied the “summarise()” function to briefly describe the variable “rating”. According to the result, variable rating show that the minimum is 0.5, the first quantile is 3, median is 3.5, mean is 3.502, third quantile is 4 and the maximum is 5.Since userid, movieid, timestamp only represent the ID of users, id of movies respectively, and digital record of the time of occurrence of a particular movie, we choose not to analyze those three variables.</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(kableExtra)
+library(pastecs)
+library(ggpubr)
+library(tm)
+data_path = &quot;./data/small/ratings.csv&quot;
+summary_df = 
+  read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  summary(summary_df$rating) %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)
+summary_df</code></pre>
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+user_id
+</th>
+<th style="text-align:left;">
+movie_id
+</th>
+<th style="text-align:left;">
+rating
+</th>
+<th style="text-align:left;">
+timestamp
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Length:100836
+</td>
+<td style="text-align:left;">
+Length:100836
+</td>
+<td style="text-align:left;">
+Min. :0.500
+</td>
+<td style="text-align:left;">
+Length:100836
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Class :character
+</td>
+<td style="text-align:left;">
+Class :character
+</td>
+<td style="text-align:left;">
+1st Qu.:3.000
+</td>
+<td style="text-align:left;">
+Class :character
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Mode :character
+</td>
+<td style="text-align:left;">
+Mode :character
+</td>
+<td style="text-align:left;">
+Median :3.500
+</td>
+<td style="text-align:left;">
+Mode :character
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+Mean :3.502
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+3rd Qu.:4.000
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+Max. :5.000
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
 <p> </p>
 </div>
 <div id="overview-of-dataset-movies.csv" class="section level3">
 <h3>Overview of dataset “movies.csv”</h3>
 <p>We count the 5 most appeared genres and made a table. The result are as following. Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. Next, we also count the 5 most appeared year of the movie released, and made a table which shoes the result. 2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
+<pre class="r"><code>data_path = &quot;./data/small/movies.csv&quot;
+
+movie_descriptive = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;%
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
+  separate_rows(genres, sep = &quot;[|]&quot;) 
+  
+genres_count =
+  movie_descriptive %&gt;% 
+  group_by(genres) %&gt;% 
+  count(genres) %&gt;% 
+  filter(n &gt;= 1500) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)
+genres_count</code></pre>
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+genres
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+4361
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+3756
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thriller
+</td>
+<td style="text-align:right;">
+1894
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Action
+</td>
+<td style="text-align:right;">
+1828
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romance
+</td>
+<td style="text-align:right;">
+1596
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>year_count =
+  movie_descriptive %&gt;% 
+  group_by(year) %&gt;% 
+  count(year) %&gt;% 
+  filter(n &gt;= 690) %&gt;% 
+  arrange(desc(n)) %&gt;%  
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)
+year_count</code></pre>
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<ol start="2006" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+733
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2009" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+719
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2005" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+709
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2002" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+705
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2008" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:right;">
+691
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
 <p> </p>
 </div>
 </div>
@@ -443,16 +722,356 @@ div.tocify {
 <div id="find-popular-movies-and-high-rating-movies" class="section level3">
 <h3>Find popular movies and high-rating movies</h3>
 <p>In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
+<pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
+
+rating_tidy = 
+  read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
+    janitor::clean_names() %&gt;% 
+    select(-timestamp) %&gt;% 
+    mutate(rating = as.double(rating))  
+
+high_rating = 
+  rating_tidy %&gt;% 
+  filter(rating == 5.0) 
+
+movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId)</code></pre>
+<pre class="r"><code>high_rating_movienames = 
+  merge(high_rating, movie_names) %&gt;% 
+  group_by(title, genres,rating) %&gt;% 
+  count(movie_id) %&gt;% 
+  filter(n &gt;= 100) %&gt;% 
+  select(n,title,genres,rating) %&gt;% 
+  ungroup(title, genres,rating) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
+  knitr::kable() %&gt;% 
+  kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)
+  
+high_rating_movienames </code></pre>
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:left;">
+name
+</th>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:left;">
+genres
+</th>
+<th style="text-align:right;">
+rating
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+153
+</td>
+<td style="text-align:left;">
+Shawshank Redemption, The
+</td>
+<td style="text-align:left;">
+<ol start="1994" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Crime|Drama
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+123
+</td>
+<td style="text-align:left;">
+Pulp Fiction
+</td>
+<td style="text-align:left;">
+<ol start="1994" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy|Crime|Drama|Thriller
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+116
+</td>
+<td style="text-align:left;">
+Forrest Gump
+</td>
+<td style="text-align:left;">
+<ol start="1994" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy|Drama|Romance|War
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+109
+</td>
+<td style="text-align:left;">
+Matrix, The
+</td>
+<td style="text-align:left;">
+<ol start="1999" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action|Sci-Fi|Thriller
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:left;">
+Star Wars: Episode IV - A New Hope
+</td>
+<td style="text-align:left;">
+<ol start="1977" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action|Adventure|Sci-Fi
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
 <p> </p>
 </div>
 <div id="find-the-average-rating-of-each-genres-in-different-year" class="section level3">
 <h3>Find the average rating of each genres in different year</h3>
 <p>As to find out the average rating of each genres in different year, we first seperrate the combined genre and find out the average rating in different by using groupby and summarize functions. The table clearly shows that in 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p>
+<pre class="r"><code>movie_names_ave = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
+  separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
+  filter(!genres  %in% &quot;(no genres listed)&quot;) </code></pre>
+<pre class="r"><code>filter_ratingscore = 
+  rating_tidy  
+ave_rating = 
+  merge(filter_ratingscore, movie_names_ave) %&gt;% 
+  group_by(year,genres) %&gt;%
+  summarize(mu_rating = mean(rating)) %&gt;% 
+  head(10) %&gt;% 
+  knitr::kable() %&gt;%
+kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)
+ave_rating</code></pre>
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:left;">
+genres
+</th>
+<th style="text-align:right;">
+mu_rating
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Action
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Adventure
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Fantasy
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1902" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1903" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Crime
+</td>
+<td style="text-align:right;">
+2.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1903" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Western
+</td>
+<td style="text-align:right;">
+2.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1908" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Animation
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1908" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1908" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="1915" style="list-style-type: decimal">
+<li></td>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+2.0
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
 <p> </p>
 </div>
 <div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level3">
 <h3>Kruskal-Wallis Test regarding user ID and rating</h3>
 <p>We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
+  geom_histogram(alpha = 0.3, bins = 30) </code></pre>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
+ broom::tidy() %&gt;% 
+ kableExtra::kbl() %&gt;% 
+ kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
+  kableExtra::kable_styling(font_size = 12)</code></pre>
+<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+parameter
+</th>
+<th style="text-align:left;">
+method
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+20676.72
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+609
+</td>
+<td style="text-align:left;">
+Kruskal-Wallis rank sum test
+</td>
+</tr>
+</tbody>
+</table>
 <p> </p>
 </div>
 </div>
@@ -461,11 +1080,46 @@ div.tocify {
 <div id="rating-distribution-among-different-genres" class="section level3">
 <h3>Rating distribution among different genres</h3>
 <p>In order to find the rating distribution among different genres, we decided to use boxplot .The boxplot regarding ratings and genres shows that the spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+
+filter_ratingscore = 
+  rating_tidy  </code></pre>
+<pre class="r"><code>boxplot_df = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  janitor::clean_names() %&gt;%
+  separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
+  filter(!genres  %in% &quot;(no genres listed)&quot;) %&gt;% 
+  ggplot(aes(x = rating, y = genres)) + geom_boxplot(aes(color = genres, alpha = .5)) +
+  theme(legend.position=&quot;none&quot;) 
+  viridis::scale_color_viridis(discrete = TRUE)
+boxplot_df </code></pre>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="rating-distribution-among-different-years" class="section level3">
 <h3>Rating distribution among different years</h3>
 <p>Next up, we also decided to use boxplot to show the rating distribution among different years. Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.</p>
+<pre class="r"><code>movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId) %&gt;% 
+  separate(
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
+<pre class="r"><code>boxplot_df2 = 
+  merge(filter_ratingscore, movie_names) %&gt;%
+  mutate(
+    year = removePunctuation(year)
+  ) %&gt;% 
+  head(1000) %&gt;% 
+  ggplot(aes(x = rating, y = year)) + geom_boxplot(aes(color = year))+
+  theme(legend.position=&quot;none&quot;) 
+  viridis::scale_fill_viridis(discrete = TRUE)
+
+boxplot_df2 </code></pre>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p> </p>
 </div>
 </div>

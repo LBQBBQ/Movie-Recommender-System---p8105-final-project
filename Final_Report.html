@@ -386,20 +386,32 @@ div.tocify {
 </div>
 
 
+<p> </p>
 <div id="motivation" class="section level1">
 <h1>Motivation</h1>
 <p>Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people’s need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.</p>
+<p> </p>
 </div>
 <div id="related-work" class="section level1">
 <h1>Related work</h1>
 <p>Haolin has previous exposure to the movielens dataset in his studies and has had some ideas about it. Shaocong, Yuxuan and Boqian all have some good knowledge of statistics, and are good at data analysis with R. At the same time, all of us hope to learn something new and complete the challenge through this project. We are eager to improve ourselves and with this thought in mind, we decide to complete this difficult project.</p>
+<p> </p>
 </div>
 <div id="initial-questions" class="section level1">
 <h1>Initial questions</h1>
+<p> </p>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<p><strong>source</strong>: - Dataset source used for EDA analysis: <a href="https://grouplens.org/datasets/movielens/latest/">MoiveLens dataset</a> - MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created. - The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied. - The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data.</p>
+<div id="source" class="section level2">
+<h2>Source</h2>
+<p>Dataset source used for EDA analysis:<a href="https://grouplens.org/datasets/movielens/latest/">MoiveLensdataset</a> - MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created. - The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied. - The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data.</p>
+<p> </p>
+<div id="data-cleaning" class="section level3">
+<h3>Data Cleaning</h3>
+<p> </p>
+</div>
+</div>
 </div>
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory analysis</h1>
@@ -408,13 +420,12 @@ div.tocify {
 <h2>Summaries</h2>
 <div id="overview-of-dataset-ratings.csv" class="section level3">
 <h3>Overview of dataset “ratings.csv”</h3>
-<p><strong>Here, we applied the “summarise()” function to briefly describe the variable “rating”</strong>: According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.</p>
-<p>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, <strong>we choose not to analyze those three variables </strong></p>
+<p>We applied the “summarise()” function to briefly describe the variable “rating”. According to the result, variable rating show that the minimum is 0.5, the first quantile is 3, median is 3.5, mean is 3.502, third quantile is 4 and the maximum is 5.Since userid, movieid, timestamp only represent the ID of users, id of movies respectively, and digital record of the time of occurrence of a particular movie, we choose not to analyze those three variables.</p>
 <p> </p>
 </div>
 <div id="overview-of-dataset-movies.csv" class="section level3">
 <h3>Overview of dataset “movies.csv”</h3>
-<p><strong>We count the 5 most appeared genres and made a table</strong> : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place._ <strong>We count the 5 most appeared year of the movie released, and made a table</strong>:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
+<p>We count the 5 most appeared genres and made a table. The result are as following. Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. Next, we also count the 5 most appeared year of the movie released, and made a table which shoes the result. 2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
 <p> </p>
 </div>
 </div>
@@ -422,17 +433,17 @@ div.tocify {
 <h2>Exploratory Statistical Analyses</h2>
 <div id="find-popular-movies-and-high-rating-movies" class="section level3">
 <h3>Find popular movies and high-rating movies</h3>
-<p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
+<p>In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
 <p> </p>
 </div>
 <div id="find-the-average-rating-of-each-genres-in-different-year" class="section level3">
 <h3>Find the average rating of each genres in different year</h3>
-<p><strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p>
+<p>As to find out the average rating of each genres in different year, we first seperrate the combined genre and find out the average rating in different by using groupby and summarize functions. The table clearly shows that in 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p>
 <p> </p>
 </div>
 <div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level3">
 <h3>Kruskal-Wallis Test regarding user ID and rating</h3>
-<p>Here, we want to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different(ANOVA) First, we checked whether the rating is normally distributed. The plot shows that the rating is not normally distributed, we need to use non parametric test. Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021) Our assumption here is <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span> Conclusion:At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<p>We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
 <p> </p>
 </div>
 </div>
@@ -440,12 +451,12 @@ div.tocify {
 <h2>Visualizations</h2>
 <div id="rating-distribution-among-different-genres" class="section level3">
 <h3>Rating distribution among different genres</h3>
-<p><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
+<p>In order to find the rating distribution among different genres, we decided to use boxplot .The boxplot regarding ratings and genres shows that the spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
 <p> </p>
 </div>
 <div id="rating-distribution-among-different-years" class="section level3">
 <h3>Rating distribution among different years</h3>
-<p><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</p>
+<p>Next up, we also decided to use boxplot to show the rating distribution among different years. Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.</p>
 <p> </p>
 </div>
 </div>

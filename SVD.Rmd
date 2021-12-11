@@ -217,13 +217,12 @@ loss_path = tibble(
 
 loss_path %>% 
     ggplot(aes(y = loss, x = iteration)) +
-    geom_line(group = 1) +
-    scale_y_sqrt()
+    geom_line(group = 1)
 ```
 
 &nbsp;
 
-## Predict & visualization
+## Predict & Visualization
 
 After training, we then predict user's ratings on movies they haven't seen, and
 visualize the predict result.

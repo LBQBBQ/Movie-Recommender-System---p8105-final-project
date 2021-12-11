@@ -165,8 +165,7 @@ high_rating =
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId)
-```
-```{r, message = FALSE, warning = FALSE}
+
 high_rating_movienames = 
   merge(high_rating, movie_names) %>% 
   group_by(title, genres,rating) %>% 
@@ -200,8 +199,7 @@ movie_names_ave =
   title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
   separate_rows(genres, sep = "[|]") %>%
   filter(!genres  %in% "(no genres listed)") 
-```
-```{r,message = FALSE,warning = FALSE}
+
 filter_ratingscore = 
   rating_tidy  
 ave_rating = 
@@ -253,8 +251,6 @@ movie_names =
 
 filter_ratingscore = 
   rating_tidy  
-```
-```{r, message = FALSE, warning = FALSE, results = 'hide'}
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
   janitor::clean_names() %>%
@@ -274,17 +270,12 @@ boxplot_df
 Next up, we also decided to use boxplot to show the rating distribution among different years.
 Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId) %>% 
   separate(
   title, c("name", "year"), sep="\\s+(?=\\S*$)") 
-
-```
-
-
-```{r,message = FALSE, warning = FALSE, results = 'hide'}
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%
   mutate(

@@ -755,8 +755,9 @@ high_rating =
 
 movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  rename(movie_id = movieId)</code></pre>
-<pre class="r"><code>high_rating_movienames = 
+  rename(movie_id = movieId)
+
+high_rating_movienames = 
   merge(high_rating, movie_names) %&gt;% 
   group_by(title, genres,rating) %&gt;% 
   count(movie_id) %&gt;% 
@@ -895,8 +896,9 @@ Action|Adventure|Sci-Fi
   separate(
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
   separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
-  filter(!genres  %in% &quot;(no genres listed)&quot;) </code></pre>
-<pre class="r"><code>filter_ratingscore = 
+  filter(!genres  %in% &quot;(no genres listed)&quot;) 
+
+filter_ratingscore = 
   rating_tidy  
 ave_rating = 
   merge(filter_ratingscore, movie_names_ave) %&gt;% 
@@ -1051,7 +1053,7 @@ Drama
 <p>We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
   geom_histogram(alpha = 0.3, bins = 30) </code></pre>
-<p><img src="Final_Report_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  kableExtra::kbl() %&gt;% 
@@ -1106,8 +1108,8 @@ Kruskal-Wallis rank sum test
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
 
 filter_ratingscore = 
-  rating_tidy  </code></pre>
-<pre class="r"><code>boxplot_df = 
+  rating_tidy  
+boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
   janitor::clean_names() %&gt;%
   separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
@@ -1116,7 +1118,7 @@ filter_ratingscore =
   theme(legend.position=&quot;none&quot;) 
   viridis::scale_color_viridis(discrete = TRUE)
 boxplot_df </code></pre>
-<p><img src="Final_Report_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="rating-distribution-among-different-years" class="section level3">
@@ -1126,8 +1128,8 @@ boxplot_df </code></pre>
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
   separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
-<pre class="r"><code>boxplot_df2 = 
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
   mutate(
     year = removePunctuation(year)
@@ -1138,7 +1140,7 @@ boxplot_df </code></pre>
   viridis::scale_fill_viridis(discrete = TRUE)
 
 boxplot_df2 </code></pre>
-<p><img src="Final_Report_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p> </p>
 </div>
 </div>

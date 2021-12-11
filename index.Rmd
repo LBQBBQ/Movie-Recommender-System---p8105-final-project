@@ -29,7 +29,7 @@ A demo movie recommendation system
 </font>
 </center>
 
-<iframe src="https://www.youtube.com/watch?v=6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
+<iframe width="600" height="315" src="https://www.youtube.com/watch?v=6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
 
  
 $\quad$

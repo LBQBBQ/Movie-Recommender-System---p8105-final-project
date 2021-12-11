@@ -1,6 +1,8 @@
 ---
 title: "**Movie Recommender**"
-output: html_document
+output: 
+  html_document:
+    toc: false
 ---
 
 <span style="font-size:2em;">a demo movie recommendation system</span>

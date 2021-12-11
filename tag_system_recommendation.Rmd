@@ -1,10 +1,5 @@
 ---
 title: "Tag-based recommendation"
-author: "Shaocong Zhang"
-date: "11/22/2021"
-output: 
-  html_document:
-   code_folding: hide
 ---
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE}

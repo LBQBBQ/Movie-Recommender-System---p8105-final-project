@@ -9,15 +9,16 @@ navbar:
     - text: "Exploratory Analyses"
       href: EDA.html
    
+    - text: "Differentiable Movies"
+      href: tree-based-bootstraping.html
+
     - text: "Recommendation Algorithm"
       menu:
-        - text: "tree-based bootstraping"
-          href: tree-based-bootstraping.html
-        - text: "user-similarity based recommendation"
+        - text: "Similarity-based Recommendation"
           href: user_similarity.html
-        - text: "SVD"
+        - text: "Latent-factor-based Recommendation"
           href: SVD.html
-        - text: "tag-based recommendation"
+        - text: "Tag-based Recommendation"
           href: tag_system_recommendation.html
 
           

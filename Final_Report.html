@@ -14,8 +14,8 @@
 
 <title>Final Report</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -421,8 +421,25 @@ div.tocify {
 <p>Dataset source used for EDA analysis:<a href="https://grouplens.org/datasets/movielens/latest/">MoiveLensdataset</a> - MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created. - The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied. - The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data.</p>
 <p> </p>
 </div>
-<div id="data-cleaning" class="section level3">
-<h3>Data Cleaning</h3>
+<div id="data-cleaning-for-eda" class="section level3">
+<h3>Data Cleaning for EDA</h3>
+<p>As for further analysis, we choose to clean some of our datasets. For dataset “rating.csv”, we apply the janitor::clean_names() function to make sure that everything is in lower case, and we also exclude the “timestamp” variable that does not related to our analysis assumption. After this step, we set up a new data frame called “rating_tidy”. Next up, we also create a new dataframe called “high_rating”, which only contains the highest rating score “5” of the “rating_tidy” dataframe. Last but not the least, we rename the variable “movieId” to movie_id for the “movie.csv” dataset and transfer it to a new data frame called “movie_names”.</p>
+<pre class="r"><code>library(tidyverse)
+data_path = &quot;./data/small/ratings.csv&quot;
+
+rating_tidy = 
+  read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
+    janitor::clean_names() %&gt;% 
+    select(-timestamp) %&gt;% 
+    mutate(rating = as.double(rating))  
+
+high_rating = 
+  rating_tidy %&gt;% 
+  filter(rating == 5.0) 
+
+movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId)</code></pre>
 <p> </p>
 </div>
 </div>
@@ -1034,7 +1051,7 @@ Drama
 <p>We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
   geom_histogram(alpha = 0.3, bins = 30) </code></pre>
-<p><img src="Final_Report_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>kruskal.test(rating ~ user_id, data = filter_ratingscore) %&gt;% 
  broom::tidy() %&gt;% 
  kableExtra::kbl() %&gt;% 
@@ -1099,7 +1116,7 @@ filter_ratingscore =
   theme(legend.position=&quot;none&quot;) 
   viridis::scale_color_viridis(discrete = TRUE)
 boxplot_df </code></pre>
-<p><img src="Final_Report_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="rating-distribution-among-different-years" class="section level3">
@@ -1121,7 +1138,7 @@ boxplot_df </code></pre>
   viridis::scale_fill_viridis(discrete = TRUE)
 
 boxplot_df2 </code></pre>
-<p><img src="Final_Report_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="Final_Report_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p> </p>
 </div>
 </div>

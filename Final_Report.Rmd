@@ -46,9 +46,27 @@ Dataset source used for EDA analysis:[MoiveLensdataset](https://grouplens.org/da
 
 &nbsp;
 
-### Data Cleaning
+### Data Cleaning for EDA
+As for further analysis, we choose to clean some of our datasets. For dataset "rating.csv", we apply the janitor::clean_names() function to make sure that everything is in lower case, and we also exclude the "timestamp" variable that does not related to our analysis assumption. After this step, we set up a new data frame called "rating_tidy".  Next up, we also create a new dataframe called "high_rating", which only contains the highest rating score "5" of the "rating_tidy" dataframe. Last but not the least, we rename the variable "movieId" to movie_id for the "movie.csv" dataset and transfer it to a new data frame called "movie_names".
 
+```{r, message = FALSE, warning = FALSE}
+library(tidyverse)
+data_path = "./data/small/ratings.csv"
 
+rating_tidy = 
+  read_csv(data_path, col_types = "ccnc") %>% 
+    janitor::clean_names() %>% 
+    select(-timestamp) %>% 
+    mutate(rating = as.double(rating))  
+
+high_rating = 
+  rating_tidy %>% 
+  filter(rating == 5.0) 
+
+movie_names = 
+  read_csv("./data/small/movies.csv") %>% 
+  rename(movie_id = movieId)
+```
 
 &nbsp;
 

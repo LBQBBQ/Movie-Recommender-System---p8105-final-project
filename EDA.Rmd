@@ -198,6 +198,9 @@ high_rating_movienames
 # Find  the average rating of each genres in different year
 
 - **Find  the average rating of each genres in different year**: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama's average ratings in 1915 is 2.0.
+
+- **Key steps** : We first create a new dataframe called "movie_names_ave". For this dataframe, we use the 
+"movies.csv" dataset and did the data cleaning as we mentioned in the previous section and also exclue the "no genres listed" for the "genres" variable.Next, we merge the "filter_ratingscore" and "movie_names_ave" dataframes, and calculate the mean rating score for each years and each genres. Finally, we show the first 10 lines of result in a tidy table.
 ```{r,message = FALSE,warning = FALSE}
 movie_names_ave = 
   read_csv("./data/small/movies.csv") %>% 
@@ -231,7 +234,9 @@ ave_rating
 
 # Rating distribution among different genres
 
-- **The boxplot regarding ratings and genres shows**: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4. 
+- **The boxplot regarding ratings and genres shows**: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.
+
+- **Key steps** : We did the data cleaning process as we mentioned in the previous data cleaning section. Next,we merge the "filter_ratingscore" and "movie_names" dataframes, clean the names to lower cases, seperate "genres" variable. Finally, we create boxplot and let the x equals rating, and y equals genres.
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
@@ -262,6 +267,7 @@ boxplot_df
 
 - **The boxplot regarding ratings and year shows**: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.
 
+- **Key steps** :
 ```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
@@ -270,8 +276,6 @@ movie_names =
   title, c("name", "year"), sep="\\s+(?=\\S*$)") 
 
 ```
-
-
 ```{r,message = FALSE, warning = FALSE, results = 'hide'}
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%

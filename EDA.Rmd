@@ -267,7 +267,7 @@ boxplot_df
 
 - **The boxplot regarding ratings and year shows**: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.
 
-- **Key steps** :
+- **Key steps** : We did the data cleaning process as mentioned above and merged the "filter_ratingscore" and "movie_names". Next, we removed the braket of the "year" variable, and showed only the first 1000 data. Finally, we set the x variable as rating and y equals to year, ans show the boxplot of the rating distribution among different years.
 ```{r, message = FALSE, warning = FALSE}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
@@ -301,8 +301,10 @@ boxplot_df2
 
 # Kruskal-Wallis Test regarding user ID and rating
 
+- **Key steps & results** :
 - Here, we want to do a test to determine whether there are any statistically significant differences between  the mean ratings of the user from the 600 users are different(ANOVA)
-- First, we checked whether the rating is normally distributed.
+- First, we checked whether the rating is normally distributed by histogram.
+
 
 ```{r}
 ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 

@@ -265,3 +265,16 @@ The algorithm above have punishment for popular tags and popular movies, and doe
 
 # Discussion
 
+A tag-based recommendation system can calculate a numerical value by algorithmically visualizing a user's interest in a movie. Based on the user's tag set and the tag set of a specific movie, the system calculates the interest value of the movie and recommends the movie to the user based on this value. The molecule of the formula, which is $\sum_{b} n_{u, b} n_{b, i}$, firstly compute the user's interest in a certain movie by finding the sets. $B(u)$ is the set of tags that user u has labeled, $B(i)$ is the set of tags that movie i is labeled, $n_{u, b}$ is the number of times that the user u has labeled tag b and $n_{b, i}$ is the number of times that movie i has been labeled tag b
+
+However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problems, scholars improve this formula by drawing on the idea of TF-IDF and constructing the new formula.
+
+$p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}$,
+
+where $n_b^{(u)}$ records how many different users have used tag b, $n_i^{(u)}$records how many different users have tagged the movie i. The denominator of the formula is used to appropriately punish popular labels and popular items, but the results will not reduce the offline accuracy of the recommendation results while enhancing the personalization of the recommendation results.
+
+Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, $n_{b, i}$, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user's interest anymore and the heat map then will be bad and doesn't contain useful information.
+
+Luckily, there are several movies that are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.
+
+It is confirmed that if the sample dataset is large enough, then a person will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the interest value is held, and the movie is recommended to the user if it is larger than a certain standard value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users' will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. A further investigation can be done in the future.

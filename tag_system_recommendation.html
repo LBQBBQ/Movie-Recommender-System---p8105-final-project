@@ -13,8 +13,8 @@
 
 <title>Tag-based recommendation</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -397,6 +397,8 @@ div.tocify {
 <p>For the above algorithm, the formula of user u’s interest in movie i is as follows:</p>
 <p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
 <p>where <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, we should build our function first.</p>
+<div id="construct-interest-function" class="section level3">
+<h3>Construct interest function</h3>
 <p>The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item).</p>
 <pre class="r"><code># Set up interest function
 fc.interest = function(u, i) {
@@ -438,6 +440,7 @@ for (b in 1:nrow(B.u.distinct)) {
 }
 return(interest = round(sum(value), 2))
 }</code></pre>
+</div>
 <div id="find-the-most-popular-movies-and-the-most-active-users" class="section level3">
 <h3>Find the most popular movies and the most active users</h3>
 <p>After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags labeled by the users. The limited dataset will destroy the credibility of the tag-based recommendation system, as the user we want to analyze may have a few tags and there may also a few tags for movies. In order to making sure that the interest values to be nonzero, we will then choose several movies that have labeled most by users and select several active users. In this way, we select the users that have labeled more than 20 movies and select movies that has labeled by more than 4 users. The selected movies for example, Star Wars: Episode IV - A New Hope. The selected movies’ table is shown below.</p>
@@ -622,7 +625,7 @@ Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
 </div>
 <div id="create-heat-map" class="section level3">
 <h3>Create heat map</h3>
-<p>A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below.</p>
+<p>To visualize the users’ interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user’s interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest.</p>
 <pre class="r"><code># construct a new table of the selected id and movie
 heat.map = tibble(user_id = rep(active.user.vec, length(popular.movie.vec)), movie_id = rep(popular.movie.vec, length(active.user.vec)))
 

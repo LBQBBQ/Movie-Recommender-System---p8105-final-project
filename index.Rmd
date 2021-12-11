@@ -1,14 +1,91 @@
 ---
 title: "**Movie Recommender**"
+subtitle: "A demo movie recommendation system"
 output: 
   html_document:
-    toc: false
+    code_folding: hide
 ---
+<style type="text/css">
 
-<span style="font-size:2em;">a demo movie recommendation system</span>
+h1.title {
+  font-size: 38px;
+  color: Black;
+  text-align: center;
+}
+
+h4.author { /* Header 4 - and the author and data headers use this too  */
+    font-size: 18px;
+  font-family: "Times New Roman", Times, serif;
+  color: DarkRed;
+  text-align: center;
+}
+
+</style>
+
 
 <img src="pics/movies.jpg" style="width:80%">
 
  Image source: 38 Top Fall Movies To Get You In the Autumn Mood( Leah Hall 2021)
+ 
+$\quad$
+$\quad$
+ 
+# About the project
 
-- See our [proposal](Proposal.html)
+Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people's need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.
+
+$\quad$
+$\quad$
+
+# Website Overview
+
+This website is designed to construct a demo movie recommendation based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset. The dataset describes 5-star rating and free-text tagging activity from the movie recommendation service. When exploring the website, you will find the [Exploratory Analyses](EDA.html), Recommendation Algorithm and Shinyapp tabs.
+
+$\quad$
+
+In the [Exploratory Analyses](EDA.html) tab, you will find:
+
+$\bullet$ Brief analyses of the dataset
+
+$\bullet$ Deeper analyses of the dataset, through statistical tests and visualization
+
+$\quad$
+
+In the Recommendation Algorithm tab, you will find the concepts, working process and results of:
+
+$\bullet$ [Tree-based bootstrapping](tree-based-bootstraping.html)
+
+$\bullet$ [Similarity-based recommendation](user_similarity.html)
+
+$\bullet$ [SVD-based recommendation](SVD.html)
+
+$\bullet$ [Tag-based recommendation](tag_system_recommendation.html)
+
+$\quad$
+
+The [shinyapp](https://hzhong.shinyapps.io/movierecommender/) tab will lead you have an amazing experience of how the movie recommendation system works.
+
+You can also see our  proposal [here](Proposal.html).
+
+$\quad$
+$\quad$
+
+# Additional Information
+
+$\bullet$ Watch our project [Youtube video](https://www.youtube.com/watch?v=6vIq99VgxkE) and get a brief understanding of this amazing project.
+
+$\bullet$ You can read our final project report here to get a comprehensive understanding of how this wonderful project was constructed from start to finish.
+
+$\quad$
+$\quad$
+
+### Collaborators:
+
+$\bullet$ Haoling Zhong
+
+$\bullet$ Shaocong Zhang
+
+$\bullet$ Yuxuan Wang
+
+$\bullet$ Boqian Zhang
+

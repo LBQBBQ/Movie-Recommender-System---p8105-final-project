@@ -57,6 +57,8 @@ $p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i
 
 where $B(u)$ is the set of tags that user u has labeled, $B(i)$ is the set of tags that movie i is labeled, $n_{u, b}$ is the number of times that user u has labeled tag b, $n_{b, i}$ is the number of times that movie i has been labeled tag b, $n_b^{(u)}$ records how many different users have used tag b, $n_i^{(u)}$records how many different users have tagged the movie i. To get the specific value, we should build our function first.
 
+### Construct interest function
+
 The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item).
 
 ```{r, collapse = TRUE}
@@ -153,7 +155,7 @@ movie.name
 
 ### Create heat map
 
-A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below.
+To visualize the users' interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user's interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest.
 
 ```{r}
 # construct a new table of the selected id and movie

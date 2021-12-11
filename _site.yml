@@ -26,7 +26,9 @@ navbar:
       href: https://hzhong.shinyapps.io/movierecommender/
       
       
-  right:  
+  right: 
+    - text: "Project Report"
+      href: Final_Report.html 
     - icon: fa-github fa-lg
       href: https://github.com/ShaocongZ/Final_Project/
       

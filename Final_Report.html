@@ -14,8 +14,8 @@
 
 <title>Final_Report</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -357,6 +357,9 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="Final_Report.html">Project Report</a>
+</li>
+<li>
   <a href="https://github.com/ShaocongZ/Final_Project/">
     <span class="fa fa-github fa-lg"></span>
      
@@ -386,22 +389,88 @@ div.tocify {
 </div>
 
 
+<p> </p>
 <div id="motivation" class="section level1">
 <h1>Motivation</h1>
-<p>Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people’s need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.</p>
+<p>The progress of computer and Internet technology has promoted the development of society. In terms of entertainment, the vibrant film industry is now facing another revolution with the Internet and big data support. How to accurately recommend information to users that match their preferences has become an important application and a major challenge in the field of data science. In this way, many websites have established complex, reliable and highly accurate film preference recommendation algorithms or systems. These algorithms or systems are great inventions, which can effectively meet the users’ need to watch movies and greatly reduce the time required for users to search movies. In this context, we want to try to make a demo movie recommendation system based on <a href="https://grouplens.org/datasets/movielens/latest/">movielens</a> dataset and try to apply the recommendation system used in daily life to our own website.</p>
+<p> </p>
 </div>
 <div id="related-work" class="section level1">
 <h1>Related work</h1>
 <p>Haolin has previous exposure to the movielens dataset in his studies and has had some ideas about it. Shaocong, Yuxuan and Boqian all have some good knowledge of statistics, and are good at data analysis with R. At the same time, all of us hope to learn something new and complete the challenge through this project. We are eager to improve ourselves and with this thought in mind, we decide to complete this difficult project.</p>
+<p> </p>
 </div>
 <div id="initial-questions" class="section level1">
 <h1>Initial questions</h1>
+<ul>
+<li>Which movies have the highest ratings?</li>
+<li>Are there any significant differences in ratings of movies in different categories? (Which types of movies do people like)</li>
+<li>Is there any relationship between movie ratings and movie release year? (Have movie ratings worsened in recent years？)</li>
+<li>Is there any relationship between movie ratings and review time? (Is it harder and harder to cater to the tastes of the audience？)</li>
+<li>What kind of movies should be provided to new users?</li>
+<li>How do we recommend movies to the users that alreday in our dataset?</li>
+</ul>
+<p> </p>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
+<div id="source" class="section level3">
+<h3>Source</h3>
+<p>Dataset source used for EDA analysis:<a href="https://grouplens.org/datasets/movielens/latest/">MoiveLensdataset</a> - MovieLens, a movie recommendation service, provided this dataset (ml-latest-small), which describes 5-star rating and free-text tagging activities. Over 9742 movies, it has 100836 ratings and 3683 tag applications. Between March 29, 1996, and September 24, 2018, 610 people produced this data. On September 26, 2018, this dataset was created. - The participants were chosen at random. All of the individuals that were chosen had rated at least 20 films. There is no demographic information provided. An id is assigned to each user, and no additional information is supplied. - The files links.csv, movies.csv, ratings.csv, and tags.csv contain the data.</p>
+<p> </p>
+</div>
+<div id="data-cleaning" class="section level3">
+<h3>Data Cleaning</h3>
+<p> </p>
+</div>
 </div>
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory analysis</h1>
+<p> </p>
+<div id="summaries" class="section level2">
+<h2>Summaries</h2>
+<div id="overview-of-dataset-ratings.csv" class="section level3">
+<h3>Overview of dataset “ratings.csv”</h3>
+<p>We applied the “summarise()” function to briefly describe the variable “rating”. According to the result, variable rating show that the minimum is 0.5, the first quantile is 3, median is 3.5, mean is 3.502, third quantile is 4 and the maximum is 5.Since userid, movieid, timestamp only represent the ID of users, id of movies respectively, and digital record of the time of occurrence of a particular movie, we choose not to analyze those three variables.</p>
+<p> </p>
+</div>
+<div id="overview-of-dataset-movies.csv" class="section level3">
+<h3>Overview of dataset “movies.csv”</h3>
+<p>We count the 5 most appeared genres and made a table. The result are as following. Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. Next, we also count the 5 most appeared year of the movie released, and made a table which shoes the result. 2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
+<p> </p>
+</div>
+</div>
+<div id="exploratory-statistical-analyses" class="section level2">
+<h2>Exploratory Statistical Analyses</h2>
+<div id="find-popular-movies-and-high-rating-movies" class="section level3">
+<h3>Find popular movies and high-rating movies</h3>
+<p>In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
+<p> </p>
+</div>
+<div id="find-the-average-rating-of-each-genres-in-different-year" class="section level3">
+<h3>Find the average rating of each genres in different year</h3>
+<p>As to find out the average rating of each genres in different year, we first seperrate the combined genre and find out the average rating in different by using groupby and summarize functions. The table clearly shows that in 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p>
+<p> </p>
+</div>
+<div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level3">
+<h3>Kruskal-Wallis Test regarding user ID and rating</h3>
+<p>We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<p> </p>
+</div>
+</div>
+<div id="visualizations" class="section level2">
+<h2>Visualizations</h2>
+<div id="rating-distribution-among-different-genres" class="section level3">
+<h3>Rating distribution among different genres</h3>
+<p>In order to find the rating distribution among different genres, we decided to use boxplot .The boxplot regarding ratings and genres shows that the spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
+<p> </p>
+</div>
+<div id="rating-distribution-among-different-years" class="section level3">
+<h3>Rating distribution among different years</h3>
+<p>Next up, we also decided to use boxplot to show the rating distribution among different years. Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.</p>
+<p> </p>
+</div>
+</div>
 </div>
 <div id="additional-analysis" class="section level1">
 <h1>Additional analysis</h1>
@@ -462,9 +531,40 @@ div.tocify {
 <p>Our train process on the train data <a href="https://shaocongz.github.io/Final_Project/SVD.html#Train">minimized the loss to approximately 0</a>. We further applied this model to <a href="https://shaocongz.github.io/Final_Project/SVD.html#Predict__Visualization">predict ratings for NA value in the original rating matrix</a>. With the size of the matrix in the train data enlarges, the time cost for training this model accurately increases. Therefore, we didn’t apply this model in our shiny app or try to optimize this model.</p>
 <p> </p>
 </div>
+<div id="tag-based-recommendation" class="section level3">
+<h3>Tag-based recommendation</h3>
+<p>In this project, we have implemented several algorithms for recommendation systems, such as tree-based bootstraping, user-similarity based recommendation, and tree-based bootstrapping. The next one I want to introduce is the tag-based recommendation system algorithm. Before introducing the new recommendation system, we need a new dataset to carry on the thoughts. The “tag.csv” in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and time stamp (it represents seconds since midnight Coordinated Universal Time of January 1, 1970, but we will not use this variable in this part). Based on these information, we can construct a personalized recommendation algorithm by:</p>
+<ol style="list-style-type: decimal">
+<li><p>Count the most commonly used tags of the user.</p></li>
+<li><p>For each tag, count the movies that have been labeled the most times.</p></li>
+<li><p>For a user, first find his commonly used tags, and then find the most popular movies with these tags to recommend to the user.</p></li>
+</ol>
+<p>For the above algorithm, the formula of user u’s interest in movie i is as follows:</p>
+<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
+<p>where <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, we should build our function first.</p>
+<p> </p>
+<p>The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item). The function code can be seen <a href="https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Construct_interest_function">here</a>.</p>
+<p> </p>
+<p>After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags labeled by the users. The limited dataset will destroy the credibility of the tag-based recommendation system, as the user we want to analyze may have a few tags and there may also a few tags for movies. In order to making sure that the interest values to be nonzero, we will then choose several movies that have labeled most by users and select several active users. In this way, we select the users that have labeled more than 20 movies and select movies that has labeled by more than 4 users. The selected movies for example, Star Wars: Episode IV - A New Hope. The selected movies’ table is <a href="https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Find_the_most_popular_movies_and_the_most_active_users">here</a>.</p>
+<p> </p>
+<p>To visualize the users’ interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user’s interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest. The detailed code is <a href="https://shaocongz.github.io/Final_Project/tag_system_recommendation.html#Create_heat_map">here</a>.</p>
+<p><img src="heat_map.png" style="width:75%"></p>
+<p> </p>
+<p>Tag based TF-IDF can help us predict the user’s interest on a certain movie (or item). The algorithm’s validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups.</p>
+<p> </p>
+<p>The algorithm above have punishment for popular tags and popular movies, and doesn’t reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p> </p>
+</div>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
+<p>A tag-based recommendation system can calculate a numerical value by algorithmically visualizing a user’s interest in a movie. Based on the user’s tag set and the tag set of a specific movie, the system calculates the interest value of the movie and recommends the movie to the user based on this value. The molecule of the formula, which is <span class="math inline">\(\sum_{b} n_{u, b} n_{b, i}\)</span>, firstly compute the user’s interest in a certain movie by finding the sets. <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that the user u has labeled tag b and <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b</p>
+<p>However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problems, scholars improve this formula by drawing on the idea of TF-IDF and constructing the new formula.</p>
+<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span>,</p>
+<p>where <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. The denominator of the formula is used to appropriately punish popular labels and popular items, but the results will not reduce the offline accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p>Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, <span class="math inline">\(n_{b, i}\)</span>, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user’s interest anymore and the heat map then will be bad and doesn’t contain useful information.</p>
+<p>Luckily, there are several movies that are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.</p>
+<p>It is confirmed that if the sample dataset is large enough, then a person will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the interest value is held, and the movie is recommended to the user if it is larger than a certain standard value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users’ will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. A further investigation can be done in the future.</p>
 </div>
 
 

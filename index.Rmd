@@ -2,8 +2,9 @@
 title: "**Movie Recommender**"
 output: 
   html_document:
-    code_folding: hide
+    code_folding: null
 ---
+
 <style type="text/css">
 
 h1.title {
@@ -29,55 +30,66 @@ A demo movie recommendation system
 </font>
 </center>
 
-<iframe width="600" height="315" src="https://www.youtube.com/watch?v=6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
 
-![](https://youtu.be/zNzZ1PfUDNk){width="560" height="315"}
+
+</style>
+
+<center>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
+
+</font>
+</center>
+
  
 $\quad$
 $\quad$
  
 # About the project
 
-The progress of computer and Internet technology has promoted the development of society. In terms of entertainment, the vibrant film industry is now facing another revolution with the support of the Internet and big data. How to accurately recommend information to users that matches their preferences has become an important application and a major challenge in the field of data science. In this way, many websites have established complex, reliable and highly accurate film preference recommendation algorithms or systems. These algorithms or systems are great inventions, which can effectively meet the users' need of watching movies and greatly reduce the time required for users to search movies. In this context, we want to try to make a demo movie recommendation system based on [movielens](https://grouplens.org/datasets/movielens/latest/) data set, and try to apply the recommendation system used in daily life to our own website.
+The prosperity of Internet industry enabled massive knowledge and entertainments to be accessible at one's fingertips, making people no longer in thirst for feeds. However, massive information also trapped people into another dilemma: we got numerous choices for our limited attentions. Therefore, many Internet companies, such as Youtube, Tiktok and Bilibili, has equipped their website with personalized recommendation service to attract users' attentions as much as possible. Curious about how the recommendation works, we learned and implemented several recommendation algorithms, through applying some of which we built our own movie recommendation system upon [movielens](https://grouplens.org/datasets/movielens/latest/) dataset.
+
+
+pushing to users appropriate information matching their preference has became a significant application and may worth billions of dollars in certain industries, e.g. film industry (see [Netflix Prize](https://en.wikipedia.org/wiki/Netflix_Prize)). 
 
 $\quad$
 $\quad$
 
 # Website Overview
 
-This website is designed to construct a demo movie recommendation based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset. The dataset describes 5-star rating and free-text tagging activity from the movie recommendation service. When exploring the website, you will find the [Exploratory Analyses](EDA.html), [Differentiable Movies](tree-based-bootstraping.html), Recommendation Algorithm and Shinyapp tabs.
+This website introduced algorithms and codes we used to built a demo movie recommendation upon the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset. The dataset described rating measured in the 5-star format and free-text tagging activity from the a real film websites. When exploring the website, you will find the [Exploratory Analyses](EDA.html), [Differentiable Movies](tree-based-bootstraping.html), Recommendation Algorithms and a Shinyapp as our recommendation system.
 
 $\quad$
 
 In the [Exploratory Analyses](EDA.html) tab, you will find:
 
-$\bullet$ Brief analyses of the dataset
+- Brief overview of the dataset
 
-$\bullet$ In-depth analyses of the dataset, through statistical tests and visualization
+- In-depth analyses of the dataset, through statistical tests and visualization
 
 $\quad$
 
 In the [Differentiable Movies](tree-based-bootstraping.html) tab, you will find:
 
-$\bullet$ The logical concept of the algorithm
+- Answer to the question: what movies should be provided to new users for rating to start recommendation?
 
-$\bullet$ Processes of implementing the algorithm
+- Core ideas of the adaptive bootstrapping algorithm
 
-$\bullet$ Results and interpretations
+- Implementation of this algorithm in R
 
 $\quad$  
 
-In the Recommendation Algorithm tab, you will find the concepts, working process and results of:
+In the Recommendation Algorithm tab, you will find the concepts, implementation and test results for three recommendation algorithms:
 
-$\bullet$ [Similarity-based recommendation](user_similarity.html)
+- [Similarity-based recommendation](user_similarity.html)
 
-$\bullet$ [SVD-based recommendation](SVD.html)
+- [Latent-factor-based recommendation](SVD.html)
 
-$\bullet$ [Tag-based recommendation](tag_system_recommendation.html)
+- [Tag-based recommendation](tag_system_recommendation.html)
 
 $\quad$
 
-The [shinyapp](https://hzhong.shinyapps.io/movierecommender/) tab will lead you have an amazing experience of how the movie recommendation system works.
+The [shinyapp](https://hzhong.shinyapps.io/movierecommender/) tab will lead you to the demo recommendation system we built
 
 You can also see our  proposal [here](Proposal.html).
 
@@ -86,11 +98,11 @@ $\quad$
 
 ### Collaborators
 
-$\bullet$ Haoling Zhong
+- Haoling Zhong
 
-$\bullet$ Shaocong Zhang
+- Shaocong Zhang
 
-$\bullet$ Yuxuan Wang
+- Yuxuan Wang
 
-$\bullet$ Boqian Li 
+- Boqian Li 
 

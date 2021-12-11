@@ -9,12 +9,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Haolin Zhong (UNI: hz2771)" />
 
 
-<title>Tag-based recommendation</title>
+<title>test_shiny</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -36,8 +37,6 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -383,276 +382,67 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Tag-based recommendation</h1>
+<h1 class="title toc-ignore">test_shiny</h1>
+<h4 class="author">Haolin Zhong (UNI: hz2771)</h4>
+<h4 class="date">2021/12/7</h4>
 
 </div>
 
 
-<p>In this project, we have implemented several algorithms for recommendation systems, such as tree-based bootstraping, user-similarity based recommendation, and tree-based bootstrapping. The next one I want to introduce is the tag-based recommendation system algorithm. Before introducing the new recommendation system, we need a new dataset to carry on the thoughts. The “tag.csv” in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and time stamp (it represents seconds since midnight Coordinated Universal Time of January 1, 1970, but we will not use this variable in this part). Based on these information, we can construct a personalized recommendation algorithm by:</p>
-<ol style="list-style-type: decimal">
-<li><p>Count the most commonly used tags of the user.</p></li>
-<li><p>For each tag, count the movies that have been labeled the most times.</p></li>
-<li><p>For a user, first find his commonly used tags, and then find the most popular movies with these tags to recommend to the user.</p></li>
-</ol>
-<p>For the above algorithm, the formula of user u’s interest in movie i is as follows:</p>
-<p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
-<p>where <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, we should build our function first.</p>
-<div id="construct-interest-function" class="section level3">
-<h3>Construct interest function</h3>
-<p>The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item).</p>
-<pre class="r"><code># Set up interest function
-fc.interest = function(u, i) {
-B.u = 
-  remove.tag %&gt;% 
-  filter(user_id == u)
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre class="r"><code>mv = read_csv(&quot;./data/small/movies.csv&quot;)</code></pre>
+<pre><code>## Rows: 9742 Columns: 3</code></pre>
+<pre><code>## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (2): title, genres
+## dbl (1): movieId</code></pre>
+<pre><code>## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>mv_genres =
+  mv %&gt;% 
+  mutate(genres = map(genres, ~str_split(string = .x, pattern = &quot;\\|&quot;))) %&gt;% 
+  unnest(genres) %&gt;% 
+  unnest(genres)
 
-B.u.distinct = 
-  B.u %&gt;% 
-  distinct(tag)
-
-remove.tag.distinct = 
-  remove.tag %&gt;% 
-  select(-movie_id, -timestamp) %&gt;% 
-  distinct()
-
-B.i = 
-  remove.tag %&gt;% 
-  filter(movie_id == i)
-
-B.i.distinct = 
-  B.i %&gt;% 
-  select(-tag, -timestamp) %&gt;% 
-  distinct()
-
-n_ub = c()
-n_bi = c()
-n_bu = c()
-lg.value = c()
-n_iu = nrow(B.i.distinct)
-value = c()
-
-for (b in 1:nrow(B.u.distinct)) {
-  n_ub[b] = sum(B.u$tag == as.character(B.u.distinct[b, 1]))
-  n_bi[b] = sum(B.i$tag == as.character(B.u.distinct[b, 1]))
-  n_bu[b] = sum(remove.tag.distinct$tag == as.character(B.u.distinct[b, 1]))
-  lg.value[b] = log(1 + n_bu[b]) * log(1 + n_iu)
-  value[b] = n_ub[b] * n_bi[b] / lg.value[b]
+cut_year = function(string){
+  year_str = str_split(string, pattern = &quot;\\(&quot;)[[1]]
+  year_str = str_remove(year_str[length(year_str)], &quot;\\)&quot;)
+  return(as.integer(year_str))
 }
-return(interest = round(sum(value), 2))
-}</code></pre>
-</div>
-<div id="find-the-most-popular-movies-and-the-most-active-users" class="section level3">
-<h3>Find the most popular movies and the most active users</h3>
-<p>After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags labeled by the users. The limited dataset will destroy the credibility of the tag-based recommendation system, as the user we want to analyze may have a few tags and there may also a few tags for movies. In order to making sure that the interest values to be nonzero, we will then choose several movies that have labeled most by users and select several active users. In this way, we select the users that have labeled more than 20 movies and select movies that has labeled by more than 4 users. The selected movies for example, Star Wars: Episode IV - A New Hope. The selected movies’ table is shown below.</p>
-<p><img src="pics/starwar.jpg" style="width:75%"></p>
-<pre class="r"><code>popular.movie = 
-  remove.tag %&gt;% 
-  select(-tag, -timestamp) %&gt;% 
-  distinct() %&gt;%
-  group_by(movie_id) %&gt;% 
-  summarize(
-    count = n()
-  ) %&gt;% 
-  filter(count &gt; 3) %&gt;% 
+
+mv_year = 
+  mv %&gt;%
   mutate(
-    &quot;movie id&quot; = movie_id
+    year = map(title, cut_year),
+    year = as.integer(year)
   ) %&gt;% 
-  select(-movie_id) %&gt;% 
-  select(&quot;movie id&quot;, count) %&gt;% 
-  arrange(desc(count))
+  arrange(desc(year))</code></pre>
+<pre><code>## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-active.user = 
-  remove.tag %&gt;% 
-  select(-tag, -timestamp) %&gt;%
-  distinct() %&gt;% 
-  group_by(user_id) %&gt;% 
-  summarize(
-    count = n()
-  ) %&gt;% 
-  filter(count &gt; 20) %&gt;% 
-  arrange(desc(count))
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-active.user.vec = as.vector(active.user$user_id)
-popular.movie.vec = as.vector(popular.movie$`movie id`)
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-movie.name = 
-  movies %&gt;% 
-  janitor::clean_names() %&gt;%
-  filter(movie_id %in% popular.movie.vec) %&gt;% 
-  knitr::kable() %&gt;% 
-  kable_styling(bootstrap_options = c(&quot;striped&quot;)) %&gt;%
-  kableExtra::kable_styling(font_size = 12)
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-movie.name</code></pre>
-<table class="table table-striped table" style="margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:right;">
-movie_id
-</th>
-<th style="text-align:left;">
-title
-</th>
-<th style="text-align:left;">
-genres
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-260
-</td>
-<td style="text-align:left;">
-Star Wars: Episode IV - A New Hope (1977)
-</td>
-<td style="text-align:left;">
-Action|Adventure|Sci-Fi
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-296
-</td>
-<td style="text-align:left;">
-Pulp Fiction (1994)
-</td>
-<td style="text-align:left;">
-Comedy|Crime|Drama|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-527
-</td>
-<td style="text-align:left;">
-Schindler’s List (1993)
-</td>
-<td style="text-align:left;">
-Drama|War
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-541
-</td>
-<td style="text-align:left;">
-Blade Runner (1982)
-</td>
-<td style="text-align:left;">
-Action|Sci-Fi|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-750
-</td>
-<td style="text-align:left;">
-Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb (1964)
-</td>
-<td style="text-align:left;">
-Comedy|War
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2959
-</td>
-<td style="text-align:left;">
-Fight Club (1999)
-</td>
-<td style="text-align:left;">
-Action|Crime|Drama|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4226
-</td>
-<td style="text-align:left;">
-Memento (2000)
-</td>
-<td style="text-align:left;">
-Mystery|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4878
-</td>
-<td style="text-align:left;">
-Donnie Darko (2001)
-</td>
-<td style="text-align:left;">
-Drama|Mystery|Sci-Fi|Thriller
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7361
-</td>
-<td style="text-align:left;">
-Eternal Sunshine of the Spotless Mind (2004)
-</td>
-<td style="text-align:left;">
-Drama|Romance|Sci-Fi
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8641
-</td>
-<td style="text-align:left;">
-Anchorman: The Legend of Ron Burgundy (2004)
-</td>
-<td style="text-align:left;">
-Comedy
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-79132
-</td>
-<td style="text-align:left;">
-Inception (2010)
-</td>
-<td style="text-align:left;">
-Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="create-heat-map" class="section level3">
-<h3>Create heat map</h3>
-<p>To visualize the users’ interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user’s interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest.</p>
-<pre class="r"><code># construct a new table of the selected id and movie
-heat.map = tibble(user_id = rep(active.user.vec, length(popular.movie.vec)), movie_id = rep(popular.movie.vec, length(active.user.vec)))
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-# add insterest value to the table
-interest = c()
-for (i in 1:nrow(heat.map)) {
-  interest[i] = fc.interest(as.numeric(heat.map[i, 1]), as.numeric(heat.map[i, 2]))
-}
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-heat.map = add_column(heat.map, interest)
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
 
-# build heat map
-heat.map %&gt;% 
-  ggplot(aes(y = as.factor(user_id), x = as.factor(movie_id), fill = interest)) +
-  geom_tile() +
-  geom_raster() +
-  labs(
-    x = &quot;Movie ID&quot;,
-    y = &quot;User ID&quot;
-  )</code></pre>
-<p><img src="tag_system_recommendation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-</div>
-<div id="conclusion" class="section level3">
-<h3>Conclusion</h3>
-<p>Tag based TF-IDF can help us predict the user’s interest on a certain movie (or item). The algorithm’s validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups.</p>
-<p>The algorithm above have punishment for popular tags and popular movies, and doesn’t reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
-</div>
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA
+
+## Warning in .f(.x[[i]], ...): 强制改变过程中产生了NA</code></pre>
 
 
 

@@ -1,6 +1,5 @@
 ---
 title: "**Movie Recommender**"
-subtitle: "A demo movie recommendation system"
 output: 
   html_document:
     code_folding: hide
@@ -22,17 +21,23 @@ h4.author { /* Header 4 - and the author and data headers use this too  */
 
 </style>
 
+<center>
+<font size = "5">
 
-<img src="pics/movies.jpg" style="width:80%">
+A demo movie recommendation system
 
- Image source: 38 Top Fall Movies To Get You In the Autumn Mood( Leah Hall 2021)
+</font>
+</center>
+
+<iframe width="560" height="315" src="https://www.youtube.com/watch?v=6vIq99VgxkE" frameborder="0" allowfullscreen></iframe>
+
  
 $\quad$
 $\quad$
  
 # About the project
 
-Watching movie is one of the most important forms of entertainment for most of people. People like many types of films, for example, documentaries, action films, suspense films, and so on. Many outstanding works have been brought to the screen by outstanding production teams to share and resonate with audiences. In the era of information explosion, pushing to users information matching their preference has been a valuable application and a major challenge in the field of data science. In this way, many websites have established sophisticated, reliable and highly accurate movie preference recommendation algorithms or systems. These algorithms or systems are a great invention that can efficiently satisfy people's need to watch movies and greatly reduce the time users need to search for movies. We want to simply try to make a demo movie recommendation system based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset, a dataset consisting of users’ rating and tagging towards movies and will allow us to use almost everything we learned in data science this semester and force us to learn some new concepts and algorithms. We strongly believe that this is a very big challenge, but we do think this project is very meaningful and worthwhile.
+The progress of computer and Internet technology has promoted the development of society. In terms of entertainment, the vibrant film industry is now facing another revolution with the support of the Internet and big data. How to accurately recommend information to users that matches their preferences has become an important application and a major challenge in the field of data science. In this way, many websites have established complex, reliable and highly accurate film preference recommendation algorithms or systems. These algorithms or systems are great inventions, which can effectively meet the users' need of watching movies and greatly reduce the time required for users to search movies. In this context, we want to try to make a demo movie recommendation system based on [movielens](https://grouplens.org/datasets/movielens/latest/) data set, and try to apply the recommendation system used in daily life to our own website.
 
 $\quad$
 $\quad$

@@ -45,7 +45,7 @@ $\quad$
 
 # Website Overview
 
-This website is designed to construct a demo movie recommendation based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset. The dataset describes 5-star rating and free-text tagging activity from the movie recommendation service. When exploring the website, you will find the [Exploratory Analyses](EDA.html), Recommendation Algorithm and Shinyapp tabs.
+This website is designed to construct a demo movie recommendation based on the [movielens](https://grouplens.org/datasets/movielens/latest/) dataset. The dataset describes 5-star rating and free-text tagging activity from the movie recommendation service. When exploring the website, you will find the [Exploratory Analyses](EDA.html), [Differentiable Movies](tree-based-bootstraping.html), Recommendation Algorithm and Shinyapp tabs.
 
 $\quad$
 
@@ -53,13 +53,21 @@ In the [Exploratory Analyses](EDA.html) tab, you will find:
 
 $\bullet$ Brief analyses of the dataset
 
-$\bullet$ Deeper analyses of the dataset, through statistical tests and visualization
+$\bullet$ In-depth analyses of the dataset, through statistical tests and visualization
 
 $\quad$
 
-In the Recommendation Algorithm tab, you will find the concepts, working process and results of:
+In the [Differentiable Movies](tree-based-bootstraping.html) tab, you will find:
 
-$\bullet$ [Tree-based bootstrapping](tree-based-bootstraping.html)
+$\bullet$ The logical concept of the algorithm
+
+$\bullet$ Processes of implementing the algorithm
+
+$\bullet$ Results and interpretations
+
+$\quad$  
+
+In the Recommendation Algorithm tab, you will find the concepts, working process and results of:
 
 $\bullet$ [Similarity-based recommendation](user_similarity.html)
 
@@ -76,16 +84,7 @@ You can also see our  proposal [here](Proposal.html).
 $\quad$
 $\quad$
 
-# Additional Information
-
-$\bullet$ Watch our project [Youtube video](https://www.youtube.com/watch?v=6vIq99VgxkE) and get a brief understanding of this amazing project.
-
-$\bullet$ You can read our final project report here to get a comprehensive understanding of how this wonderful project was constructed from start to finish.
-
-$\quad$
-$\quad$
-
-### Collaborators:
+### Collaborators
 
 $\bullet$ Haoling Zhong
 

@@ -27,10 +27,9 @@ other applicable algorithms.
 
 # Initial questions
 
-- Which movies have the highest ratings? 
-- Are there any significant differences in ratings of movies in different genres? (Which types of movie do people like?)
+- What movies are both popular and highly-rated?
+- Is there any significant differences in ratings of movies in different genres? (Which types of movie do people like?)
 - Is there any relationship between movie ratings and movie release year? (Have movie ratings worsened in recent years?)
-- Is there any relationship between movie ratings and review time? (Is it getting harder to cater to tastes of audience?)
 - For new users entering into the recommendation system, how to gain the first batch of rating information?
 - For existing users, how to recommend movies to them?
 
@@ -246,6 +245,8 @@ rows represent users, and values in each grid represent ratings.
 Due to the limitation of computing power, we only predict ratings for the first 
 20 users and the first 20 movies in the dataset.
 
+&nbsp;
+
 #### Data cleaning for user-generated tags
 
 In tag-based recommendation, we used the "tag.csv" dataset. After using `janitor::clean_names()` to clean the variable names, we used the `strsplit` function to split tags into single words. In this way, punctuation marks (like comma, parenthesis) and "less important" words (like "a", "too") become the main barriers to the data cleaning process.
@@ -339,9 +340,9 @@ year_count
 ## Exploratory Statistical Analyses
 
 
-### Find popular movies and high-rating movies
+### Find movies receive most 5-star ratings
 
-We first merged the "high_rating" and "movie_names" dataframes, and counted the "movie_id" variable and filtered movies with over 100 ratings. Next, we re-arranged rows according to the count and separated release year of movies from `title` as `year`. One interesting fact we found is that among the 5 most popular movies and 5 highest rating movies, 3 movies were released in 1994; 4 movies were released in the 90s.
+We first merged the "high_rating" and "movie_names" dataframes, and counted the `movie_id` variable and filtered movies with over 100 ratings. Next, we re-arranged rows according to the count and separated release year of movies from `title` as `year`. One interesting factis that among the 5 movies, 3 movies were released in 1994; 4 movies were released in the 90s.
 
 ```{r, message = FALSE, warning = FALSE}
 data_path = "./data/small/ratings.csv"
@@ -382,7 +383,7 @@ high_rating_movienames
 
 &nbsp;
 
-### Find  the average rating of each genres in different year
+### Find the average rating of each genres in different year
 
 As to find out the average rating of each genres in different year, we used `separate()` to separate the combined genre. Then, we found the average rating in different genres by using `group_by()` and `summarize()`. Here we only display the first ten rows of this dataframe:
 
@@ -480,7 +481,7 @@ violin_df
 
 ### Rating distribution among different years
 
-After completing data cleaning process mentioned in previous sections, we removed brackets in `year`, and only included movies released between 1990 and 2018. We made a violin plot to show the rating distributions among movie release years. [XXXXXXXXXXXXXX]
+After completing data cleaning process mentioned in previous sections, we removed brackets in `year`, and only included movies released between 1990 and 2018. We made a violin plot to show the rating distributions among movie release years. We found an obvious trend that from 1990 to 2018, the average rating score of movies has become more and more “similar”. That is, the rating values of modern movies are more frequently concentrated between 3.5 and 4, and the density of corresponding scores is close. However, compared to the modern movies from 2000, the user preference for movies from the 90s is more divided, and the density between different ratings is more obvious.
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
 movie_names = 
@@ -653,27 +654,17 @@ The algorithm penalizes popular tags and popular movies to generate more persona
 
 # Discussion
 
-## EDA
+## Explorotory Data Analysis
 
 ### Key finding & insights
 
-We first found out some overview information about the datasets that were mainly used in the EDA. This step helped us to decide which variables were more necessary to be included in the analysis.
+Our exploratory analyses generated an overview of dataset, and helped us to answer most of our initial questions.
 
-In our closer look at the relationship between movies and ratings, we found out a lot of useful information which can answer some of our initial questions. We filtered movies with a rating of less than 5 and counted the top 5 most rated movies to discover the top 5 most popular movies with the highest rating. The Shawshank Redemption (1994) was the most popular film, with a user rating of 153 times. No. 2 Pulp Fiction (1994) had been rated 123 times by users. Forrest Gump (1994) came in third position with 116 user ratings. The Matrix (1999) was ranked fourth among the top five most popular films, with a user rating of 109 times. Star Wars: Episode IV - A New Hope (1977) was ranked No. 5 with a 104 percent user rating. We also discovered that drama was the most prevalent genre among the top 5 most rated and highest rated films Appeared three times in Forrest Gump (1994), Pulp Fiction (1994), and The Shawshank Redemption (1994)). We also discovered an intriguing fact: three of the top five most popular and highest-rated films were released in 1994, while four were released in the 1990s.Besides what we found out about the relationship between movies and ratings, we also got information about the average rating of each genres in different year. The average rating for the categories Action, Adventure, Fantasy, and Science Fiction in 1902 was 3.5. The average rating for the genres of crime and western in 1903 was 2.5. In 1908, the averages for the categories Animation, Comedy, and Science Fiction were all 4.0. In 1915, the average rating for the category Drama was 2.0.
+We found movies which received most 5-star ratings, and discovered the top 5 popular and highly-rated movies. The Shawshank Redemption (1994) was the most popular film, with 153 times of 5-star ratings. No. 2 Pulp Fiction (1994) had received 123 5-star ratings. Forrest Gump (1994) came in third position with 116 5-star ratings. The Matrix (1999) was ranked fourth among the top five most popular films, with 109 times of 5-star rating. Star Wars: Episode IV - A New Hope (1977) was ranked No. 5 with 104 5-star. We also discovered an intriguing fact: three of the 5 movies were released in 1994, while four were released in the 1990s. 
 
-In addition to the abstract digital results, we also got a lot of more intuitive visualization results. The boxplot of rating distribution among different genres showed us the spread of the ratings of different genres of movies. Outliers in all of the ratings were around 1.0 or 0.5 points. Outliers of 1.5 points were seen in the Film-Noir and Documentary category ratings. We may also deduce that the average rating for genres such as Thriller, Science Fiction, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure, and Action is 3.5. Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime, and Animation all had mean of 4 out of 5 stars. The boxplot which explored the rating distribution among different years also provided some stright forward results. We chose to present only a portion of the boxplot related year and rating because this dataset contains too many years. According to the boxplot, the rating data records for the years 2010, 2009, 2007, 2006, and 1998 had the fewest rating records. In the plot, there were no obvious trend.
+Besides, we also got rating distributions among genres and movie release years, and noted a trend that From 1990 to 2018, the average rating score of movies has become more and more “similar”. That is, the rating values of modern movies are more frequently concentrated between 3.5 and 4, and the density of corresponding scores is close. However, compared to the modern movies from 2000, the user preference for movies from the 90s is more divided, and the density between different ratings is more obvious.
 
-Except the visualization results, we also did the Kruskal-Wallis Test and thus found out that At 0.05 significance level, we rejected the null hypothesis and concluded that at least two of the mean ratings of the user from the 600 users were different.
-
-&nbsp;
-
-### Suggestions for further research and analysis of EDA
-
-Future analysis could provide more information about what factors cause different rating score and try to provides information of the findings.
-
-Future modifications should aim to provide other types of visualization results. In stead of boxplot, we could try to use density plot, scatter plot, etc. 
-
-Future research should focus on how to do more tests or modelings for nonparametric variable. 
+We also performed Kruskal-Wallis Test, whose result suggests significant differences in users' ratings.
 
 &nbsp;
 

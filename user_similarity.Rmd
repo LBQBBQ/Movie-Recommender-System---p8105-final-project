@@ -49,7 +49,7 @@ two column `movie_id` and `rating` for following analyses' convenience.
 The user similarity based recommendation algorithm predict ratings with the following
 procedures:
 
-- Find $X$ most similar users to the given user (Here we set $X$ to 10)
+- Find $K$ most similar users to the given user (Here we set $K$ to 10)
 - Find all movies that these similar users have rated and the given user has not watched
 - Predict the given user's ratings on these movies based on the similarity measure and ratings of similar user's
 

@@ -415,7 +415,7 @@ ratings = ratings_tidy %&gt;%
 <h1>Algorithm</h1>
 <p>The user similarity based recommendation algorithm predict ratings with the following procedures:</p>
 <ul>
-<li>Find <span class="math inline">\(X\)</span> most similar users to the given user (Here we set <span class="math inline">\(X\)</span> to 10)</li>
+<li>Find <span class="math inline">\(K\)</span> most similar users to the given user (Here we set <span class="math inline">\(K\)</span> to 10)</li>
 <li>Find all movies that these similar users have rated and the given user has not watched</li>
 <li>Predict the given user’s ratings on these movies based on the similarity measure and ratings of similar user’s</li>
 </ul>

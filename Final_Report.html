@@ -1257,8 +1257,20 @@ boxplot_df2 </code></pre>
 <p> </p>
 </div>
 </div>
-<div id="tag-based-recommendation-1" class="section level2">
-<h2>Tag-based recommendation</h2>
+<div id="additional-analyses" class="section level2">
+<h2>Additional Analyses</h2>
+<div id="finding-differentiable-movies" class="section level3">
+<h3>Finding Differentiable Movies</h3>
+<p>Through adaptive bootstrapping, we found the most “differentiable” movies in the dataset. We noticed that these movies are basically high-rating movies. This may be resulted from the trend that movies received more ratings tends to be high-rating movies. However, for high-rating movies, most people love them and only a small proportion of people dislike them. The unbalanced population sizes of lovers and haters may affect the calculation of variance of ratings, as a larger population generally has lower variance compared to smaller population, which can subsequently affect the power of <span class="math inline">\(D(m)\)</span> in measuring differentiability. So, such result suggests potential bias caused by our method of filtering popular movies. To avoid such problem, if given a dataset with ample records of ratings, we can further filter popular movies to only include those with balanced population of lovers and haters.</p>
+<p> </p>
+</div>
+<div id="considering-timepoint-of-rating" class="section level3">
+<h3>Considering timepoint of rating</h3>
+<p>In our analysis, we excluded the variable <code>timestamp</code>, which describes the timepoint that the rating was given at. However, integration of timepoint may significantly improve the performance of models, because a user’s taste may change with time and does not always stay the same. To integrate timepoint, ratings can be adjusted by timepoint, making ratings given earlier become smaller to reward recent ratings as they reflect users’ current taste.</p>
+<p> </p>
+</div>
+<div id="tag-based-recommendation-1" class="section level3">
+<h3>Tag-based recommendation</h3>
 <p>A tag-based recommendation system can calculate a numerical value by algorithmically visualizing a user’s interest in a movie. Based on the user’s tag set and the tag set of a specific movie, the system calculates the interest value of the movie and recommends the movie to the user based on this value. The molecule of the formula, which is <span class="math inline">\(\sum_{b} n_{u, b} n_{b, i}\)</span>, firstly compute the user’s interest in a certain movie by finding the sets. <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that the user u has labeled tag b and <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b</p>
 <p>However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problems, scholars improve this formula by drawing on the idea of TF-IDF and constructing the new formula.</p>
 <p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span>,</p>
@@ -1266,6 +1278,12 @@ boxplot_df2 </code></pre>
 <p>Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, <span class="math inline">\(n_{b, i}\)</span>, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user’s interest anymore and the heat map then will be bad and doesn’t contain useful information.</p>
 <p>Luckily, there are several movies that are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.</p>
 <p>It is confirmed that if the sample dataset is large enough, then a person will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the interest value is held, and the movie is recommended to the user if it is larger than a certain standard value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users’ will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. A further investigation can be done in the future.</p>
+<p> </p>
+</div>
+<div id="shiny-app" class="section level3">
+<h3>Shiny app</h3>
+<p>We implemented results of adaptive boostrapping and user-similarity based recommendation in our shiny app. Users can rate on adaptively-provided movies found by adaptive boostrapping, or rate on any other movie released after 1990. After rating on at least 3 movies, user can get movies recommended by the user-similarity-based recommendation algorithm. The computation for generating recommendation usually takes 1~3 minutes.</p>
+</div>
 </div>
 </div>
 

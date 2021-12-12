@@ -480,7 +480,7 @@ violin_df
 
 ### Rating distribution among different years
 
-After completing data cleaning process mentioned in previous sections, we removed brackets in `year`, and only included movies released between 1990 and 2018. We made a violin plot to show the rating distributions among movie release years. [XXXXXXXXXXXXXX]
+After completing data cleaning process mentioned in previous sections, we removed brackets in `year`, and only included movies released between 1990 and 2018. We made a violin plot to show the rating distributions among movie release years.
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
 movie_names = 

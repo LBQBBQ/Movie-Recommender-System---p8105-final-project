@@ -14,8 +14,8 @@
 
 <title>Final Report</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -400,7 +400,7 @@ div.tocify {
 <div id="related-work" class="section level1">
 <h1>Related work</h1>
 <p>For film industry, good recommendation algorithm may worth billions of dollars. A living example is <a href="https://en.wikipedia.org/wiki/Netflix_Prize">Netflix Prize</a>, where <a href="https://sifter.org/~simon/journal/20061211.html">Funk-SVD</a> was proposed.</p>
-<p>As we are short in computing power needed to train the Funk-SVD model, we then turned to consult the book, <a href="https://book.douban.com/subject/10769749/">Implementation of Recommend System by Liang Xiang</a>, to learn other applicable algorithms.</p>
+<p>As we are short in computing power needed to train the Funk-SVD model, we then turned to consult the book, Implementation of Recommend System by Liang Xiang, to learn other applicable algorithms.</p>
 <p> </p>
 </div>
 <div id="initial-questions" class="section level1">
@@ -411,7 +411,6 @@ div.tocify {
 <li>Is there any relationship between movie ratings and movie release year? (Have movie ratings worsened in recent years?)</li>
 <li>Is there any relationship between movie ratings and review time? (Is it harder and harder to cater to the tastes of the audience?)</li>
 <li>For new users entering into the recommendation system, how to gain the first batch of rating information?</li>
-<li>For existing users in the system, how to recommend movies to them according to ratings they given?</li>
 </ul>
 <p> </p>
 </div>
@@ -424,7 +423,7 @@ div.tocify {
 </div>
 <div id="data-cleaning-for-eda" class="section level3">
 <h3>Data cleaning for EDA</h3>
-<p>As for further analysis, we choose to clean some of our datasets. For dataset “rating.csv”, we apply the janitor::clean_names() function to make sure that everything is in lower case, and we also exclude the “timestamp” variable that does not related to our analysis assumption. After this step, we set up a new data frame called “rating_tidy”. Next up, we also create a new dataframe called “high_rating”, which only contains the highest rating score “5” of the “rating_tidy” dataframe. Last but not the least, we rename the variable “movieId” to movie_id for the “movie.csv” dataset and transfer it to a new data frame called “movie_names”.</p>
+<p>As for further analysis, we chose to clean some of our datasets. For dataset “rating.csv”, we applied the <code>janitor::clean_names()</code> function to make sure that everything is in lower case, and we also excluded the “timestamp” variable that did not related to our analysis assumption. After this step, we set up a new data frame called “rating_tidy”. Next up, we also created a new dataframe called “high_rating”, which only contains the highest rating score “5” of the “rating_tidy” dataframe. Last but not the least, we renamed the variable “movieId” to movie_id for the “movie.csv” dataset and transfered it to a new data frame called “movie_names”. Other trivial data cleaning process were mentioned in the following EDA section.</p>
 <pre class="r"><code>library(tidyverse)
 data_path = &quot;./data/small/ratings.csv&quot;
 
@@ -458,7 +457,7 @@ movie_names =
 <h2>Summaries</h2>
 <div id="overview-of-dataset-ratings.csv" class="section level3">
 <h3>Overview of dataset “ratings.csv”</h3>
-<p>We applied the “summarise()” function to briefly describe the variable “rating”. According to the result, variable rating show that the minimum is 0.5, the first quantile is 3, median is 3.5, mean is 3.502, third quantile is 4 and the maximum is 5.Since userid, movieid, timestamp only represent the ID of users, id of movies respectively, and digital record of the time of occurrence of a particular movie, we choose not to analyze those three variables.</p>
+<p>We first imported the dataset:“ratings.csv”, and applied <code>janitor::clean_names()</code> to made everything into lower cases. Next, we applied the <code>summary()</code> function to get the summary table and finally showed the result.According to the result, variable rating showed that the minimum is 0.5, the first quantile is 3, median is 3.5, mean is 3.502, third quantile is 4 and the maximum is 5. Since userid, movieid, timestamp only represented the ID of users, id of movies respectively, and digital record of the time of occurrence of a particular movie, we chose not to analyze those three variables.</p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
@@ -598,7 +597,7 @@ NA
 </div>
 <div id="overview-of-dataset-movies.csv" class="section level3">
 <h3>Overview of dataset “movies.csv”</h3>
-<p>We count the 5 most appeared genres and made a table. The result are as following. Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. Next, we also count the 5 most appeared year of the movie released, and made a table which shoes the result. 2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
+<p>We first imported the dataset:“movies.csv”, and applied <code>janitor::clean_names()</code> to made everything into lower cases. We also applied <code>separate()</code> function to separate the year of the variable “title”. Next, we applied counted the genres by <code>count()</code> function. We also applied the <code>filter()</code> function to keep the n number lager than 1500. For the dataframe, we did the same steps mentioned above and finally we should the tidy table results The result were as following. Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place. Next, we also counted the 5 most appeared year of the movie released, and made a table which shoes the result. 2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</p>
 <pre class="r"><code>data_path = &quot;./data/small/movies.csv&quot;
 
 movie_descriptive = 
@@ -748,7 +747,7 @@ n
 <h2>Exploratory Statistical Analyses</h2>
 <div id="find-popular-movies-and-high-rating-movies" class="section level3">
 <h3>Find popular movies and high-rating movies</h3>
-<p>In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p>
+<p>We first merged the “high_rating” and “movie_names” dataframes, and counted the “movie_id” variable and filtered to keep the the rating times higher than 100 times movies. Next, arranged the n to decreasing-wise rank and separated the year of movie publication of the variable called “title” and created a new variable called “year”. Finally, showed the results in a tidy table. The Shawshank Redemption (1994) was the most popular movie, which had 153 times user rating. No.2 Pulp Fiction (1994), had 123 times user rating. 116 times user rating, Forrest Gump (1994) won the 3rd popular place. The Matrix (1999) had 109 times user rating,and was the fourth place among the top 5 popular movies. No. 5 was Star Wars: Episode IV - A New Hope (1977), and it had 104 times user rating. We also found out that among those 5 most rated movies and highest rating movies, genres with tag drama appeared the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also found out one interesting fact was that among the 5 most popular movies and 5 highest rating movies, 3 movies were released in 1994; 4 movies were released in the 90s.</p>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
 rating_tidy = 
@@ -897,7 +896,7 @@ Action|Adventure|Sci-Fi
 </div>
 <div id="find-the-average-rating-of-each-genres-in-different-year" class="section level3">
 <h3>Find the average rating of each genres in different year</h3>
-<p>As to find out the average rating of each genres in different year, we first seperrate the combined genre and find out the average rating in different by using groupby and summarize functions. The table clearly shows that in 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p>
+<p>As to find out the average rating of each genres in different year, we first <code>separate()</code> the combined genre and found out the average rating in different by using <code>group_by()</code> and <code>summarize()</code> functions. The table clearly showed that in 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi were all 3.5. In 1903, the average ratings for genres Crime and Western were both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 were all 4.0. The genre Drama’s average ratings in 1915 was 2.0.</p>
 <pre class="r"><code>movie_names_ave = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -1058,7 +1057,7 @@ Drama
 </div>
 <div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level3">
 <h3>Kruskal-Wallis Test regarding user ID and rating</h3>
-<p>We first wanted to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different by using ANOVA.In order to use ANOVA, we checked whether the rating is normally distributed. However, because the plot showed that the rating is not normally distributed, we need to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test are: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result shows that the p value is less than 0.05.We can thus conclude that at 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<p>We first decided to do a test to determine whether there were any statistically significant differences between the mean ratings of the user from the 600 users by using ANOVA. In order to use ANOVA, we checked whether the rating was normally distributed or not. However, because the plot showed that the rating was not normally distributed, we needed to use non parametric test.Thus, we used the Kruskal-Wallis Test regarding user ID and rating. The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021). Our assumption for KW test were: <span class="math inline">\(H_0:\mu_{0}=\mu_1=\mu_2=\mu_3=...=\mu _x\)</span>,<span class="math inline">\(H_1: \text{At least two of the mean ratings of the users are different}\)</span>. The result showed that the p value was less than 0.05. We can thus concluded that at 0.05 significance level, we rejected the null hypothesis and concluded that at least two of the mean ratings of the user from the 600 users were different.</p>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
   geom_histogram(alpha = 0.3, bins = 30) </code></pre>
 <p><img src="Final_Report_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
@@ -1101,6 +1100,7 @@ Kruskal-Wallis rank sum test
 </tr>
 </tbody>
 </table>
+<p><strong>Notice</strong>: The p values here is less than 2.2e-16 and is too small to be shown in r. Thus,the p value shown in table here is 0.</p>
 <p> </p>
 </div>
 </div>
@@ -1108,7 +1108,7 @@ Kruskal-Wallis rank sum test
 <h2>Visualizations</h2>
 <div id="rating-distribution-among-different-genres" class="section level3">
 <h3>Rating distribution among different genres</h3>
-<p>In order to find the rating distribution among different genres, we decided to use boxplot .The boxplot regarding ratings and genres shows that the spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p>
+<p>We did the data cleaning process as we mentioned in the previous data cleaning section. Next,we merged the “filter_ratingscore” and “movie_names” dataframes, cleaned the names to lower cases, seperateed “genres” variable. Finally, we created boxplot and let the x equaled rating, and y equaled genres.The boxplot regarding ratings and genres showed that the spread of the ratings of War, Mystery,Horror and Crime were larger comparing to the other ratings of genres. All of ratings had outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary had outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equaled to 3.5. The mean of the ratings of genres included Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equaled to 4.</p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -1131,7 +1131,7 @@ boxplot_df </code></pre>
 </div>
 <div id="rating-distribution-among-different-years" class="section level3">
 <h3>Rating distribution among different years</h3>
-<p>Next up, we also decided to use boxplot to show the rating distribution among different years. Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.</p>
+<p>We did the data cleaning process as mentioned above and merged the “filter_ratingscore” and “movie_names”. Next, we removed the braket of the “year” variable, and showed only the first 1000 data. Finally, we set the x variable as rating and y equals to year, and showed the boxplot of the rating distribution among different years.Since this dataset included too much year, we chose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 had the least rating data records. There were no obivious trend shown in the plot.</p>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
@@ -1243,10 +1243,10 @@ boxplot_df2 </code></pre>
 <h2>EDA</h2>
 <div id="key-finding-insights" class="section level3">
 <h3>Key finding &amp; insights</h3>
-<p>We first found out some overview information about the datasets that were mainly used in the EDA. This step helped us to decide which variables are more necessary to be included in the analysis.</p>
-<p>In our closer look at the relationship between movies and ratings, we found out a lot of useful information which can answer some of our initial questions. We filtered movies with a rating of less than 5 and counted the top 5 most rated movies to discover the top 5 most popular movies with the highest rating. The Shawshank Redemption (1994) is the most popular film, with a user rating of 153 times. No. 2 Pulp Fiction (1994) has been rated 123 times by users. Forrest Gump (1994) comes in third position with 116 user ratings. The Matrix (1999) is ranked fourth among the top five most popular films, with a user rating of 109 times. Star Wars: Episode IV - A New Hope (1977) is ranked No. 5 with a 104 percent user rating. We also discover that drama is the most prevalent genre among the top 5 most rated and highest rated films (appearing three times in Forrest Gump (1994), Pulp Fiction (1994), and The Shawshank Redemption (1994)). We also discover an intriguing fact: three of the top five most popular and highest-rated films were released in 1994, while four were released in the 1990s.Besides what we found out about the relationship between movies and ratings, we also got information about the average rating of each genres in different year. The average rating for the categories Action, Adventure, Fantasy, and Science Fiction in 1902 is 3.5. The average rating for the genres of crime and western in 1903 is 2.5. In 1908, the averages for the categories Animation, Comedy, and Science Fiction were all 4.0. In 1915, the average rating for the category Drama was 2.0.</p>
-<p>In addition to the abstract digital results, we also got a lot of more intuitive visualization results. The boxplot of rating distribution namong different genres shows us the spread of the ratings of different genres of movies. Outliers in all of the ratings are around 1.0 or 0.5 points. Outliers of 1.5 points are seen in the Film-Noir and Documentary category ratings. We may also deduce that the average rating for genres such as Thriller, Science Fiction, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure, and Action is 3.5. Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime, and Animation all have a mean of 4 out of 5 stars. The boxplot which explore the rating distribution among different years also provide some stright forward results. We choose to present only a portion of the boxplot related year and rating because this dataset contains too many years. According to the boxplot, the rating data records for the years 2010, 2009, 2007, 2006, and 1998 have the fewest rating records. In the plot, there is no obvious trend.</p>
-<p>Except the visualization results, we also did the Kruskal-Wallis Test and thus found out that At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</p>
+<p>We first found out some overview information about the datasets that were mainly used in the EDA. This step helped us to decide which variables were more necessary to be included in the analysis.</p>
+<p>In our closer look at the relationship between movies and ratings, we found out a lot of useful information which can answer some of our initial questions. We filtered movies with a rating of less than 5 and counted the top 5 most rated movies to discover the top 5 most popular movies with the highest rating. The Shawshank Redemption (1994) was the most popular film, with a user rating of 153 times. No. 2 Pulp Fiction (1994) had been rated 123 times by users. Forrest Gump (1994) came in third position with 116 user ratings. The Matrix (1999) was ranked fourth among the top five most popular films, with a user rating of 109 times. Star Wars: Episode IV - A New Hope (1977) was ranked No. 5 with a 104 percent user rating. We also discovered that drama was the most prevalent genre among the top 5 most rated and highest rated films Appeared three times in Forrest Gump (1994), Pulp Fiction (1994), and The Shawshank Redemption (1994)). We also discovered an intriguing fact: three of the top five most popular and highest-rated films were released in 1994, while four were released in the 1990s.Besides what we found out about the relationship between movies and ratings, we also got information about the average rating of each genres in different year. The average rating for the categories Action, Adventure, Fantasy, and Science Fiction in 1902 was 3.5. The average rating for the genres of crime and western in 1903 was 2.5. In 1908, the averages for the categories Animation, Comedy, and Science Fiction were all 4.0. In 1915, the average rating for the category Drama was 2.0.</p>
+<p>In addition to the abstract digital results, we also got a lot of more intuitive visualization results. The boxplot of rating distribution among different genres showed us the spread of the ratings of different genres of movies. Outliers in all of the ratings were around 1.0 or 0.5 points. Outliers of 1.5 points were seen in the Film-Noir and Documentary category ratings. We may also deduce that the average rating for genres such as Thriller, Science Fiction, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure, and Action is 3.5. Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime, and Animation all had mean of 4 out of 5 stars. The boxplot which explored the rating distribution among different years also provided some stright forward results. We chose to present only a portion of the boxplot related year and rating because this dataset contains too many years. According to the boxplot, the rating data records for the years 2010, 2009, 2007, 2006, and 1998 had the fewest rating records. In the plot, there were no obvious trend.</p>
+<p>Except the visualization results, we also did the Kruskal-Wallis Test and thus found out that At 0.05 significance level, we rejected the null hypothesis and concluded that at least two of the mean ratings of the user from the 600 users were different.</p>
 <p> </p>
 </div>
 <div id="suggestions-for-further-research-and-analysis-of-eda" class="section level3">
@@ -1257,20 +1257,8 @@ boxplot_df2 </code></pre>
 <p> </p>
 </div>
 </div>
-<div id="additional-analyses" class="section level2">
-<h2>Additional Analyses</h2>
-<div id="finding-differentiable-movies" class="section level3">
-<h3>Finding Differentiable Movies</h3>
-<p>Through adaptive bootstrapping, we found the most “differentiable” movies in the dataset. We noticed that these movies are basically high-rating movies. This may be resulted from the trend that movies received more ratings tends to be high-rating movies. However, for high-rating movies, most people love them and only a small proportion of people dislike them. The unbalanced population sizes of lovers and haters may affect the calculation of variance of ratings, as a larger population generally has lower variance compared to smaller population, which can subsequently affect the power of <span class="math inline">\(D(m)\)</span> in measuring differentiability. So, such result suggests potential bias caused by our method of filtering popular movies. To avoid such problem, if given a dataset with ample records of ratings, we can further filter popular movies to only include those with balanced population of lovers and haters.</p>
-<p> </p>
-</div>
-<div id="considering-timepoint-of-rating" class="section level3">
-<h3>Considering timepoint of rating</h3>
-<p>In our analysis, we excluded the variable <code>timestamp</code>, which describes the timepoint that the rating was given at. However, integration of timepoint may significantly improve the performance of models, because a user’s taste may change with time and does not always stay the same. To integrate timepoint, ratings can be adjusted by timepoint, making ratings given earlier become smaller to reward recent ratings as they reflect users’ current taste.</p>
-<p> </p>
-</div>
-<div id="tag-based-recommendation-1" class="section level3">
-<h3>Tag-based recommendation</h3>
+<div id="tag-based-recommendation-1" class="section level2">
+<h2>Tag-based recommendation</h2>
 <p>A tag-based recommendation system can calculate a numerical value by algorithmically visualizing a user’s interest in a movie. Based on the user’s tag set and the tag set of a specific movie, the system calculates the interest value of the movie and recommends the movie to the user based on this value. The molecule of the formula, which is <span class="math inline">\(\sum_{b} n_{u, b} n_{b, i}\)</span>, firstly compute the user’s interest in a certain movie by finding the sets. <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that the user u has labeled tag b and <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b</p>
 <p>However, this formula tends to give a lot of weight to popular movies corresponding to popular tags, which will lead to recommending popular movies to users, thus reducing the novelty of the recommendation results. To solve these problems, scholars improve this formula by drawing on the idea of TF-IDF and constructing the new formula.</p>
 <p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span>,</p>
@@ -1278,12 +1266,6 @@ boxplot_df2 </code></pre>
 <p>Although we got the interest function of user u on movie i, it was still hard to create the heat map. The main problem was the small dataset. The dataset only contains 58 users and most of them only labeled 1 movie. In this way, if the sample size is not large enough, <span class="math inline">\(n_{b, i}\)</span>, which is the number of times that movie i has been labeled tag b, will always be 0. Then we cannot predict the user’s interest anymore and the heat map then will be bad and doesn’t contain useful information.</p>
 <p>Luckily, there are several movies that are popular and some users are active. That is, the movies were labeled by several users and some users labeled numbers of movies. We selected the popular movies and active users and then created a heat map.</p>
 <p>It is confirmed that if the sample dataset is large enough, then a person will be able to get the interest of any user for any movie and form a movie recommendation system based on it. For example, the interest value is held, and the movie is recommended to the user if it is larger than a certain standard value; the users with similar movie watching interests can be grouped together, and the movie with the highest interest value in this group of users’ will be recommended. In this project, because of the limited sample dataset, time and experience, we could not go deeper. A further investigation can be done in the future.</p>
-<p> </p>
-</div>
-<div id="shiny-app" class="section level3">
-<h3>Shiny app</h3>
-<p>We implemented results of adaptive boostrapping and user-similarity based recommendation in our shiny app. Users can rate on adaptively-provided movies found by adaptive boostrapping, or rate on any other movie released after 1990. After rating on at least 3 movies, user can get movies recommended by the user-similarity-based recommendation algorithm. The computation for generating recommendation usually takes 1~3 minutes.</p>
-</div>
 </div>
 </div>
 

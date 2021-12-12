@@ -49,9 +49,9 @@ Previously, we have implemented several algorithms for recommendation, such as a
 
 1. For every user, find the most commonly used tags 
 
-2. For each movie, find the movie has been labeled by which tag for the most times.
+2. For each tag, find the movie that labeled by this tag for the most times.
 
-3. For the given user, find his most commonly used tags, recommend to the user the movie who has been labeled by this tag for the most times.
+3. For the given user, find his most commonly used tags, then recommend to the user the most popular movie labeled by this tag.
 
 To improve the above strategy and utilizing all tags rather than most used/received tags, we can quantitatively measure a user's interest to a movie based on all tags given by the user and all tags received by the movie. The formula of the user u's interest to the movie i is as follows:
 
@@ -63,7 +63,7 @@ where $n_{u, b}$ is the number of times that user u has labeled tag b, $n_{b, i}
 
 ### Construct interest function
 
-The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we manipulated this dataset, counted the corresponding numbers we need during each round. Then, we sum all values we got in each round and get the interest value of the user on specific movie.
+The difficulty of the function is to find the correct sets of tags or users. To achieve this goal, we manipulated this dataset, counted the corresponding numbers we need during each round. Then, we sum all values we got in each round and get the interest value of the user on specific movie.
 
 ```{r, collapse = TRUE}
 # Set up interest function
@@ -191,9 +191,9 @@ heat.map %>%
 
 ### Conclusion
 
-Tag based TF-IDF can help us predict the user's interest on a certain movie (or item). The algorithm's validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups. 
+Tag-based recommendation can help us predict the user's interest on a certain movie. The algorithm's validity relies on amount of tags. Therefore, when trained on datasets with ample data of tags, the algorithm will become more accurate. 
 
-The algorithm above have punishment for popular tags and popular movies, and doesn't reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.
+The algorithm penalizes popular tags and popular movies to generate more personalized recommendation results.
 
 
 

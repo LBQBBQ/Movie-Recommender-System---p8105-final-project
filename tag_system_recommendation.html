@@ -392,8 +392,8 @@ div.tocify {
 <p>Previously, we have implemented several algorithms for recommendation, such as adaptive bootstraping, user-similarity-based recommendation, and latent-factor-based recommendation. The next one we would like to introduce is the tag-based recommendation algorithm. Before introducing it, we need a new dataset to carry on the thought. The “tag.csv” in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and timestamp (which represents the timepoint that the rating was generated at). Based on the data of tags, we can employ a strategy to achieve personalized recommendation for a user:</p>
 <ol style="list-style-type: decimal">
 <li><p>For every user, find the most commonly used tags</p></li>
-<li><p>For each movie, find the movie has been labeled by which tag for the most times.</p></li>
-<li><p>For the given user, find his most commonly used tags, recommend to the user the movie who has been labeled by this tag for the most times.</p></li>
+<li><p>For each tag, find the movie that labeled by this tag for the most times.</p></li>
+<li><p>For the given user, find his most commonly used tags, then recommend to the user the most popular movie labeled by this tag.</p></li>
 </ol>
 <p>To improve the above strategy and utilizing all tags rather than most used/received tags, we can quantitatively measure a user’s interest to a movie based on all tags given by the user and all tags received by the movie. The formula of the user u’s interest to the movie i is as follows:</p>
 <p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
@@ -401,7 +401,7 @@ div.tocify {
 <p> </p>
 <div id="construct-interest-function" class="section level3">
 <h3>Construct interest function</h3>
-<p>The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we manipulated this dataset, counted the corresponding numbers we need during each round. Then, we sum all values we got in each round and get the interest value of the user on specific movie.</p>
+<p>The difficulty of the function is to find the correct sets of tags or users. To achieve this goal, we manipulated this dataset, counted the corresponding numbers we need during each round. Then, we sum all values we got in each round and get the interest value of the user on specific movie.</p>
 <pre class="r"><code># Set up interest function
 fc.interest = function(u, i) {
 B.u = 
@@ -654,8 +654,8 @@ heat.map %&gt;%
 </div>
 <div id="conclusion" class="section level3">
 <h3>Conclusion</h3>
-<p>Tag based TF-IDF can help us predict the user’s interest on a certain movie (or item). The algorithm’s validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups.</p>
-<p>The algorithm above have punishment for popular tags and popular movies, and doesn’t reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p>Tag-based recommendation can help us predict the user’s interest on a certain movie. The algorithm’s validity relies on amount of tags. Therefore, when trained on datasets with ample data of tags, the algorithm will become more accurate.</p>
+<p>The algorithm penalizes popular tags and popular movies to generate more personalized recommendation results.</p>
 </div>
 
 

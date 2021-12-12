@@ -1,7 +1,6 @@
 ---
 title: "Final Report"
-author: "Haolin Zhong, Shaocong Zhang, Yuxuan Wang, Boqian Li"
-date: "12/7/2021"
+author: "Haolin Zhong (hz2771), Shaocong Zhang (sz3030), Yuxuan Wang (yw3608), Boqian Li (bl2898)"
 output: 
   html_document:
     code_folding: hide

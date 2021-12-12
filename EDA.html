@@ -711,10 +711,33 @@ n
 </ol>
 <p> </p>
 </div>
+<div id="data-cleaning" class="section level1">
+<h1>Data cleaning</h1>
+<ul>
+<li>As for further analysis, we choose to clean some of our datasets. For dataset “rating.csv”, we apply the janitor::clean_names() function to make sure that everything is in lower case, and we also exclude the “timestamp” variable that does not related to our analysis assumption. After this step, we set up a new data frame called “rating_tidy”. Next up, we also create a new dataframe called “high_rating”, which only contains the highest rating score “5” of the “rating_tidy” dataframe. Last but not the least, we rename the variable “movieId” to movie_id for the “movie.csv” dataset and transfer it to a new data frame called “movie_names”.</li>
+</ul>
+<pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
+
+rating_tidy = 
+  read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
+    janitor::clean_names() %&gt;% 
+    select(-timestamp) %&gt;% 
+    mutate(rating = as.double(rating))  
+
+high_rating = 
+  rating_tidy %&gt;% 
+  filter(rating == 5.0) 
+
+movie_names = 
+  read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
+  rename(movie_id = movieId)</code></pre>
+<p> </p>
+</div>
 <div id="find-popular-movies-and-high-rating-movies" class="section level1">
 <h1>Find popular movies and high-rating movies</h1>
 <ul>
-<li><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</li>
+<li><p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p></li>
+<li><p><strong>Key steps</strong> : We first merge the “high_rating” and “movie_names” dataframes, and count the “movie_id” variable and filter to keep the the rating times higher than 100 times movies. Next, arrange the n to decreasing-wise rank and seperate the year of movie publication of the variable called “title” and create a new variable called “year”. Finally, show the results in a tidy table.</p></li>
 </ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
@@ -1045,7 +1068,7 @@ filter_ratingscore =
   theme(legend.position=&quot;none&quot;) 
   viridis::scale_color_viridis(discrete = TRUE)
 boxplot_df </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="rating-distribution-among-different-years" class="section level1">
@@ -1069,7 +1092,7 @@ boxplot_df </code></pre>
   viridis::scale_fill_viridis(discrete = TRUE)
 
 boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level1">
@@ -1080,7 +1103,7 @@ boxplot_df2 </code></pre>
 </ul>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
   geom_histogram(alpha = 0.3, bins = 30) </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <ul>
 <li>The plot shows that the rating is not normally distributed, we need to use non parametric test.</li>
 <li>Thus, we used the Kruskal-Wallis Test regarding user ID and rating.</li>

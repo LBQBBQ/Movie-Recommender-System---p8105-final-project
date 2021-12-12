@@ -384,7 +384,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Find most differentiable movies</h1>
-<h3 class="subtitle">- by tree-based bootstrapping</h3>
+<h3 class="subtitle">- by adaptive bootstrapping</h3>
 
 </div>
 
@@ -398,7 +398,7 @@ div.tocify {
 <li><p><strong>Differentiable</strong>: People who love the movie and who hate the movie should have varied taste.</p></li>
 </ul>
 <p> </p>
-<p>In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the tree-based bootstrapping algorithm proposed by <a href="https://dl.acm.org/doi/10.1145/1935826.1935910">Golbandi, N., et al. 2011.</a> to find the most “differentiable” movies among these movies. Our findings was further implemented in our <a href="https://hzhong.shinyapps.io/movierecommender/">shiny app</a>, which can recommend you movies based on your ratings of the movies we found here.</p>
+<p>In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the adaptive bootstrapping algorithm proposed by <a href="https://dl.acm.org/doi/10.1145/1935826.1935910">Golbandi, N., et al. 2011.</a> to find the most “differentiable” movies among these movies. Our findings was further implemented in our <a href="https://hzhong.shinyapps.io/movierecommender/">shiny app</a>, which can recommend you movies based on your ratings of the movies we found here.</p>
 <p> </p>
 <div id="dependencies" class="section level3">
 <h3>Dependencies</h3>
@@ -466,7 +466,7 @@ hot_movies =
 </div>
 <div id="convert-rating-into-categorical-variable-type" class="section level3">
 <h3>Convert rating into categorical variable <code>type</code></h3>
-<p>The tree-based bootstrapping algorithm demands a variable suggest user’s attitude toward movies, which should have three levels: <code>lover</code>, <code>hater</code>, <code>unknown</code>. Therefore, We converted numerical ratings into this variable, <code>type</code>.</p>
+<p>The adaptive bootstrapping algorithm demands a variable suggest user’s attitude toward movies, which should have three levels: <code>lover</code>, <code>hater</code>, <code>unknown</code>. Therefore, We converted numerical ratings into this variable, <code>type</code>.</p>
 <div id="generate-the-cartesian-product-of-users-ratings-on-movies" class="section level5">
 <h5>Generate the Cartesian product of users’ ratings on movies</h5>
 <pre class="r"><code>rating_dscts = 
@@ -512,9 +512,9 @@ user_cate =
 </div>
 </div>
 </div>
-<div id="tree-based-bootstrapping" class="section level1">
-<h1>Tree-based bootstrapping</h1>
-<p>The tree-based bootstrapping algorithm will find the most “differentiable” movie as the spliter to split users into three sub-groups, those who love it, those who dislike it and those who haven’t watched it. Then, for each sub-group, we repeat this process and split sub-groups into sub-sub groups. This recursive process will built a ternary tree whose nodes are movies, through which users will be divided into subgroups.</p>
+<div id="adaptive-bootstrapping" class="section level1">
+<h1>Adaptive bootstrapping</h1>
+<p>The adaptive bootstrapping algorithm will find the most “differentiable” movie as the spliter to split users into three sub-groups, those who love it, those who dislike it and those who haven’t watched it. Then, for each sub-group, we repeat this process and split sub-groups into sub-sub groups. This recursive process will built a ternary tree whose nodes are movies, through which users will be divided into subgroups.</p>
 <p> </p>
 <div id="calculate-differentiation-score" class="section level3">
 <h3>Calculate differentiation score</h3>
@@ -869,7 +869,8 @@ Action|Adventure|Drama
 </div>
 <div id="graphic-interpretation" class="section level3">
 <h3>Graphic interpretation:</h3>
-<p>According to the result, when facing new users, we can let them show their attitude for above movies:</p>
+<p>According to the result, when facing new users, we can let them rate on movies we found. The logic is:</p>
+<p>For new users, let them rate on “The Last Samurai” at first. Users who give ratings above or equal to 3.5 are considered to be lovers, and those who give ratings below 3.5 are considered to be haters. Users can also reply that they haven’t watched this movie. For lovers, we then let them rate on “The Lord of the Rings: The Two Towers”, for haters we let them rate on “Finding Nemo”, and the unknown will be asked to rate on “City of God”. After rating on the second provided movie, users will then be asked to rate on the third movie which is also adaptively provided.</p>
 <p><img src="pics/recsys.png" style="width:100%"></p>
 </div>
 </div>

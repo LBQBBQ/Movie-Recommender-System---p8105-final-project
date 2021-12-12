@@ -1,6 +1,6 @@
 ---
 title: "Find most differentiable movies"
-subtitle: "- by tree-based bootstrapping"
+subtitle: "- by adaptive bootstrapping"
 ---
 
 &nbsp;
@@ -17,7 +17,7 @@ Intuitively, these movies should be:
 
 &nbsp;
 
-In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the tree-based bootstrapping algorithm proposed by [Golbandi, N., et al. 2011.](https://dl.acm.org/doi/10.1145/1935826.1935910) to find the most "differentiable" movies among these movies. Our findings was further implemented in our [shiny app](https://hzhong.shinyapps.io/movierecommender/), which can recommend you movies based on your ratings of the movies we found here.
+In the following analysis we will explore this topic and try to find such movies in the dataset. we chose the most popular 100 movies released after 2000 to ensure popularity of movies, and adopted the adaptive bootstrapping algorithm proposed by [Golbandi, N., et al. 2011.](https://dl.acm.org/doi/10.1145/1935826.1935910) to find the most "differentiable" movies among these movies. Our findings was further implemented in our [shiny app](https://hzhong.shinyapps.io/movierecommender/), which can recommend you movies based on your ratings of the movies we found here.
 
 &nbsp;
 
@@ -103,7 +103,7 @@ and found 100 movies with most ratings released after 2000.
 
 ### Convert rating into categorical variable `type`
 
-The tree-based bootstrapping algorithm demands a variable suggest user's attitude 
+The adaptive bootstrapping algorithm demands a variable suggest user's attitude 
 toward movies, which should have three levels: `lover`, `hater`, `unknown`. 
 Therefore, We converted numerical ratings into this variable, `type`.
 
@@ -167,9 +167,9 @@ If the rating is `NA`, then we know the user has not seen this movie and denote
 
 &nbsp;
 
-# Tree-based bootstrapping
+# Adaptive bootstrapping
 
-The tree-based bootstrapping algorithm will find the most "differentiable" movie
+The adaptive bootstrapping algorithm will find the most "differentiable" movie
 as the spliter to split users into three sub-groups, those who love it, those who 
 dislike it and those who haven't watched it. Then, for each sub-group, we repeat 
 this process and split sub-groups into sub-sub groups. This recursive process will
@@ -454,7 +454,9 @@ movie_info %>%
 
 ### Graphic interpretation:
 
-According to the result, when facing new users, we can let them show their attitude for above movies:
+According to the result, when facing new users, we can let them rate on movies we found. The logic is:
+
+For new users, let them rate on “The Last Samurai” at first. Users who give ratings above or equal to 3.5 are considered to be lovers, and those who give ratings below 3.5 are considered to be haters. Users can also reply that they haven’t watched this movie. For lovers, we then let them rate on “The Lord of the Rings: The Two Towers”, for haters we let them rate on “Finding Nemo”, and the unknown will be asked to rate on “City of God”. After rating on the second provided movie, users will then be asked to rate on the third movie which is also adaptively provided. 
 
 
 <img src="pics/recsys.png" style="width:100%">

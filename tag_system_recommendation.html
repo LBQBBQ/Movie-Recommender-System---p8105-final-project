@@ -13,8 +13,8 @@
 
 <title>Tag-based recommendation</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -388,18 +388,20 @@ div.tocify {
 </div>
 
 
-<p>In this project, we have implemented several algorithms for recommendation systems, such as tree-based bootstraping, user-similarity based recommendation, and tree-based bootstrapping. The next one I want to introduce is the tag-based recommendation system algorithm. Before introducing the new recommendation system, we need a new dataset to carry on the thoughts. The “tag.csv” in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and time stamp (it represents seconds since midnight Coordinated Universal Time of January 1, 1970, but we will not use this variable in this part). Based on these information, we can construct a personalized recommendation algorithm by:</p>
+<p> </p>
+<p>Previously, we have implemented several algorithms for recommendation, such as adaptive bootstraping, user-similarity-based recommendation, and latent-factor-based recommendation. The next one we would like to introduce is the tag-based recommendation algorithm. Before introducing it, we need a new dataset to carry on the thought. The “tag.csv” in the Movielens contains the data we are looking for. The dataset includes user id, movie id, tag and timestamp (which represents the timepoint that the rating was generated at). Based on the data of tags, we can employ a strategy to achieve personalized recommendation for a user:</p>
 <ol style="list-style-type: decimal">
-<li><p>Count the most commonly used tags of the user.</p></li>
-<li><p>For each tag, count the movies that have been labeled the most times.</p></li>
-<li><p>For a user, first find his commonly used tags, and then find the most popular movies with these tags to recommend to the user.</p></li>
+<li><p>For every user, find the most commonly used tags</p></li>
+<li><p>For each tag, find the movie that labeled by this tag for the most times.</p></li>
+<li><p>For the given user, find his most commonly used tags, then recommend to the user the most popular movie labeled by this tag.</p></li>
 </ol>
-<p>For the above algorithm, the formula of user u’s interest in movie i is as follows:</p>
+<p>To improve the above strategy and utilizing all tags rather than most used/received tags, we can quantitatively measure a user’s interest to a movie based on all tags given by the user and all tags received by the movie. The formula of the user u’s interest to the movie i is as follows:</p>
 <p><span class="math inline">\(p(u, i)=\sum_{b} \frac{n_{u, b}}{\log \left(1+n_{b}^{(u)}\right)} \frac{n_{b, i}}{\log \left(1+n_{i}^{(u)}\right)}\)</span></p>
-<p>where <span class="math inline">\(B(u)\)</span> is the set of tags that user u has labeled, <span class="math inline">\(B(i)\)</span> is the set of tags that movie i is labeled, <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, we should build our function first.</p>
+<p>where <span class="math inline">\(n_{u, b}\)</span> is the number of times that user u has labeled tag b, <span class="math inline">\(n_{b, i}\)</span> is the number of times that movie i has been labeled tag b, <span class="math inline">\(n_b^{(u)}\)</span> records how many different users have used tag b, <span class="math inline">\(n_i^{(u)}\)</span>records how many different users have tagged the movie i. To get the specific value, we should build our function first.</p>
+<p> </p>
 <div id="construct-interest-function" class="section level3">
 <h3>Construct interest function</h3>
-<p>The difficulty of the function is to find the correct sets of tags or users. To acheive the goal, we use the knowledge we have learned in the class, manipulate the dataset count the corresponding numbers we need during each trail. Sum all of the value we got in each trail and then we can get the interest value of the user on specific movie (or item).</p>
+<p>The difficulty of the function is to find the correct sets of tags or users. To achieve this goal, we manipulated this dataset, counted the corresponding numbers we need during each round. Then, we sum all values we got in each round and get the interest value of the user on specific movie.</p>
 <pre class="r"><code># Set up interest function
 fc.interest = function(u, i) {
 B.u = 
@@ -440,11 +442,11 @@ for (b in 1:nrow(B.u.distinct)) {
 }
 return(interest = round(sum(value), 2))
 }</code></pre>
+<p> </p>
 </div>
 <div id="find-the-most-popular-movies-and-the-most-active-users" class="section level3">
 <h3>Find the most popular movies and the most active users</h3>
-<p>After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags labeled by the users. The limited dataset will destroy the credibility of the tag-based recommendation system, as the user we want to analyze may have a few tags and there may also a few tags for movies. In order to making sure that the interest values to be nonzero, we will then choose several movies that have labeled most by users and select several active users. In this way, we select the users that have labeled more than 20 movies and select movies that has labeled by more than 4 users. The selected movies for example, Star Wars: Episode IV - A New Hope. The selected movies’ table is shown below.</p>
-<p><img src="pics/starwar.jpg" style="width:75%"></p>
+<p>After building the function, we want to select the most popular movies to see how this function works. That is, we want to visualize the interest value. However, the dataset only contains about 3700 tags. The limited tag amount will destroy the credibility of the tag-based recommendation system, as some users may have given only a few tags and some movies may have only received a few tags. Therefore, we only included several movies that received most tags and several active users. The cut-off is, we select users who have labeled more than 20 movies and movies that has been labeled by at least 4 users. The selected movies is shown below.</p>
 <pre class="r"><code>popular.movie = 
   remove.tag %&gt;% 
   select(-tag, -timestamp) %&gt;% 
@@ -622,10 +624,11 @@ Action|Crime|Drama|Mystery|Sci-Fi|Thriller|IMAX
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
-<div id="create-heat-map" class="section level3">
-<h3>Create heat map</h3>
-<p>To visualize the users’ interest values, we decided to create a heat map. A heat map (or heatmap) is a data visualization technique that shows magnitude of a phenomenon as color in two dimensions. The variation in color may be by hue or intensity, giving obvious visual cues about how the phenomenon is clustered or varies over space. The heat map is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, each corresponding color represents the level of the user’s interest in the movie. The brighter the color (the greater the interest value), the deeper the interest, and the darker the color (the smaller the interest value), the lighter the interest.</p>
+<div id="visualize-users-predicted-interests-on-movies" class="section level3">
+<h3>Visualize user’s predicted interests on movies</h3>
+<p>We created a heat map to visualize the users’ interest values, which is shown below. The horizontal coordinate of the heat map is the movie ID and the vertical coordinate is the user ID, color in each grid represents the value of the user’s interest to the movie.</p>
 <pre class="r"><code># construct a new table of the selected id and movie
 heat.map = tibble(user_id = rep(active.user.vec, length(popular.movie.vec)), movie_id = rep(popular.movie.vec, length(active.user.vec)))
 
@@ -647,11 +650,12 @@ heat.map %&gt;%
     y = &quot;User ID&quot;
   )</code></pre>
 <p><img src="tag_system_recommendation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p> </p>
 </div>
 <div id="conclusion" class="section level3">
 <h3>Conclusion</h3>
-<p>Tag based TF-IDF can help us predict the user’s interest on a certain movie (or item). The algorithm’s validity relies on a large dataset. That is, when enlarging the dataset, the system will become more and more accurate. In this way, the system works well for big websites due to their large user groups.</p>
-<p>The algorithm above have punishment for popular tags and popular movies, and doesn’t reduce the accuracy of the recommendation results while enhancing the personalization of the recommendation results.</p>
+<p>Tag-based recommendation can help us predict the user’s interest on a certain movie. The algorithm’s validity relies on amount of tags. Therefore, when trained on datasets with ample data of tags, the algorithm will become more accurate.</p>
+<p>The algorithm penalizes popular tags and popular movies to generate more personalized recommendation results.</p>
 </div>
 
 

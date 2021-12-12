@@ -887,7 +887,8 @@ Action|Adventure|Sci-Fi
 <div id="find-the-average-rating-of-each-genres-in-different-year" class="section level1">
 <h1>Find the average rating of each genres in different year</h1>
 <ul>
-<li><strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</li>
+<li><p><strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p></li>
+<li><p><strong>Key steps</strong> : We first create a new dataframe called “movie_names_ave”. For this dataframe, we use the “movies.csv” dataset and did the data cleaning as we mentioned in the previous section and also exclue the “no genres listed” for the “genres” variable.Next, we merge the “filter_ratingscore” and “movie_names_ave” dataframes, and calculate the mean rating score for each years and each genres. Finally, we show the first 10 lines of result in a tidy table.</p></li>
 </ul>
 <pre class="r"><code>movie_names_ave = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -1049,7 +1050,8 @@ Drama
 <div id="rating-distribution-among-different-genres" class="section level1">
 <h1>Rating distribution among different genres</h1>
 <ul>
-<li><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</li>
+<li><p><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p></li>
+<li><p><strong>Key steps</strong> : We did the data cleaning process as we mentioned in the previous data cleaning section. Next,we merge the “filter_ratingscore” and “movie_names” dataframes, clean the names to lower cases, seperate “genres” variable. Finally, we create boxplot and let the x equals rating, and y equals genres.</p></li>
 </ul>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -1074,7 +1076,8 @@ boxplot_df </code></pre>
 <div id="rating-distribution-among-different-years" class="section level1">
 <h1>Rating distribution among different years</h1>
 <ul>
-<li><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</li>
+<li><p><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</p></li>
+<li><p><strong>Key steps</strong> : We did the data cleaning process as mentioned above and merged the “filter_ratingscore” and “movie_names”. Next, we removed the braket of the “year” variable, and showed only the first 1000 data. Finally, we set the x variable as rating and y equals to year, ans show the boxplot of the rating distribution among different years.</p></li>
 </ul>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -1098,8 +1101,9 @@ boxplot_df2 </code></pre>
 <div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level1">
 <h1>Kruskal-Wallis Test regarding user ID and rating</h1>
 <ul>
+<li><strong>Key steps &amp; results</strong> :</li>
 <li>Here, we want to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different(ANOVA)</li>
-<li>First, we checked whether the rating is normally distributed.</li>
+<li>First, we checked whether the rating is normally distributed by histogram.</li>
 </ul>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
   geom_histogram(alpha = 0.3, bins = 30) </code></pre>

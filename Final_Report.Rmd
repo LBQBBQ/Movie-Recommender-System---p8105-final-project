@@ -46,7 +46,7 @@ Dataset source used for EDA analysis:[MoiveLensdataset](https://grouplens.org/da
 
 &nbsp;
 
-### Data Cleaning for EDA
+### Data cleaning for EDA
 As for further analysis, we choose to clean some of our datasets. For dataset "rating.csv", we apply the janitor::clean_names() function to make sure that everything is in lower case, and we also exclude the "timestamp" variable that does not related to our analysis assumption. After this step, we set up a new data frame called "rating_tidy".  Next up, we also create a new dataframe called "high_rating", which only contains the highest rating score "5" of the "rating_tidy" dataframe. Last but not the least, we rename the variable "movieId" to movie_id for the "movie.csv" dataset and transfer it to a new data frame called "movie_names".
 
 ```{r, message = FALSE, warning = FALSE}
@@ -67,6 +67,16 @@ movie_names =
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId)
 ```
+
+&nbsp;
+
+### Data cleaning for tag-based recommendation
+
+For tag-based recommendation, we use the "tag.csv" dataset. After using `janitor::clean_names()` to clean the variable names, we use the `strsplit` to split the tag into single words. In this way, punctuation marks (like comma, parenthesis) and "less important" words (like "a", "too") become the main barriers to the data cleaning process.
+
+In order to removing the punctuation marks in the dataset, we apply `removePunctuation()` to the dataset and successfully remove all the punctutation.
+
+The "less important" words are more complicated. Fortunately, a [stop list](https://countwordsfree.com/stopwords) helps us a lot, which contains the stop words that are frequently used in different languages (we only consider English in this project). Then, we remove the tags that are contained in the stop list and get the dataset for this part.
 
 &nbsp;
 
@@ -165,8 +175,7 @@ high_rating =
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId)
-```
-```{r, message = FALSE, warning = FALSE}
+
 high_rating_movienames = 
   merge(high_rating, movie_names) %>% 
   group_by(title, genres,rating) %>% 
@@ -200,8 +209,7 @@ movie_names_ave =
   title, c("name", "year"), sep="\\s+(?=\\S*$)") %>% 
   separate_rows(genres, sep = "[|]") %>%
   filter(!genres  %in% "(no genres listed)") 
-```
-```{r,message = FALSE,warning = FALSE}
+
 filter_ratingscore = 
   rating_tidy  
 ave_rating = 
@@ -253,8 +261,6 @@ movie_names =
 
 filter_ratingscore = 
   rating_tidy  
-```
-```{r, message = FALSE, warning = FALSE, results = 'hide'}
 boxplot_df = 
   merge(filter_ratingscore, movie_names) %>%
   janitor::clean_names() %>%
@@ -274,17 +280,12 @@ boxplot_df
 Next up, we also decided to use boxplot to show the rating distribution among different years.
 Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating.According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obivous trend shown in the plot.
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, results = 'hide'}
 movie_names = 
   read_csv("./data/small/movies.csv") %>% 
   rename(movie_id = movieId) %>% 
   separate(
   title, c("name", "year"), sep="\\s+(?=\\S*$)") 
-
-```
-
-
-```{r,message = FALSE, warning = FALSE, results = 'hide'}
 boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %>%
   mutate(

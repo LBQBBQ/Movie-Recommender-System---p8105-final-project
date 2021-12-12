@@ -481,7 +481,11 @@ violin_df
 
 ### Rating distribution among different years
 
+<<<<<<< HEAD
 After completing data cleaning process mentioned in previous sections, we removed brackets in `year`, and only included movies released between 1990 and 2018. We made a violin plot to show the rating distributions among movie release years. We found an obvious trend that from 1990 to 2018, the average rating score of movies has become more and more “similar”. That is, the rating values of modern movies are more frequently concentrated between 3.5 and 4, and the density of corresponding scores is close. However, compared to the modern movies from 2000, the user preference for movies from the 90s is more divided, and the density between different ratings is more obvious.
+=======
+After completing data cleaning process mentioned in previous sections, we removed brackets in `year`, and only included movies released between 1990 and 2018. We made a violin plot to show the rating distributions among movie release years.
+>>>>>>> ccdb696ddc417fdb6faaa695f7a0e8a689e7e0e6
 
 ```{r, message = FALSE, warning = FALSE, results = 'hide'}
 movie_names = 

@@ -429,11 +429,12 @@ library(tm)</code></pre>
 <div id="overview-of-dataset-ratings.csv" class="section level1">
 <h1>Overview of dataset “ratings.csv”</h1>
 <ul>
-<li><p><strong>Here, we applied the “summarise()” function to briefly describe the variable “rating”</strong>: According to the result, variable rating show that the minimum is 0.5, the first quantile is 3,median is 3.5,mean is 3.502,third quantile is 4 and the maximum is 5.</p></li>
-<li><p>Since userid ,movieid,timestamp only represent the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, <strong>we choose not to analyze those three variables </strong></p></li>
+<li><p><strong>Here, we applied the <code>summarise()</code> function to briefly describe the variable “rating”</strong>: According to the result, variable rating showed that the minimum was 0.5, the first quantile was 3,median was 3.5,mean was 3.502,third quantile was 4 and the maximum was 5.</p></li>
+<li><p>Since userid ,movieid,timestamp only represented the ID of users, id of movies respectively,and digital record of the time of occurrence of a particular movie, <strong>we chose not to analyze those three variables </strong></p></li>
+<li><p><strong>Key steps</strong> : We first imported that dataset:“ratings.csv”, and applied <code>janitor::clean_names()</code> to made everything into lower cases. Next, we applied the <code>summary()</code> function to get the summary table and finally showed the result.</p></li>
 </ul>
-<pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;</code></pre>
-<pre class="r"><code>summary_df = 
+<pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
+summary_df = 
   read_csv(data_path, col_types = &quot;ccnc&quot;) %&gt;% 
   janitor::clean_names() %&gt;% 
   summary(summary_df$rating) %&gt;% 
@@ -564,8 +565,9 @@ NA
 <div id="overview-of-dataset-movies.csv" class="section level1">
 <h1>Overview of dataset “movies.csv”</h1>
 <ul>
-<li><strong>We count the 5 most appeared genres and made a table</strong> : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place._</li>
-<li><strong>We count the 5 most appeared year of the movie released, and made a table</strong>:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</li>
+<li><strong>We counted the 5 most appeared genres and made a table</strong> : Drama appeared 4361 times,1st place. Comedy appeared 3756 times, 2nd place. Thriller appeared 1894 times, 3rd place. Action appeared 1828 times, 4th place.Romance appeared 1596 time, 5 th place.</li>
+<li><strong>We counted the 5 most appeared year of the movie released, and made a table</strong>:2006 appeared 733 times,1st place. 2009 appeared 719 times, 2nd place. 2005 appeared 709 times, 3rd place. 2002 appeared 705 times, 4th place. 2008 appeared 691 time, 5 th place.</li>
+<li><strong>Key steps</strong> :We first imported that dataset:“movies.csv”, and applied <code>janitor::clean_names()</code> to made everything into lower cases. We also applied <code>separate()</code> function to separate the year of the variable “title”. Next, we applied counted the genres by <code>count()</code> function. We also applied the <code>filter()</code> function to keep the n number lager than 1500. For the datafram, we did the same steps mentioned above and finally we should the tidy table results.</li>
 </ul>
 <pre class="r"><code>data_path = &quot;./data/small/movies.csv&quot;
 
@@ -714,7 +716,7 @@ n
 <div id="data-cleaning" class="section level1">
 <h1>Data cleaning</h1>
 <ul>
-<li>As for further analysis, we choose to clean some of our datasets. For dataset “rating.csv”, we apply the janitor::clean_names() function to make sure that everything is in lower case, and we also exclude the “timestamp” variable that does not related to our analysis assumption. After this step, we set up a new data frame called “rating_tidy”. Next up, we also create a new dataframe called “high_rating”, which only contains the highest rating score “5” of the “rating_tidy” dataframe. Last but not the least, we rename the variable “movieId” to movie_id for the “movie.csv” dataset and transfer it to a new data frame called “movie_names”.</li>
+<li>As for further analysis, we chose to clean some of our datasets. For dataset “rating.csv”, we applied the <code>janitor::clean_names()</code> function to make sure that everything is in lower case, and we also excluded the “timestamp” variable that did not related to our analysis assumption. After this step, we set up a new data frame called “rating_tidy”. Next up, we also created a new dataframe called “high_rating”, which only contains the highest rating score “5” of the “rating_tidy” dataframe. Last but not the least, we renamed the variable “movieId” to movie_id for the “movie.csv” dataset and transfered it to a new data frame called “movie_names”. Other trivial data cleaning process were mentioned in the following EDA section.</li>
 </ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
@@ -736,8 +738,8 @@ movie_names =
 <div id="find-popular-movies-and-high-rating-movies" class="section level1">
 <h1>Find popular movies and high-rating movies</h1>
 <ul>
-<li><p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and count the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), has 123 times user rating. 116 times user rating, Forrest Gump (1994) wins the 3rd popular place. The Matrix (1999) has 109 times user rating,and is the fourth place among the top 5 popular movies. No. 5 is Star Wars: Episode IV - A New Hope (1977), and it has 104 times user rating. We also find out that among those 5 most rated movies and highest rating movies, genres with tag drama appears the most(3 times, appear in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also find out one interesting fact is that among the 5 most popular movies and 5 highest rating movies, 3 movies are released in 1994; 4 movies are released in the 90s.</p></li>
-<li><p><strong>Key steps</strong> : We first merge the “high_rating” and “movie_names” dataframes, and count the “movie_id” variable and filter to keep the the rating times higher than 100 times movies. Next, arrange the n to decreasing-wise rank and seperate the year of movie publication of the variable called “title” and create a new variable called “year”. Finally, show the results in a tidy table.</p></li>
+<li><p><strong>Find popular movies and high-rating movies</strong> : In order to find the top 5 popular movies with highest rating, we filtered movies with rating less than 5, and counted the 5 most rated movies. The Shawshank Redemption (1994) is the most popular movie, which has 153 times user rating. No.2 Pulp Fiction (1994), had 123 times user rating. 116 times user rating, Forrest Gump (1994) won the 3rd popular place. The Matrix (1999) had 109 times user rating,and was the fourth place among the top 5 popular movies. No. 5 was Star Wars: Episode IV - A New Hope (1977), and it had 104 times user rating. We also found out that among those 5 most rated movies and highest rating movies, genres with tag drama appeared the most(3 times, appeared in Forrest Gump (1994), Pulp Fiction (1994),The Shawshank Redemption (1994)). We also found out one interesting fact was that among the 5 most popular movies and 5 highest rating movies, 3 movies were released in 1994; 4 movies are released in the 90s.</p></li>
+<li><p><strong>Key steps</strong> : We first merged the “high_rating” and “movie_names” dataframes, and counted the “movie_id” variable and filtered to keep the the rating times higher than 100 times movies. Next, arranged the n to decreasing-wise rank and separated the year of movie publication of the variable called “title” and created a new variable called “year”. Finally, showed the results in a tidy table.</p></li>
 </ul>
 <pre class="r"><code>data_path = &quot;./data/small/ratings.csv&quot;
 
@@ -753,8 +755,9 @@ high_rating =
 
 movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
-  rename(movie_id = movieId)</code></pre>
-<pre class="r"><code>high_rating_movienames = 
+  rename(movie_id = movieId)
+
+high_rating_movienames = 
   merge(high_rating, movie_names) %&gt;% 
   group_by(title, genres,rating) %&gt;% 
   count(movie_id) %&gt;% 
@@ -887,8 +890,8 @@ Action|Adventure|Sci-Fi
 <div id="find-the-average-rating-of-each-genres-in-different-year" class="section level1">
 <h1>Find the average rating of each genres in different year</h1>
 <ul>
-<li><p><strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi are all 3.5. In 1903, the average ratings for genres Crime and Western are both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 are all 4.0. The genre Drama’s average ratings in 1915 is 2.0.</p></li>
-<li><p><strong>Key steps</strong> : We first create a new dataframe called “movie_names_ave”. For this dataframe, we use the “movies.csv” dataset and did the data cleaning as we mentioned in the previous section and also exclue the “no genres listed” for the “genres” variable.Next, we merge the “filter_ratingscore” and “movie_names_ave” dataframes, and calculate the mean rating score for each years and each genres. Finally, we show the first 10 lines of result in a tidy table.</p></li>
+<li><p><strong>Find the average rating of each genres in different year</strong>: In 1902, the average ratings for genres Action, Adventure, Fantasy, Sci-Fi were all 3.5. In 1903, the average ratings for genres Crime and Western were both 2.5. The averages for genres Animation, Comedy, Sci-Fi in 1908 were all 4.0. The genre Drama’s average ratings in 1915 was 2.0.</p></li>
+<li><p><strong>Key steps</strong> : We first created a new dataframe called “movie_names_ave”. For this dataframe, we used the “movies.csv” dataset and did the data cleaning as we mentioned in the previous section and also excluded the “no genres listed” for the “genres” variable.Next, we merged the “filter_ratingscore” and “movie_names_ave” dataframes, and calculated the mean rating score for each years and each genres. Finally, we showed the first 10 lines of result in a tidy table.</p></li>
 </ul>
 <pre class="r"><code>movie_names_ave = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -896,8 +899,9 @@ Action|Adventure|Sci-Fi
   separate(
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) %&gt;% 
   separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
-  filter(!genres  %in% &quot;(no genres listed)&quot;) </code></pre>
-<pre class="r"><code>filter_ratingscore = 
+  filter(!genres  %in% &quot;(no genres listed)&quot;) 
+
+filter_ratingscore = 
   rating_tidy  
 ave_rating = 
   merge(filter_ratingscore, movie_names_ave) %&gt;% 
@@ -1050,8 +1054,8 @@ Drama
 <div id="rating-distribution-among-different-genres" class="section level1">
 <h1>Rating distribution among different genres</h1>
 <ul>
-<li><p><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime are larger comparing to the other ratings of genres. All of ratings have outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary have outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equal to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equal to 4.</p></li>
-<li><p><strong>Key steps</strong> : We did the data cleaning process as we mentioned in the previous data cleaning section. Next,we merge the “filter_ratingscore” and “movie_names” dataframes, clean the names to lower cases, seperate “genres” variable. Finally, we create boxplot and let the x equals rating, and y equals genres.</p></li>
+<li><p><strong>The boxplot regarding ratings and genres shows</strong>: The spread of the ratings of War, Mystery,Horror and Crime were larger comparing to the other ratings of genres. All of ratings had outliers around either 1.0 point or 0.5 point. The ratings of genres Film-Noir and documentary had outliers at 1.5 points.We can also conclude that the mean of the ratings of genres like Thriller,sci-fi, Romance, Musical, Horror, Fantasy, Comedy, Children, Adventure and Action all equaled to 3.5. The mean of the ratings of genres include Western, War, Mystery, IMAX, Film-Noir, Drama, Documentary, Crime and Animation all equaled to 4.</p></li>
+<li><p><strong>Key steps</strong> : We did the data cleaning process as we mentioned in the previous data cleaning section. Next, we merged the “filter_ratingscore” and “movie_names” dataframes, cleaned the names to lower cases, separated “genres” variable. Finally, we created boxplot and let the x equaled rating, and y equaled genres.</p></li>
 </ul>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
@@ -1060,8 +1064,9 @@ Drama
   title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
 
 filter_ratingscore = 
-  rating_tidy  </code></pre>
-<pre class="r"><code>boxplot_df = 
+  rating_tidy  
+
+boxplot_df = 
   merge(filter_ratingscore, movie_names) %&gt;%
   janitor::clean_names() %&gt;%
   separate_rows(genres, sep = &quot;[|]&quot;) %&gt;%
@@ -1070,21 +1075,22 @@ filter_ratingscore =
   theme(legend.position=&quot;none&quot;) 
   viridis::scale_color_viridis(discrete = TRUE)
 boxplot_df </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="rating-distribution-among-different-years" class="section level1">
 <h1>Rating distribution among different years</h1>
 <ul>
-<li><p><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset include too much year, we choose to show only part of the boxplot regarding year and rating. According to the boxplot, we can conclude that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There is no obovious trend shown in the plot.</p></li>
-<li><p><strong>Key steps</strong> : We did the data cleaning process as mentioned above and merged the “filter_ratingscore” and “movie_names”. Next, we removed the braket of the “year” variable, and showed only the first 1000 data. Finally, we set the x variable as rating and y equals to year, ans show the boxplot of the rating distribution among different years.</p></li>
+<li><p><strong>The boxplot regarding ratings and year shows</strong>: Since this dataset included too much year, we chose to show only part of the boxplot regarding year and rating. According to the boxplot, we can concluded that the rating of years including 2010, 2009, 2007,2006 and 1998 have the least rating data records. There were no obvious trend shown in the plot.</p></li>
+<li><p><strong>Key steps</strong> : We did the data cleaning process as mentioned above and merged the “filter_ratingscore” and “movie_names”. Next, we removed the braket of the “year” variable, and showed only the first 1000 data. Finally, we set the x variable as rating and y equaled to year, and showed the boxplot of the rating distribution among different years.</p></li>
 </ul>
 <pre class="r"><code>movie_names = 
   read_csv(&quot;./data/small/movies.csv&quot;) %&gt;% 
   rename(movie_id = movieId) %&gt;% 
   separate(
-  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) </code></pre>
-<pre class="r"><code>boxplot_df2 = 
+  title, c(&quot;name&quot;, &quot;year&quot;), sep=&quot;\\s+(?=\\S*$)&quot;) 
+
+boxplot_df2 = 
   merge(filter_ratingscore, movie_names) %&gt;%
   mutate(
     year = removePunctuation(year)
@@ -1095,21 +1101,21 @@ boxplot_df </code></pre>
   viridis::scale_fill_viridis(discrete = TRUE)
 
 boxplot_df2 </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p> </p>
 </div>
 <div id="kruskal-wallis-test-regarding-user-id-and-rating" class="section level1">
 <h1>Kruskal-Wallis Test regarding user ID and rating</h1>
 <ul>
 <li><strong>Key steps &amp; results</strong> :</li>
-<li>Here, we want to do a test to determine whether there are any statistically significant differences between the mean ratings of the user from the 600 users are different(ANOVA)</li>
-<li>First, we checked whether the rating is normally distributed by histogram.</li>
+<li>Here, we first decided to do a test to determine whether there were any statistically significant differences between the mean ratings of the user from the 600 users are different(ANOVA)</li>
+<li>First, we checked whether the rating was normally distributed by histogram.</li>
 </ul>
 <pre class="r"><code>ggplot(filter_ratingscore, aes(x = rating, y = ..density..)) + 
   geom_histogram(alpha = 0.3, bins = 30) </code></pre>
-<p><img src="EDA_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="EDA_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <ul>
-<li>The plot shows that the rating is not normally distributed, we need to use non parametric test.</li>
+<li>The plot showed that the rating was not normally distributed, we needed to use non parametric test.</li>
 <li>Thus, we used the Kruskal-Wallis Test regarding user ID and rating.</li>
 <li>The Kruskal-Wallis H test (also known as the “one-way ANOVA on ranks”) is a rank-based nonparametric test that may be used to see if two or more groups of an independent variable on a continuous or ordinal dependent variable have statistically significant differences. It is the nonparametric counterpart of the one-way ANOVA (Kruskal-Wallis H Test in SPSS Statistics | Procedure, output and interpretation of the output using a relevant example., 2021)</li>
 </ul>
@@ -1155,7 +1161,7 @@ Kruskal-Wallis rank sum test
 </tr>
 </tbody>
 </table>
-<p><strong>Notice</strong>: The p values here is less than 2.2e-16 and is too small to be shown in r. Thus,the p value shown in table here is 0.</p>
+<p><strong>Notice</strong>: The p values here was less than 2.2e-16 and was too small to be shown in r. Thus,the p value shown in table here was 0.</p>
 <ul>
 <li><strong>Conclusion:At 0.05 significance level, we reject the null hypothesis and conclude that at least two of the mean ratings of the user from the 600 users are different.</strong></li>
 </ul>
